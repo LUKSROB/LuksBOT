@@ -1,12 +1,12 @@
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    description: 'Hace display de la imagen',
+    description: 'Display the avatar of a user',
     run: async (message) => {
         const target = message.mentions.users.first() || message.author;
         const member = await message.guild.members.fetch(target.id);
 
-        if (!member) return message.reply('No se ha encontrado el usuario');
+        if (!member) return message.reply('User not ');
         
         const avatar = member.user.displayAvatarURL({ size: 512 });
         const embed = new EmbedBuilder()
