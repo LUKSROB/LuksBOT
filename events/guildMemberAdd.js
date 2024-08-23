@@ -1,6 +1,6 @@
 // Join member to guild
 
-const { EmbedBuilder } = require("@discordjs/builders");
+const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const welcomeImage = require('../utils/canvas/welcomeImage');
 
 module.exports = async (member) => {
@@ -9,7 +9,7 @@ module.exports = async (member) => {
     const channel = await client.channels.fetch(channelWelcome);
 
     const buffer = await welcomeImage(member);
-    const attachment = new MessageAttachment(
+    const attachment = new AttachmentBuilder(
         buffer, 
         {
             name: 'welcome-image.png'
@@ -18,7 +18,7 @@ module.exports = async (member) => {
 
     const embed = new EmbedBuilder()
         .setTitle(`Welcome to the server, ${member.user.displayname}!`)
-        .setColor('GREEN')
+        .setColor('#ff7084')
         .setDescription(`Welcome to the server, ${member}!`)
         .setImage('attachment://welcome-image.png')
         

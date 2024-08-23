@@ -15,7 +15,7 @@ registerFont(fontPath, { family: 'SuperSquad' });
 module.exports = async (member) => {
     // Get user data
     const username = member.user.username;
-    const avatar = member.user.avatarURL({ size: 265, extension: 'png' }) || defaultIcon;
+    const avatar = member.user.avatarURL({ size: 256, extension: 'png' }) || defaultIcon;
 
     // Create canvas
     const canvas = createCanvas(1200, 800);
@@ -34,7 +34,7 @@ module.exports = async (member) => {
         background, 
         margin, 
         margin, 
-        canvas.width - mergin * 2, 
+        canvas.width - margin * 2, 
         canvas.height - margin * 2
     );
 
@@ -86,7 +86,7 @@ module.exports = async (member) => {
     ctx.arc(
         canvas.width / 2, 
         canvas.height / 3, 
-        avatarRadius, 
+        avatarRadius - 5, 
         0, 
         Math.PI * 2
     );
@@ -94,8 +94,8 @@ module.exports = async (member) => {
     ctx.clip();
     ctx.drawImage(
         avatarImage, 
-        canvas.width / 2 - avatarRadius, 
-        canvas.height / 3 - avatarRadius, 
+        canvas.width / 2 - (avatarRadius - 5), 
+        canvas.height / 3 - (avatarRadius - 5), 
         avatarRadius * 2, 
         avatarRadius * 2
     );
