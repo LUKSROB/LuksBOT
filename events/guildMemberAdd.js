@@ -17,9 +17,9 @@ module.exports = async (member) => {
     );
 
     const embed = new EmbedBuilder()
-        .setTitle(`Welcome to the server, ${member.user.displayname}!`)
+        .setTitle(`Welcome to the server, ${member}!`)
         .setColor('#ff7084')
-        .setDescription(`Welcome to the server, ${member}!`)
+        .setDescription(`We are glad to have you here!`)
         .setImage('attachment://welcome-image.png')
         
     channel.send({

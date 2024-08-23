@@ -24,5 +24,20 @@ async function getLastUsed(guild) {
     const guildCacheInvites = await inviteCache.get(guild.id)?.fetch();
     const guildUpdateInvites = await guild.invites.fetch();
 
-    
+    if (!guildCacheInvites) {
+        await updateCache(guild.client);
+        return;
+    }
+
+    let usedInvite;
+    for (const invite of guildCacheInvites.values()) {
+        const upgradeInvite = guildUpdateInvites.get(invite.code);
+        
+        if (updateInvite && updateInvite.uses !== invite.uses) {
+            usedInvite = updateInvite || invite;
+        }
+    }
+
+    await updateCache(guild.client);
+    return usedInvite;
 }

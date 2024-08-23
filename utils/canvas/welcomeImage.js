@@ -4,7 +4,6 @@ const { createCanvas, registerFont, loadImage } = require('canvas');
 const defaultIcon = 'https://cdn.discordapp.com/embed/avatars/0.png';
 const backgroundPath = './assets/images/welcome.jpg';
 const fontPath = './assets/fonts/Super_Squad.ttf';
-const subtitle = 'Bienvenid@ al servidor';
 const avatarRadius = 150;
 
 registerFont(fontPath, { family: 'SuperSquad' });
@@ -56,6 +55,7 @@ module.exports = async (member) => {
     ctx.font = '50px SuperSquad';
     ctx.fillStyle = '#ffffff';
 
+    const subtitle = 'Bienvenid@ al servidor';
     const subtitleMetrics = ctx.measureText(subtitle);
 
     ctx.fillText(
