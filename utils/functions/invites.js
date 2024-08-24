@@ -11,7 +11,7 @@ async function updateCache(client) {
     const guilds = client.guilds.cache;
 
     for (const guild of guilds) {
-        invite.set(guild.id, guild.invites);
+        invites.set(guild.id, guild.invites);
     };
 }
 
@@ -31,7 +31,7 @@ async function getLastUsed(guild) {
 
     let usedInvite;
     for (const invite of guildCacheInvites.values()) {
-        const upgradeInvite = guildUpdateInvites.get(invite.code);
+        const updateInvite = guildUpdateInvites.get(invite.code);
         
         if (updateInvite && updateInvite.uses !== invite.uses) {
             usedInvite = updateInvite || invite;
@@ -41,3 +41,5 @@ async function getLastUsed(guild) {
     await updateCache(guild.client);
     return usedInvite;
 }
+
+module.exports = { updateCache, getLastUsed };
