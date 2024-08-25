@@ -12,12 +12,12 @@ const client = new Discord.Client({
 });
 
 // Load commands
-Discord.Client.commands = new Discord.Collection();
+client.commands = new Discord.Collection();
 
 fs.readdirSync('./commands')
   .forEach((commandfile) => {
     const command = require(`./commands/${commandfile}`);
-    Discord.Client.commands.set(command.data.name, command);
+    client.commands.set(command.data.name, command);
 });
 
 // Charge commands
@@ -31,10 +31,10 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
         await REST.put(
             Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
             {
-                body: Discord.Client.commands.map(cmd => cmd.data.toJSON())
+                body: client.commands.map(cmd => cmd.data.toJSON())
             }
         );
-        console.log(`Loaded ${Discord.Client.commands.size} commands`);
+        console.log(`Loaded ${client.commands.size} commands`);
     } catch (err) {
         console.log('Error loading commands');
         console.error(err);
