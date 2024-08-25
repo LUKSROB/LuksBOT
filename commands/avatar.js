@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, GuildMember } = require('discord.js');
 
 module.exports = {
     description: 'Display the avatar of a user',

@@ -48,7 +48,7 @@ module.exports = async (member) => {
     ctx.fillText(
         username, 
         canvas.width / 2 - usernameMetrics.width / 2, 
-        canvas.height * 3 / 4
+        canvas.height * 3 / 4 - 30
     );
 
     // Draw subtitle

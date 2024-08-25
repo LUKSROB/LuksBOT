@@ -6,6 +6,6 @@ module.exports = async (member) => {
     const { guild } = member;
     const channel = await guild.channels.fetch(goodbyeChannel);
     if (channel) {
-        await channel.send(`Goodbye, ${member} lamentablemente nos ha abandonado.`);
+        await channel.send(`Ay no..., ${member.user.username} nos hizo la abandonacion.`);
     }
 }

@@ -4,6 +4,7 @@ const { Collection, Client, Guild } = require("discord.js");
 const inviteCache = new Collection();
 
 /**
+ * Update the cache with the current invites
  * @param {Client} client
  */
 
@@ -22,7 +23,7 @@ async function updateCache(client) {
 
 async function getLastUsed(guild) {
     const guildCacheInvites = await inviteCache.get(guild.id)?.fetch();
-    const guildUpdateInvites = await guild.invites.fetch();
+    const guildUpdatedInvites = await guild.invites.fetch();
 
     if (!guildCacheInvites) {
         await updateCache(guild.client);
@@ -31,10 +32,10 @@ async function getLastUsed(guild) {
 
     let usedInvite;
     for (const invite of guildCacheInvites.values()) {
-        const updateInvite = guildUpdateInvites.get(invite.code);
+        const updatedInvite = guildUpdatedInvites.get(invite.code);
         
-        if (updateInvite && updateInvite.uses !== invite.uses) {
-            usedInvite = updateInvite || invite;
+        if (updatedInvite && updatedInvite.uses !== invite.uses) {
+            usedInvite = updatedInvite || invite;
         }
     }
 
