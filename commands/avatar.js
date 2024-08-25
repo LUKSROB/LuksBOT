@@ -1,7 +1,10 @@
-const { EmbedBuilder, GuildMember } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    description: 'Display the avatar of a user',
+    data: new SlashCommandBuilder()
+        .setName('avatar')
+        .setDescription('Display the avatar of a user'),
+
     run: async (message) => {
         const target = message.mentions.users.first() || message.author;
         const member = await message.guild.members.fetch(target.id);

@@ -1,4 +1,4 @@
-const { ButtonBuilder, ActionRowBuilder } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
 
 const usernameButton = new ButtonBuilder()
     .setCustomId('username')
@@ -13,7 +13,10 @@ const avatarButton = new ButtonBuilder()
     .setStyle(2);
 
 module.exports = {
-    description: 'Envia dos botones, uno envia el user ',
+    data: new SlashCommandBuilder()
+        .setName('button')
+        .setDescription('Envia dos botones, uno envia el user '),
+
     run: async (message) => {
         const actionRow = new ActionRowBuilder().addComponents(usernameButton, avatarButton);
 
