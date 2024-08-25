@@ -2,7 +2,7 @@
 
 const { Collection, Client, Guild } = require("discord.js");
 const inviteCache = new Collection();
-
+const invites = new Collection();
 /**
  * Update the cache with the current invites
  * @param {Client} client
