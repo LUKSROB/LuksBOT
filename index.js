@@ -56,5 +56,3 @@ fs.readdirSync('./events')
 
 // Conect to Discord
 client.login(config.BOT_TOKEN);
-
-module.exports = { client };
