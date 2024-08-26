@@ -21,9 +21,7 @@ fs.readdirSync('./commands')
 });
 
 // Charge commands
-
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
-
 
 (async () => {
     try {
@@ -32,9 +30,10 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
             Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
             {
                 body: client.commands.map(cmd => cmd.data.toJSON())
-            }
+            }   
         );
         console.log(`Loaded ${client.commands.size} commands`);
+        
     } catch (err) {
         console.log('Error loading commands');
         console.error(err);
@@ -48,7 +47,7 @@ fs.readdirSync('./events')
     try {
         const listener = require(`./events/${filename}`);
         const eventName = path.basename(filename, '.js');
-
+        
         client.on(eventName, listener);
     } catch (err) {
         console.log(`Error loading event ${filename}`, err);
@@ -57,3 +56,5 @@ fs.readdirSync('./events')
 
 // Conect to Discord
 client.login(config.BOT_TOKEN);
+
+module.exports = { client };
