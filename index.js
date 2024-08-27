@@ -33,7 +33,6 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
             }   
         );
         console.log(`Loaded ${client.commands.size} commands`);
-        
     } catch (err) {
         console.log('Error loading commands');
         console.error(err);

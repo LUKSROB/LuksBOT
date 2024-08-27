@@ -1,4 +1,5 @@
 const { ButtonBuilder, ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
+const { execute } = require('./random');
 
 const usernameButton = new ButtonBuilder()
     .setCustomId('username')
@@ -17,7 +18,7 @@ module.exports = {
         .setName('button')
         .setDescription('Envia dos botones, uno envia el user '),
 
-    run: async (message) => {
+    execute: async (message) => {
         const actionRow = new ActionRowBuilder().addComponents(usernameButton, avatarButton);
 
         const reply = await message.reply({
