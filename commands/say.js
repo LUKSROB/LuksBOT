@@ -1,11 +1,12 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { execute } = require('./random');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('say')
         .setDescription('Repeat a argument that you provide'),
         
-    run: async (message) => {
+    execute: async (message) => {
         const args = message.content.split(' ').slice(1).join(' ');
 
         if (args.length < 1) return message.reply('You need to provide a message to say');

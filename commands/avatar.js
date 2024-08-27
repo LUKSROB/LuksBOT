@@ -1,11 +1,12 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { execute } = require('./random');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('avatar')
         .setDescription('Display the avatar of a user'),
 
-    run: async (message) => {
+    execute: async (message) => {
         const target = message.mentions.users.first() || message.author;
         const member = await message.guild.members.fetch(target.id);
 
