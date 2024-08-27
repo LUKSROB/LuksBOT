@@ -1,16 +1,25 @@
+// Repeat a argument that you provide
+
 const { SlashCommandBuilder } = require('discord.js');
 const { execute } = require('./random');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('say')
-        .setDescription('Repeat a argument that you provide'),
+        .setDescription('Repeat a argument that you provide')
+        .addStringOption(option => 
+            option.setName('message')
+                  .setDescription('Message to repeat')
+                  .setMinLength(1)
+                  .setMaxLength(100)
+                  .setRequired(true)
+        ),
         
-    execute: async (message) => {
-        const args = message.content.split(' ').slice(1).join(' ');
+    execute: async (interaction) => {
+        const args = interaction.options.getString('message');
 
-        if (args.length < 1) return message.reply('You need to provide a message to say');
-        
-        message.reply(args);
+        interaction
+            .reply(args)
+            .catch(console.error);
     }
 }
