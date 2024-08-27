@@ -20,8 +20,6 @@ module.exports = {
         const avatar = member.avatarURL(image) || member.user.avatarURL(image);
 
         if (!avatar) return interaction.reply('This user not have an avatar');
-
-        console.log(member.user);
         
         const embed = new EmbedBuilder()
             .setAuthor({
