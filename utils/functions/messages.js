@@ -3,7 +3,7 @@
 const {  } = require("discord.js");
 
 module.exports = async (interaction) => {
-    const random = Math.random() * 3;
+    const random = Math.floor(Math.random() * 3);
 
     const welcomeMessage = [
         'Welcome to the server!',
