@@ -24,6 +24,7 @@ module.exports = {
         const reply = await message.reply({
             components: [actionRow]
         });
+        console.log(message.author);
 
         const filter = (interaction) => interaction.user.id === message.author.id && interaction.message.id === reply.id;
         const collector = message.channel.createMessageComponentCollector({

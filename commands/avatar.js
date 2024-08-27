@@ -4,20 +4,40 @@ const { execute } = require('./random');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('avatar')
-        .setDescription('Display the avatar of a user'),
+        .setDescription('Display the avatar of a user')
+        .addUserOption(option => 
+            option.setName('user')
+                  .setDescription('User to display the avatar')
+        ),
 
-    execute: async (message) => {
-        const target = message.mentions.users.first() || message.author;
-        const member = await message.guild.members.fetch(target.id);
+    execute: async (interaction) => {
+        const { user, client, guild } = interaction;
+        const image = { size: 512, dynamic: true };
+        const target = interaction.options.getUser('user') || user;
 
-        if (!member) return message.reply('User not ');
+        const member = await guild.members.fetch(target.id);
+
+        const avatar = member.avatarURL(image) || member.user.avatarURL(image);
+
+        if (!avatar) return interaction.reply('This user not have an avatar');
+
+        console.log(member.user);
         
-        const avatar = member.user.displayAvatarURL({ size: 512 });
         const embed = new EmbedBuilder()
-            .setTitle(`@${member.user.displayName}'s avatar`)
-            .setImage(avatar)
+            .setAuthor({
+                name: `Requested by ${user.username}`,
+                iconURL: user.avatarURL()
+            })
+            .setTitle(`@${member.user.globalName}'s avatar`)
             .setColor('#335577')
+            .setImage(avatar)
+            .setFooter({
+                text: client.user.username,
+                iconURL: client.user.avatarURL()
+            })
 
-        message.reply({ embeds : [embed] });
+        interaction
+            .reply({ embeds : [embed] })
+            .catch(console.error);
     }
 }
