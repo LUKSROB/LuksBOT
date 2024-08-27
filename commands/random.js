@@ -1,4 +1,4 @@
-// Randomize number between 0 and 2
+// Randomize number between 0 and 3
 
 const { SlashCommandBuilder } = require('discord.js');
 
