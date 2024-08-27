@@ -1,4 +1,5 @@
 // 
+const messages = require('../utils/functions/messages');
 
 module.exports =  async (interaction) => {
     const client = interaction.client;
@@ -6,6 +7,7 @@ module.exports =  async (interaction) => {
     if (interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
         command.execute(interaction).catch();
+        messages(interaction);
     } else if (interaction.isButton()) {
 
     }
