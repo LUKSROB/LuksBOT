@@ -25,7 +25,6 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
 (async () => {
     try {
-        console.log('Started refreshing application (/) commands');
         await REST.put(
             Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
             {

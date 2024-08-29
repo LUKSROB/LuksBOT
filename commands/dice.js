@@ -1,4 +1,4 @@
-// Randomize number between 0 and 3
+// Randomize number between 1 and 6
 
 const { SlashCommandBuilder } = require('discord.js');
 
@@ -11,7 +11,6 @@ module.exports = {
 
         const diceValue = Math.floor(Math.random() * 6);
     
-
         interaction
             .reply(`🎲 ${diceValue + 1}`)
             .catch(console.error);
