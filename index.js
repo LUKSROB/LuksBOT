@@ -27,9 +27,7 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
     try {
         await REST.put(
             Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
-            {
-                body: client.commands.map(cmd => cmd.data.toJSON())
-            }   
+            { body: client.commands.map(cmd => cmd.data.toJSON())}
         );
         console.log(`Loaded ${client.commands.size} commands`);
     } catch (err) {

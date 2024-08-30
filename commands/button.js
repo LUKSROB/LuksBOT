@@ -1,5 +1,4 @@
 const { ButtonBuilder, ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
-const { execute } = require('./random');
 
 const usernameButton = new ButtonBuilder()
     .setCustomId('username')
@@ -11,34 +10,32 @@ const avatarButton = new ButtonBuilder()
     .setCustomId('avatar')
     .setEmoji('☺️')
     .setLabel('Mostrar avatar de usuario')
-    .setStyle(2);
+    .setStyle(1);
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('button')
-        .setDescription('Envia dos botones, uno envia el user '),
+        .setDescription('Send two buttons, username and avatar'),
 
-    execute: async (message) => {
+    execute: async (interaction) => {
         const actionRow = new ActionRowBuilder().addComponents(usernameButton, avatarButton);
 
-        const reply = await message.reply({
+        const reply = await interaction.reply({
             components: [actionRow]
         });
-        console.log(message.author);
 
-        const filter = (interaction) => interaction.user.id === message.author.id && interaction.message.id === reply.id;
-        const collector = message.channel.createMessageComponentCollector({
-            filter, time: 60 * 1000
+        const collector = interaction.channel.createMessageComponentCollector({
+            time: 60 * 1000
         });
 
         collector.on('collect', async (interaction) => {
             if (interaction.customId === 'username') {
                 interaction.update({
-                    content: `Tu nombre es ${message.author.displayName}`,
+                    content: `Tu nombre es ${interaction.user.displayName}`,
                     components: []
                 });
             } else if (interaction.customId === 'avatar') {
-                const avatar = message.author.displayAvatarURL({ size: 512 });
+                const avatar = interaction.user.displayAvatarURL({ size: 512 });
 
                 interaction.update({
                     content: 'Tu imagen de perfil es:',
