@@ -1,7 +1,6 @@
 // Repeat a argument that you provide
 
 const { SlashCommandBuilder } = require('discord.js');
-const { execute } = require('./random');
 
 module.exports = {
     data: new SlashCommandBuilder()
