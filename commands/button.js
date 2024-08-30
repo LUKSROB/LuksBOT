@@ -2,15 +2,21 @@ const { ButtonBuilder, ActionRowBuilder, SlashCommandBuilder } = require('discor
 
 const usernameButton = new ButtonBuilder()
     .setCustomId('username')
-    .setEmoji('✅')
+    .setEmoji('👤')
     .setLabel('Mostrar nombre de usuario')
     .setStyle(1);
 
 const avatarButton = new ButtonBuilder()
     .setCustomId('avatar')
-    .setEmoji('☺️')
+    .setEmoji('🖼️')
     .setLabel('Mostrar avatar de usuario')
     .setStyle(1);
+
+const contactButton = new ButtonBuilder()
+    .setCustomId('contact')
+    .setEmoji('📞')
+    .setLabel('Contactar')
+    .setStyle(2);
 
 module.exports = {
     data: new SlashCommandBuilder()
