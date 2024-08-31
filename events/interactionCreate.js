@@ -1,7 +1,5 @@
 // 
 
-const { Events } = require('discord.js');
-
 module.exports = 
 async (interaction) => {
     const client = interaction.client;
