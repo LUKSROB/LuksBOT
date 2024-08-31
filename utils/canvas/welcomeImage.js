@@ -1,5 +1,6 @@
 const { GuildMember } = require('discord.js');
 const { createCanvas, registerFont, loadImage } = require('canvas');
+const { messages } = require('../functions/messages');
 
 const defaultIcon = 'https://cdn.discordapp.com/embed/avatars/0.png';
 const backgroundPath = './assets/images/welcome.jpg';
@@ -14,6 +15,8 @@ registerFont(fontPath, { family: 'SuperSquad' });
 module.exports = async (member) => {
     // Get user data
     const username = member.user.username;
+    const subtitle = 'Bienvenid@ al servidor';
+    const numberMember = `Eres el miembro: ${member.guild.memberCount}`;
     const avatar = member.user.avatarURL({ size: 256, extension: 'png' }) || defaultIcon;
 
     // Create canvas
@@ -55,13 +58,24 @@ module.exports = async (member) => {
     ctx.font = '50px SuperSquad';
     ctx.fillStyle = '#ffffff';
 
-    const subtitle = 'Bienvenid@ al servidor';
     const subtitleMetrics = ctx.measureText(subtitle);
 
     ctx.fillText(
         subtitle, 
         canvas.width / 2 - subtitleMetrics.width / 2, 
         canvas.height * 3 / 4 + 60
+    );
+
+    // Draw number of member
+    ctx.font = '30px SuperSquad';
+    ctx.fillStyle = '#ffffff';
+
+    const numberMetrics = ctx.measureText(numberMember);
+
+    ctx.fillText(
+        numberMember, 
+        canvas.width / 5 - numberMetrics.width / 2, 
+        canvas.height / 6
     );
 
     // Draw avatar
@@ -100,5 +114,6 @@ module.exports = async (member) => {
         avatarRadius * 2
     );
 
+    // Return image buffer
     return canvas.toBuffer();
 }

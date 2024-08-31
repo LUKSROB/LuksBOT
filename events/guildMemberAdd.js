@@ -21,8 +21,8 @@ module.exports = async (member) => {
     );
 
     const embed = new EmbedBuilder()
-        .setTitle(`Welcome to the server, ${member.user.username}!`)
-        .setDescription(`We are glad to have you here!`)
+        .setTitle(messages.welcomeMessage(member))
+        .setDescription(messages.descriptionMessage())
         .setImage('attachment://welcome-image.png')
     
     if (usedInvite && usedInvite.inviter) {
