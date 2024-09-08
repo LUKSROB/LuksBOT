@@ -43,7 +43,6 @@ fs.readdirSync('./events')
     try {
         const listener = require(`./events/${filename}`);
         const eventName = path.basename(filename, '.js');
-        console.log(`Loading ${eventName}`);
 
         client.on(eventName, listener);
     } catch (err) {
