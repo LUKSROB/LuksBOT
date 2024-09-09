@@ -5,6 +5,11 @@ const Discord = require("discord.js");
 const config = require('./config.json');
 const fs = require('fs');
 const path = require('path');
+const express = require('express')
+
+
+const app = express()
+const port = process.env.PORT || 4000;
 
 // Create a new Discord client
 const client = new Discord.Client({
@@ -49,6 +54,14 @@ fs.readdirSync('./events')
         console.log(`Error loading event ${filename}`, err);
     }
 });
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+  })
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
 
 // Conect to Discord
 client.login(config.BOT_TOKEN);
