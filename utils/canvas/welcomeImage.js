@@ -1,8 +1,9 @@
+// Create a welcome image with the user data.
+
 const { GuildMember } = require('discord.js');
 const { createCanvas, registerFont, loadImage } = require('canvas');
-const { messages } = require('../functions/messages');
 
-const defaultIcon = 'https://cdn.discordapp.com/embed/avatars/0.png';
+const defaultIcon = './assets/images/defaultIcon.png';
 const backgroundPath = './assets/images/welcome.jpg';
 const fontPath = './assets/fonts/Super_Squad.ttf';
 const avatarRadius = 150;
