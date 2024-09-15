@@ -1,13 +1,14 @@
 // Join member to guild
 
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
+const { WELCOME_CHANNEL } = require('../config.json');
 const welcomeImage = require('../utils/canvas/welcomeImage');
 const invites = require('../utils/functions/invites');
 const messages = require('../utils/functions/messages');
 
 module.exports = async (member) => {
     const { client } = member;
-    const channelWelcome = '1275997705302446080';
+    const channelWelcome = WELCOME_CHANNEL;
     const channel = await client.channels.fetch(channelWelcome);
 
     const usedInvite = await invites.getLastUsed(member.guild);

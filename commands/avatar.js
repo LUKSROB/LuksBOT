@@ -1,5 +1,4 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { execute } = require('./random');
 
 module.exports = {
     data: new SlashCommandBuilder()
