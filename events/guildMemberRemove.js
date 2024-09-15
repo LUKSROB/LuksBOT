@@ -1,4 +1,4 @@
-// 
+// Removed member from guild
 
 const messages = require('../utils/functions/messages');
 const { GOODBYE_CHANNEL } = require('../config.json');
