@@ -43,12 +43,14 @@ module.exports = async (client) => {
             }])
     )
 
-    client.channels.fetch(TICKETS_ID)
-        .then(channel => channel.send({
-            embeds: [embed],
-            files: [attachment],
-            components: [menu]
-        }))
+    const channel = await client.channels.fetch(TICKETS_ID);
+        if (channel) {
+            await channel.send({
+                embeds: [embed],
+                files: [attachment],
+                components: [menu]
+            })
+        }
         
     console.log(`Connected to Discord! as ${client.user.username}`);
 
