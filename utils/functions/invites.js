@@ -1,8 +1,8 @@
 // 
 
 const { Collection, Client, Guild } = require("discord.js");
-const inviteCache = new Collection();
 const invites = new Collection();
+const inviteCache = new Collection();
 /**
  * Update the cache with the current invites
  * @param {Client} client
@@ -11,8 +11,8 @@ const invites = new Collection();
 async function updateCache(client) {
     const guilds = client.guilds.cache;
 
-    for (const guild of guilds) {
-        invites.set(guild.id, guild.invites);
+    for (const guild of guilds.values()) {
+        invites.set(guild.id, await guild.invites.fetch());
     };
 }
 
