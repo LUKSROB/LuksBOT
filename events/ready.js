@@ -9,6 +9,7 @@ const embed = new EmbedBuilder()
     .setTitle('Panel de soporte')
     .setDescription('Si tienes alguna duda o problema, no dudes en solicitar un ticket de soporte')
     .setImage('attachment://support-image.png')
+    .setColor(' #748CD5')
 
 const menu = new ActionRowBuilder().addComponents(
     new StringSelectMenuBuilder()

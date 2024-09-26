@@ -25,6 +25,7 @@ module.exports = async (member) => {
         .setTitle(messages.welcomeMessage(member))
         .setDescription(messages.descriptionMessage())
         .setImage('attachment://welcome-image.png')
+        .setColor('#4B054F')
     
     if (usedInvite && usedInvite.inviter) {
         embed.setFooter({
