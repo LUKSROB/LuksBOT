@@ -1,4 +1,5 @@
 "canvas": "^2.11.2",
 "discord.js": "^14.15.3",
 "discord": "^0.8.2",
-"express": "^4.19.2"
+"express": "^4.19.2",
+"distube": "^5.0.2",
