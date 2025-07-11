@@ -1,12 +1,13 @@
 // File index for the bot
 
 // Dependencies
-const Discord = require("discord.js");
+const Discord = require('discord.js');
+const mongoose = require('mongoose');
 const config = require('./config.json');
+
 const fs = require('fs');
 const path = require('path');
 const express = require('express')
-
 
 const app = express()
 const port = process.env.PORT || 4000;
@@ -15,6 +16,16 @@ const port = process.env.PORT || 4000;
 const client = new Discord.Client({
     intents: 53608447
 });
+
+// Connect to MongoDB 
+(async () => {
+    try {
+        await mongoose.connect(config.MONGO_URL);
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        console.error('Error connecting to Mongoose:', err);
+    } 
+})();
 
 // Load commands
 client.commands = new Discord.Collection();
