@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true },
     serverId: { type: String, required: true },
+    birthday: { type: Array, default: [] },
     commandCount: { type: Number, default: 0 },
 });
 

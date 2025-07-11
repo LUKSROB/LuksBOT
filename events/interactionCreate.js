@@ -1,6 +1,6 @@
 // Handler interactions for the bot
 
-const { getOrCreateUser, incrementCommandCount } = require('../db/userHelper');
+const { getUser, incCmdCount } = require('../db/userHelper');
 
 module.exports = async (interaction) => {
     const client = interaction.client;
@@ -10,10 +10,10 @@ module.exports = async (interaction) => {
   
     if (interaction.isChatInputCommand()) {
         try {
-            const userData = await getOrCreateUser(interaction.user.id, interaction.guild.id);
+            const userData = await getUser(interaction.guild.id, interaction.user.id);
             command.execute(interaction, userData);
-            
-            await incrementCommandCount(interaction.user.id, interaction.guild.id);
+
+            await incCmdCount(interaction.guild.id, interaction.user.id);
         } catch (error) {
             console.error(error);
         }

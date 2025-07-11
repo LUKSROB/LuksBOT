@@ -1,23 +1,23 @@
 const User = require('../models/user');
 
-async function getOrCreateUser(userId, serverId) {
-    let user = await User.findOne({ userId, serverId });
+async function getUser(serverId, userId) {
+    let user = await User.findOne({ serverId, userId });
 
     if (!user) {
         user = new User({
+            serverId,
             userId,
-            serverId
         });
         await user.save();
     }
         return user;
 }
 
-async function incrementCommandCount(userId, serverId) {
+async function incCmdCount(serverId, userId) {
     await User.updateOne(
-        { userId, serverId },
+        { serverId, userId },
         { $inc: { commandCount: 1 } }
     );
 }
 
-module.exports = { getOrCreateUser, incrementCommandCount };
+module.exports = { getUser, incCmdCount };
