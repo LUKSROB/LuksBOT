@@ -32,8 +32,13 @@ client.commands = new Discord.Collection();
 
 fs.readdirSync('./commands')
   .forEach((commandfile) => {
-    const command = require(`./commands/${commandfile}`);
-    client.commands.set(command.data.name, command);
+    const cmd = fs.readdirSync(`./commands/${commandfile}`);
+
+    for (const file of cmd) {
+        const command = require(`./commands/${commandfile}/${file}`);
+
+        client.commands.set(command.data.name, command);
+    }
 });
 
 // Charge commands
