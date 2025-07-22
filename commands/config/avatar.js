@@ -10,7 +10,7 @@ module.exports = {
         ),
 
     execute: async (interaction) => {
-        const { user, client, guild } = interaction;
+        const { user, guild } = interaction;
         const image = { size: 512, dynamic: true };
         const target = interaction.options.getUser('user') || user;
 
@@ -28,10 +28,6 @@ module.exports = {
             .setTitle(`@${member.user.globalName}'s avatar`)
             .setColor('#335577')
             .setImage(avatar)
-            .setFooter({
-                text: client.user.username,
-                iconURL: client.user.avatarURL()
-            })
 
         interaction
             .reply({ embeds : [embed] })

@@ -10,7 +10,7 @@ module.exports = {
     execute: async (interaction) => {
 
         const diceValue = Math.floor(Math.random() * 6);
-    
+
         interaction
             .reply(`🎲 ${diceValue + 1}`)
             .catch(console.error);

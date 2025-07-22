@@ -1,6 +1,6 @@
 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { setBirthday, getBirthday, delBirthday } = require('../db/birthday');
+const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
 
 module.exports = {
     data: new SlashCommandBuilder()

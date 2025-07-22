@@ -7,7 +7,6 @@ module.exports = {
 
     execute: async (interaction, userData) => {
 
-        // Reply with greeting
         await interaction.reply(`¡Hola ${interaction.user.username}! tienes un total de ${userData.commandCount} comandos utilizados.`);
     },
 }
