@@ -1,23 +1,23 @@
+// Function to get or create a user in the database
+
+// Import necessary modules
 const User = require('../models/user');
 
-async function getUser(serverId, userId) {
-    let user = await User.findOne({ serverId, userId });
+// Function to get or create a user in the database
+async function getUser(userId, serverId) {
+    let user = await User.findOne({ userId, serverId });
 
     if (!user) {
         user = new User({
-            serverId,
             userId,
+            serverId,
         });
         await user.save();
+        
     }
         return user;
 }
 
-async function incCmdCount(serverId, userId) {
-    await User.updateOne(
-        { serverId, userId },
-        { $inc: { commandCount: 1 } }
-    );
-}
-
-module.exports = { getUser, incCmdCount };
+module.exports = {
+    getUser
+};

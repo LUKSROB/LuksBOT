@@ -1,22 +1,26 @@
 // Handler interactions for the bot
 
-const { getUser, incCmdCount } = require('../db/userHelper');
+// Import necessary modules
+const { getUser } = require('../db/userHelper');
+const { incCmdCount } = require('../db/incCmdCount');
 
+// Export the interaction handler
 module.exports = async (interaction) => {
     const client = interaction.client;
 
     const command = client.commands.get(interaction.commandName);
 
-  
+    // Chat input command handling
     if (interaction.isChatInputCommand()) {
         try {
-            const userData = await getUser(interaction.guild.id, interaction.user.id);
+            const userData = await getUser(interaction.user.id, interaction.guild.id);
             command.execute(interaction, userData);
 
-            await incCmdCount(interaction.guild.id, interaction.user.id);
+            await incCmdCount(interaction.user.id, interaction.guild.id);
         } catch (error) {
             console.error(error);
         }
+
     } else {
         try {
             const execute = require(`../interactions/${interaction.customId}.js`);

@@ -71,6 +71,7 @@ fs.readdirSync('./events')
     }
 });
 
+// Express server for health check
 app.get('/', (req, res) => {
     res.send('Hello World!')
   })
