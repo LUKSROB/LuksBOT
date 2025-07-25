@@ -1,7 +1,10 @@
+// 
 
+// Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
 
+// Export the birthday command module
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('birthday')
@@ -9,25 +12,25 @@ module.exports = {
         .addSubcommand(option => 
             option.setName('set')
                 .setDescription('Birthday date of the user')
-                .addStringOption(opt =>
+                .addNumberOption(opt =>
                 opt.setName('day')
                     .setDescription('The birthday date')
-                    .setMinLength(1)
-                    .setMaxLength(31)
+                    .setMinValue(1)
+                    .setMaxValue(31)
                     .setRequired(true)
                 )
-                .addStringOption(opt =>
+                .addNumberOption(opt =>
                     opt.setName('month')
                     .setDescription('The birthday month')
-                    .setMinLength(1)
-                    .setMaxLength(12)
+                    .setMinValue(1)
+                    .setMaxValue(12)
                     .setRequired(true)
                 )
-                .addStringOption(opt =>
+                .addNumberOption(opt =>
                     opt.setName('year')
                     .setDescription('The birthday year')
-                    .setMinLength(4)
-                    .setMaxLength(4)
+                    .setMinValue(1900)
+                    .setMaxValue(new Date().getFullYear())
                     .setRequired(true)
                 )
         )
@@ -64,12 +67,23 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
 
         switch (subcommand) {
+// Handle the 'set' subcommand
             case 'set':
-                const day = interaction.options.getString('day');
-                const month = interaction.options.getString('month');
-                const year = interaction.options.getString('year');
+                const day = interaction.options.getNumber('day');
+                const month = interaction.options.getNumber('month');
+                const year = interaction.options.getNumber('year');
 
-                await setBirthday(interaction.guild.id, interaction.user.id, {
+                const birthday = userData.birthday;
+
+                let reply
+
+                if (birthday) {
+                    reply = `Tu cumpleaños se ha actualizado correctamente: ${day} de ${months[month]} de ${year}.`;
+                } else {
+                    reply = `Tu cumpleaños ha sido establecido correctamente: ${day} de ${months[month]} de ${year}.`;
+                }
+
+                await setBirthday(interaction.user.id, {
                     birthday: [
                         day,
                         month,
@@ -79,10 +93,10 @@ module.exports = {
 
                 const embed = new EmbedBuilder()
                     .setAuthor({
-                        name: `Requested by ${interaction.user.username}`,
+                        name: `Solicitado por ${interaction.user.username}`,
                         iconURL: interaction.user.avatarURL()
                     })
-                    .setTitle(`Tu cumpleaños ha sido establecido correctamente`)
+                    .setTitle(reply)
                     .setColor('#335577')
 
                 interaction
@@ -90,11 +104,12 @@ module.exports = {
                     .catch(console.error);
 
                 break;
+// Handle the 'get' subcommand
             case 'get':
                 const user = interaction.options.getUser('user' ) || interaction.user;
-                const date = await getBirthday( interaction.guild.id, user.id );
+                const date = await getBirthday(user.id);
 
-                if (!date[0] || !date[1] || !date[2]) {
+                if (!date) {
                     let embed = new EmbedBuilder()
                     if (user.id === interaction.user.id) {
                         embed.setTitle(`No has establecido tu fecha de cumpleaños todavia.`)
@@ -127,9 +142,10 @@ module.exports = {
                     }
                 }
                 break;
+// Handle the 'delete' subcommand
             case 'delete':
-                const userId = interaction.user.id;
-                await delBirthday(interaction.guild.id, userId);
+                
+                await delBirthday(interaction.user.id);
 
                 interaction
                     .reply(`Tu fecha de cumpleaños ha sido eliminada correctamente.`)
