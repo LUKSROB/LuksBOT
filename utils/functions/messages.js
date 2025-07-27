@@ -1,5 +1,6 @@
-// Randomize messages to be sent to the user
+// Functions to generate random messages for user interactions
 
+// Functions to generate random messages for welcome
 function welcomeMessage(member) {
     const user = member.user.username;
     const random = Math.floor(Math.random() * 7);
@@ -17,6 +18,7 @@ function welcomeMessage(member) {
     return welcomeMess[random];
 }
 
+// Function to generate a random description message
 function descriptionMessage() {
     const random = Math.floor(Math.random() * 7);
 
@@ -33,6 +35,7 @@ function descriptionMessage() {
     return descriptionMess[random];
 }
 
+// Function to generate a goodbye message when a user leaves
 function goodbyeMessage(member) {
     const user = member.user.username;
     const random = Math.floor(Math.random() * 7);
@@ -50,4 +53,9 @@ function goodbyeMessage(member) {
     return goodbyeMess[random];
 }
 
-module.exports = { welcomeMessage, descriptionMessage, goodbyeMessage };
+// Export the functions for use in other modules
+module.exports = {
+    welcomeMessage,
+    descriptionMessage,
+    goodbyeMessage
+};

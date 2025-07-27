@@ -1,12 +1,15 @@
 // Event handler for new guild member joining
 
+// Import necessary modules
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const WELCOME_CHANNEL = '1286849190156173393';
 const welcomeImage = require('../utils/canvas/welcomeImage');
 const invites = require('../utils/functions/invites');
 const messages = require('../utils/functions/messages');
 
+// Export the guildMemberAdd event handler
 module.exports = async (member) => {
+
     const { client } = member;
     const channelWelcome = WELCOME_CHANNEL;
 
@@ -21,9 +24,6 @@ module.exports = async (member) => {
             name: 'welcome-image.png'
         }
     );
-
-    const user = await client.users.fetch(member.id);
-
 
     const embed = new EmbedBuilder()
         .setTitle(messages.welcomeMessage(member))
@@ -45,4 +45,5 @@ module.exports = async (member) => {
     });
 
     await invites.updateCache(member.client);
+    
 }

@@ -1,5 +1,6 @@
-// Create a ticket for the user
+// Interaction handler for creating a ticket for the user
 
+// Import necessary modules
 const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { TICKET_CHANNEL, MOD_ROLE } = require("../config.json");
 
@@ -11,7 +12,9 @@ const closeButton = new ActionRowBuilder().addComponents(
         .setEmoji('🔒')
 );
 
+// Export the interaction handler for creating a ticket
 module.exports = async (interaction) => {
+
     const {user, guild} = interaction;
     const ticketType = interaction.values[0];
 
@@ -39,4 +42,5 @@ module.exports = async (interaction) => {
                 });
             });
         });
+        
 };

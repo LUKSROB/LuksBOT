@@ -1,5 +1,6 @@
-// Close a ticket
+// Interaction handler for closing a ticket
 
+// Export the interaction handler for closing a ticket
 module.exports = async (interaction) => {
     const {channel, guild} = interaction;
 

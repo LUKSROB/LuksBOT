@@ -1,8 +1,9 @@
-// Response to messages with commands
+// Event handler for message creation
 
+// Export the messageCreate event handler
 module.exports = async (message) => {
     if (message.author.bot) return;
-    if (!message.content.startsWith("-")) return;
+    if (!message.content.startsWith("/")) return;
 
     const args = message.content.slice(1).split(" ")[0];
 

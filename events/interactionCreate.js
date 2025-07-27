@@ -1,4 +1,4 @@
-// Handler interactions for the bot
+// Event handler for interaction creation
 
 // Import necessary modules
 const { getUser } = require('../db/userHelper');
@@ -6,6 +6,7 @@ const { incCmdCount } = require('../db/incCmdCount');
 
 // Export the interaction handler
 module.exports = async (interaction) => {
+
     const client = interaction.client;
 
     const command = client.commands.get(interaction.commandName);
@@ -29,4 +30,5 @@ module.exports = async (interaction) => {
             console.error(error);
         }
     }
+    
 };

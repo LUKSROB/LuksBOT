@@ -1,5 +1,6 @@
-// 
+// Functions to manage Discord invites
 
+// Import necessary modules
 const { Client } = require("discord.js");
 const { setInvites, getInvites } = require('../../db/invites');
 const Guild = require('../../models/guild');
@@ -8,6 +9,7 @@ const Guild = require('../../models/guild');
  * @param {Client} client
  */
 
+// Function to update the invite cache for all guilds the bot is in.
 async function updateCache(client) {
     const guildId = client.guilds.cache.first()?.id;
 
@@ -32,6 +34,7 @@ async function updateCache(client) {
  * @param {Guild} guild
  */
 
+// Function to get the last used invite in a guild.
 async function getLastUsed(guild) {
     const guildInvites = await getInvites(guild.id);
     const guildInvitesUpdated = await guild.invites.fetch();
@@ -48,11 +51,15 @@ async function getLastUsed(guild) {
         
         if (updatedInvite && updatedInvite.uses > guildInvite.uses) {
             usedInvite = updatedInvite;
-            break; // Solo necesitas la primera que cambió
+            break;
         }
     }
     
     return usedInvite;
 }
 
-module.exports = { updateCache, getLastUsed };
+// Export the functions for use in other modules
+module.exports = {
+    updateCache,
+    getLastUsed
+};

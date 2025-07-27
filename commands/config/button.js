@@ -1,3 +1,6 @@
+// Command button: Sends buttons to display username and avatar
+
+// Import necessary modules
 const { ButtonBuilder, ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
 
 const usernameButton = new ButtonBuilder()
@@ -18,11 +21,13 @@ const contactButton = new ButtonBuilder()
     .setLabel('Contactar')
     .setStyle(2);
 
+// Export the button command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('button')
         .setDescription('Send two buttons, username and avatar'),
-
+    // Execute the command
     execute: async (interaction) => {
         const actionRow = new ActionRowBuilder().addComponents(usernameButton, avatarButton);
 

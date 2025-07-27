@@ -1,4 +1,4 @@
-// 
+// Command birthday: Manages user birthdays in the server
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
@@ -6,6 +6,7 @@ const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
 
 // Export the birthday command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('birthday')
         .setDescription('Charge the birthday date of a user')
@@ -46,7 +47,7 @@ module.exports = {
             option.setName('delete')
                 .setDescription('Delete your birthday date')
         ),
-
+    // Execute the command
     execute: async (interaction, userData) => {
 
         months = {

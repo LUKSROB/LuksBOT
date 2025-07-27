@@ -1,10 +1,13 @@
 // Create image for support ticket
 
+// Import necessary modules
 const { createCanvas, loadImage } = require('canvas');
 
 const image = './assets/images/support.png';
 
+// Function to create a support image
 module.exports = async () => {
+
     // Create canvas
     const canvas = createCanvas(700, 393);
     const ctx = canvas.getContext('2d');
@@ -28,4 +31,5 @@ module.exports = async () => {
 
     // Return image buffer
     return canvas.toBuffer();
+    
 }

@@ -1,8 +1,9 @@
-// command cmdCount: Shows the number of commands used by the user
+// Command cmdCount: Shows the number of commands used by the user
 
-// Import dependencies
+// Import necessary modules
 const { SlashCommandBuilder } = require('discord.js');
 
+// Export the cmdCount command module
 module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()

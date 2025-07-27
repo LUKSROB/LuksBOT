@@ -1,6 +1,10 @@
+// Handler for invite-related database operations
+
+// Import necessary modules
 const Guild = require('../models/guild');
 const { getGuild } = require('./guild');
 
+// Function to serialize user data for invites
 function serializeUser(user) {
 
     if (!user) console.log(user);
@@ -11,6 +15,7 @@ function serializeUser(user) {
     };
 }
 
+// Function to set invites for a guild
 async function setInvites(guildId, invite) {
     
     await Guild.updateOne(
@@ -23,12 +28,14 @@ async function setInvites(guildId, invite) {
     );
 }
 
+// Function to get invites for a guild
 async function getInvites(guildId) {
     let guild = await getGuild(guildId);
 
     return guild.invites;
 }
 
+// Export the functions for use in other modules
 module.exports = {
     setInvites,
     getInvites

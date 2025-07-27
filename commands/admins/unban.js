@@ -1,6 +1,11 @@
+// Command unban: Unbans a user from the server
+
+// Import necessary modules
 const { SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
 
+// Export the unban command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('unban')
         .setDescription('Desbanea un usuario del servidor')
@@ -16,6 +21,7 @@ module.exports = {
                 .setRequired(false)
                 .setMaxLength(250)
         ),
+    // Execute the command
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
         

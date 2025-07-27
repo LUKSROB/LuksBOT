@@ -1,12 +1,15 @@
-// Command to show all commands and their descriptions
+// Command help: Displays all commands and their descriptions
 
+// Import necessary modules
 const { SlashCommandBuilder } = require('discord.js');
 
+// Export the help command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Show all commands and their descriptions'),
-
+    // Execute the command
     execute: async (interaction) => {
         const { commands } = interaction.client;
 

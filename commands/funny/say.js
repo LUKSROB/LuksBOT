@@ -1,8 +1,11 @@
-// Repeat a argument that you provide
+// Command say: Repeats a message provided by the user
 
+// Import necessary modules
 const { SlashCommandBuilder } = require('discord.js');
 
+// Export the say command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('say')
         .setDescription('Repeat a argument that you provide')
@@ -13,7 +16,7 @@ module.exports = {
                   .setMaxLength(100)
                   .setRequired(true)
         ),
-        
+    // Execute the command
     execute: async (interaction) => {
         const args = interaction.options.getString('message');
 

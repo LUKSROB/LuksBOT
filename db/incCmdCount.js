@@ -1,4 +1,4 @@
-// Function to increment command count for a user in a server
+// Handler for command count-related database operations
 
 // Import necessary modules
 const User = require('../models/user');
@@ -23,6 +23,7 @@ async function incCmdCount(userId) {
     );
 }
 
+// Export the incCmdCount function for use in other modules
 module.exports = {
     incCmdCount
 };

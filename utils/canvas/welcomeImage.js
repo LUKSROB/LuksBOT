@@ -1,5 +1,6 @@
 // Create a welcome image with the user data.
 
+// Import necessary modules
 const { GuildMember } = require('discord.js');
 const { createCanvas, registerFont, loadImage } = require('canvas');
 
@@ -13,7 +14,10 @@ registerFont(fontPath, { family: 'SuperSquad' });
 /**
 @param {GuildMember} member
 */
+
+// Function to create a welcome image for a new member
 module.exports = async (member) => {
+    
     // Get user data
     const username = member.user.username;
     const subtitle = 'Bienvenid@ al servidor';
@@ -117,4 +121,5 @@ module.exports = async (member) => {
 
     // Return image buffer
     return canvas.toBuffer();
+
 }
