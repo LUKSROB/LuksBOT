@@ -1,7 +1,9 @@
+// Event handler for invite deletion
 
-
-const invites = require("../utils/functions/invites");
+const { updateCache } = require("../utils/functions/invites");
 
 module.exports = async (invite) => {
-    invites.updateCache(invite.client);
+
+    updateCache(invite.client);
+    
 };
