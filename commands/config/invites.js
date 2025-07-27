@@ -18,10 +18,7 @@ module.exports = {
             let name = invite.inviter.username;
 
             inviteCount[name] = ( inviteCount[name] || 0 ) + invite.uses;
-            console.log(inviteCount[name]);
         });
-
-        
 
         const sortedInvites = Object.keys(inviteCount).sort(
             (a, b) => inviteCount[b] - inviteCount[a]
