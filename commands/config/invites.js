@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { getInvites } = require('../../db/invites');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,20 +8,21 @@ module.exports = {
 
     async execute(interaction) {
         const guild = interaction.guild;
-        const invites = await guild.invites.fetch()
+        const invites = await getInvites(guild.id);
 
         const inviteCount = {};
         
         invites.forEach((invite) => {
             if (!invite.inviter) return;
             
-            const { username, discriminator } = invite.inviter;
-
-            let name = discriminator == 0 ? `${username}` : `${username}#${discriminator}`;
+            let name = invite.inviter.username;
 
             inviteCount[name] = ( inviteCount[name] || 0 ) + invite.uses;
+            console.log(inviteCount[name]);
         });
+
         
+
         const sortedInvites = Object.keys(inviteCount).sort(
             (a, b) => inviteCount[b] - inviteCount[a]
         ).slice(0, 10);
