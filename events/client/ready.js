@@ -1,8 +1,8 @@
 // Event handler for bot ready event
 
 // Import necessary modules
-const { setGuild } = require('../db/guild');
-const { updateCache } = require('../utils/functions/invites');
+const { setGuild } = require('../../db/guild');
+const { updateCache } = require('../../utils/functions/invites');
 
 // Export the ready event handler
 module.exports = async (client) => {

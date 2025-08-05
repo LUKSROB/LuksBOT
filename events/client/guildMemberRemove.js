@@ -1,8 +1,8 @@
 // Event handler for when a guild member leaves
 
 // Import necessary modules
-const messages = require('../utils/functions/messages');
-const { GOODBYE_CHANNEL } = require('../config.json');
+const messages = require('../../utils/functions/messages');
+const { GOODBYE_CHANNEL } = require('../../config.json');
 
 // Export the guildMemberRemove event handler
 module.exports = async (member) => {

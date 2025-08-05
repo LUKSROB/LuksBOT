@@ -1,8 +1,8 @@
 // Event handler for interaction creation
 
 // Import necessary modules
-const { getUser } = require('../db/userHelper');
-const { incCmdCount } = require('../db/incCmdCount');
+const { getUser } = require('../../db/userHelper.js');
+const { incCmdCount } = require('../../db/incCmdCount.js');
 
 // Export the interaction handler
 module.exports = async (interaction) => {

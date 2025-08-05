@@ -63,11 +63,11 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 })();
 
 // Load events
-fs.readdirSync('./events')
+fs.readdirSync('./events/client')
   .filter((filename) => filename.endsWith('.js'))
   .forEach((filename) => {
     try {
-        const listener = require(`./events/${filename}`);
+        const listener = require(`./events/client/${filename}`);
         const eventName = path.basename(filename, '.js');
 
         client.on(eventName, listener);
