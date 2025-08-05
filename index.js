@@ -74,11 +74,19 @@ fs.readdirSync('./events')
 // Express server for health check
 app.get('/', (req, res) => {
     res.send('Hello World!')
-  })
+
+    const fullUrl = req.get('host') + req.originalUrl;
+        
+    client.user.setActivity({
+        name: fullUrl,
+        type: 3,
+        status: 'online',
+    });
+});
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
-  })
+});
 
 // Conect to Discord
 client.login(config.BOT_TOKEN);
