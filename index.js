@@ -3,6 +3,7 @@
 // Dependencies
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
+const deepl = require('deepl-node');
 const config = require('./config.json');
 
 const fs = require('fs');
