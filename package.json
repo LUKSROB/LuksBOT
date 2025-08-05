@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "canvas": "^2.11.2",
+    "deepl-node": "^1.19.0",
     "discord": "^0.8.2",
     "discord.js": "^14.16.3",
     "distube": "^5.0.2",

@@ -27,6 +27,10 @@ const client = new Discord.Client({
     } 
 })();
 
+// Set up DeepL translator
+client.translator = new deepl.Translator(config.DeepL_API_KEY);
+console.log('DeepL Translator initialized')
+
 // Load commands
 client.commands = new Discord.Collection();
 
@@ -71,6 +75,9 @@ fs.readdirSync('./events')
     }
 });
 
+// Conect to Discord
+client.login(config.BOT_TOKEN);
+
 // Express server for health check
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -88,5 +95,3 @@ app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 });
 
-// Conect to Discord
-client.login(config.BOT_TOKEN);
