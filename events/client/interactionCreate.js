@@ -23,11 +23,12 @@ module.exports = async (interaction) => {
         }
 
     } else if (interaction.isButton()) {
-        try {if (interaction.customId && interaction.customId.startsWith('tictactoe:')) {
+        try {
+            if (interaction.customId && interaction.customId.startsWith('tictactoe:')) {
                 const execute = require('../../interactions/tictactoe.js');
                 execute(interaction);
             } else {
-                const execute = require(`../interactions/${interaction.customId}.js`);
+                const execute = require(`../../interactions/${interaction.customId}.js`);
                 execute(interaction);
             }
         } catch (error) {

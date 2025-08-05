@@ -50,10 +50,10 @@ module.exports = {
         .setName('tic-tac-toe')
         .setDescription('Juega a Tic Tac Toe')
         .addUserOption(opt => opt.setName('opponent').setDescription('Usuario contra el que jugar').setRequired(false)),
-    async execute(interaction) {
+    execute: async (interaction) => {
 
         await interaction.client.user.setActivity({
-            name: '',
+            name: 'Tic Tac Toe',
             type: 0,
             status: 'online',
         });
