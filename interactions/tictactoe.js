@@ -1,14 +1,7 @@
 
 
 const { EmbedBuilder } = require('discord.js');
-const {
-    activeGames,
-    createBoard,
-    checkWinner,
-    isBoardFull,
-    handleBotMove,
-    GAME_TIMEOUT_SECONDS
-} = require('../commands/funny/tic-tac-toe.js');
+const { activeGames, createBoard, checkWinner, isBoardFull, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../utils/functions/tictactoe.js');
 
 module.exports = async (interaction) => {
     const session = activeGames.get(interaction.message.id);
@@ -65,7 +58,7 @@ module.exports = async (interaction) => {
 
     if (!isWinner && !isDraw) {
         session.currentPlayer = nextPlayer;
-        // Bot move
+
         if (session.isBot && session.currentPlayer === session.player2Id) {
             setTimeout(() => handleBotMove(interaction.message, session, interaction), 700);
         }
