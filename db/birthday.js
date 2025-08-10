@@ -1,6 +1,5 @@
 // Handler for birthday-related database operations
 
-
 // Import necessary modules
 const User = require('../models/user')
 
