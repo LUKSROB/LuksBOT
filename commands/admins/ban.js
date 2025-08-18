@@ -26,7 +26,7 @@ module.exports = {
                 .setDescription('Duración del baneo (en días)')
                 .setRequired(false)
                 .setChoices(
-                    { name: '5 Minutos', value: '300' },
+                    { name: '1 Hora', value: '3600' },
                     { name: '1 día', value: '86400' },
                     { name: '3 días', value: '259200' },
                     { name: '5 días', value: '432000' },
@@ -34,28 +34,29 @@ module.exports = {
         ),
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
-        const member = await interaction.guild.members.fetch(user.id);
         const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';
         const duration = interaction.options.getString('duration');
-
+        const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+        
         if (user.id === interaction.client.user.id) {
             return interaction.reply({ content: 'No puedo banearme a mí mismo.', flags: 64 });
         }
 
-        if (member.id == interaction.user.id) {
+        if (member && member.id == interaction.user.id) {
             return interaction.reply({ content: 'No puedes banearte a ti mismo.', flags: 64 });
         }
 
-        if (member.id == interaction.guild.ownerId) {
+        if (member && member.id == interaction.guild.ownerId) {
             return interaction.reply({ content: 'No puedes banear al propietario del servidor.', flags: 64 });
         }
 
         try {
             let userDMerror = '';
             let time = '';
-            
-            if (duration == '300') {
-                time = duration / 60 + ' minutos';
+            if (duration == '3600') {
+                time = duration / 60 / 60 + ' hora';
+            } else if (duration == '86400') {
+                time = duration / 60 / 24 + ' día';
             } else {
                 time = duration / 60 / 24 + ' días';
             }
@@ -74,8 +75,12 @@ module.exports = {
             } catch (err) {
                 userDMerror = 'No se pudo enviar el mensaje de su baneo';
             }
-            await member.ban({ reason });
 
+            if (member) {
+                await member.ban({ reason });
+            } else {
+                await interaction.guild.bans.create(user.id, { reason });
+            }
             const embed = new EmbedBuilder()
                 .setAuthor({
                     name: `${interaction.user.username} acaba de banear a un usuario`,
@@ -96,9 +101,23 @@ module.exports = {
                 .catch(console.error);
 
             if (duration) {
-
                 setTimeout(() => {
-                    interaction.guild.members.unban(user.id).catch(console.error);
+                    try {
+                        interaction.guild.members.unban(user.id)
+
+                        const embed = new EmbedBuilder()
+                                .setTitle(`Usuario desbaneado`)
+                                .setDescription(`
+                                    **Usuario:** ${user.tag}\n
+                                    **ID:** ${user.id}\n
+                                    **Razón:** ${reason}\n
+                                `)
+                                .setColor('#00FF00');
+
+                        interaction.channel.send({ embeds : [embed] })
+                    } catch (err) {
+                        console.error();
+                    }
                 }, duration * 1000);
             }
 

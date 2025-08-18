@@ -1,7 +1,7 @@
 // Command unban: Unbans a user from the server
 
 // Import necessary modules
-const { SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
 
 // Export the unban command module
 module.exports = {
@@ -26,12 +26,25 @@ module.exports = {
         const user = interaction.options.getUser('user');
         
         try {
+            const reason = interaction.options.getString('reason') || 'No se especifica la razón del desbaneo';
 
             await interaction.guild.bans.remove(user.id);
-            const reason = interaction.options.getString('reason')
             
+            const embed = new EmbedBuilder()
+                .setAuthor({
+                    name: `${interaction.user.username} acaba de desbanear a un usuario`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true})
+                })
+                .setTitle(`Usuario desbaneado`)
+                .setDescription(`
+                    **Usuario:** ${user.tag}\n
+                    **ID:** ${user.id}\n
+                    **Razón:** ${reason}\n
+                `)
+                .setColor('#00FF00');
+
             interaction
-                .reply(`Se desbaneó a ${user.tag} por: ${reason || 'No se especificó razón'}`)
+                .reply({ embeds : [embed] })
                 .catch(console.error);
        
         } catch (error) {
