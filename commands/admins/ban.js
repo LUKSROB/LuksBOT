@@ -26,29 +26,48 @@ module.exports = {
                 .setDescription('Duración del baneo (en días)')
                 .setRequired(false)
                 .setChoices(
+                    { name: '1 Minuto', value: '60' },
                     { name: '1 día', value: '86400' },
                     { name: '3 días', value: '259200' },
                     { name: '5 días', value: '432000' },
                     { name: '7 días', value: '604800' })
         ),
-    // Execute the command
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
-        
+        const member = await interaction.guild.members.fetch(user.id);
+        const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';
+        const duration = interaction.options.getString('duration');
+
+        if (user.id === interaction.client.user.id) {
+            return interaction.reply({ content: 'No puedo banearme a mí mismo.', flags: 64 });
+        }
+
+        if (member.id == interaction.user.id) {
+            return interaction.reply({ content: 'No puedes banearte a ti mismo.', flags: 64 });
+        }
+
+        if (member.id == interaction.guild.ownerId) {
+            return interaction.reply({ content: 'No puedes banear al propietario del servidor.', flags: 64 });
+        }
+
         try {
-            const member = await interaction.guild.members.fetch(user.id);
-            const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';
-            const duration = interaction.options.getString('duration') || 0;
-            
-            if (member.id == interaction.user.id) {
-                return interaction.reply({ content: 'No puedes banearte a ti mismo.', ephemeral: true });
-            }
+            let userDMerror = '';
 
-            if (member.id == interaction.guild.ownerId) {
-                return interaction.reply({ content: 'No puedes banear al propietario del servidor.', ephemeral: true });
-            }
+            try {
+                const userDM = new EmbedBuilder()
+                    .setTitle(`Has sido baneado de ${interaction.guild.name}`)
+                    .setDescription(`
+                        **Razón:** ${reason}\n
+                        **Duración:** ${duration ? duration + ' días' : 'Permanentemente'}
+                    `)
+                    .setColor('#FF0000')
+                    .setFooter({ text: 'Si crees que esto es un error, contacta con un administrador.' });
 
-            await member.ban({ reason, deleteMessageSeconds: duration });
+                await user.send({ embeds: [userDM] });
+            } catch (err) {
+                userDMerror = 'No se pudo enviar el mensaje de su baneo';
+            }
+            await member.ban({ reason });
 
             const embed = new EmbedBuilder()
                 .setAuthor({
@@ -60,14 +79,21 @@ module.exports = {
                     **Usuario:** ${user.tag}\n
                     **ID:** ${user.id}\n
                     **Razón:** ${reason}\n
-                    **Duración:** ${duration} días
+                    **Duración:** ${duration ? duration + ' días' : 'Permanentemente'}
+                    ${userDMerror ? `\n${userDMerror}` : ''}
                 `)
                 .setColor('#FF0000');
 
             interaction
                 .reply({ embeds : [embed] })
                 .catch(console.error);
-       
+
+            if (duration) {
+                setTimeout(() => {
+                    interaction.guild.members.unban(user.id).catch(console.error);
+                }, duration * 1000);
+            }
+
         } catch (error) {
             console.error('Error al banear al usuario:', error);
             await interaction.reply({ content: 'Ocurrió un error al intentar banear al usuario.', ephemeral: true });
