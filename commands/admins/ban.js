@@ -26,7 +26,7 @@ module.exports = {
                 .setDescription('Duración del baneo (en días)')
                 .setRequired(false)
                 .setChoices(
-                    { name: '1 Minuto', value: '60' },
+                    { name: '5 Minutos', value: '300' },
                     { name: '1 día', value: '86400' },
                     { name: '3 días', value: '259200' },
                     { name: '5 días', value: '432000' },
@@ -52,13 +52,20 @@ module.exports = {
 
         try {
             let userDMerror = '';
+            let time = '';
+            
+            if (duration == 300) {
+                time = duration / 60 + ' minutos';
+            } else {
+                time = duration / 60 / 24 + ' días';
+            }
 
             try {
                 const userDM = new EmbedBuilder()
                     .setTitle(`Has sido baneado de ${interaction.guild.name}`)
                     .setDescription(`
                         **Razón:** ${reason}\n
-                        **Duración:** ${duration ? duration + ' días' : 'Permanentemente'}
+                        **Duración:** ${duration ? time : 'Permanentemente'}
                     `)
                     .setColor('#FF0000')
                     .setFooter({ text: 'Si crees que esto es un error, contacta con un administrador.' });
@@ -79,7 +86,7 @@ module.exports = {
                     **Usuario:** ${user.tag}\n
                     **ID:** ${user.id}\n
                     **Razón:** ${reason}\n
-                    **Duración:** ${duration ? duration + ' días' : 'Permanentemente'}
+                    **Duración:** ${duration ? time : 'Permanentemente'}
                     ${userDMerror ? `\n${userDMerror}` : ''}
                 `)
                 .setColor('#FF0000');
@@ -89,6 +96,7 @@ module.exports = {
                 .catch(console.error);
 
             if (duration) {
+
                 setTimeout(() => {
                     interaction.guild.members.unban(user.id).catch(console.error);
                 }, duration * 1000);
