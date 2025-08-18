@@ -3,14 +3,15 @@
 // Export the messageCreate event handler
 module.exports = async (message) => {
     if (message.author.bot) return;
-    if (!message.content.startsWith("/")) return;
+    
+    if (!message.content.startsWith("/")) {
+        const args = message.content.slice(1).split(" ")[0];
 
-    const args = message.content.slice(1).split(" ")[0];
-
-    try {
-        const command = require(`../commands/${args}.js`);
-        command.run(message);
-    } catch (error) {
-        console.log(`this command is not created yet: ${args}`, error.message);
+        try {
+            const command = require(`../commands/${args}.js`);
+            command.run(message);
+        } catch (error) {
+            console.log(`this command is not created yet: ${args}`, error.message);
+        }
     }
 }
