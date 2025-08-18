@@ -54,7 +54,7 @@ module.exports = {
             let userDMerror = '';
             let time = '';
             
-            if (duration == 300) {
+            if (duration == '300') {
                 time = duration / 60 + ' minutos';
             } else {
                 time = duration / 60 / 24 + ' días';
@@ -104,7 +104,11 @@ module.exports = {
 
         } catch (error) {
             console.error('Error al banear al usuario:', error);
-            await interaction.reply({ content: 'Ocurrió un error al intentar banear al usuario.', ephemeral: true });
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({ content: 'Ocurrió un error al intentar banear al usuario.', flags: 64 });
+            } else {
+                await interaction.followUp({ content: 'Ocurrió un error al intentar banear al usuario.', flags: 64 }).catch(() => {});
+            };
         }
     }
 };
