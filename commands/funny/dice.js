@@ -8,7 +8,7 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('dice')
-        .setDescription('Roll a dice'),
+        .setDescription('Lanza un dado'),
     // Execute the command
     execute: async (interaction) => {
 

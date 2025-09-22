@@ -8,10 +8,10 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('avatar')
-        .setDescription('Display the avatar of a user')
+        .setDescription('Muestra el avatar de un usuario')
         .addUserOption(option => 
             option.setName('user')
-                  .setDescription('User to display the avatar')
+                  .setDescription('Usuario del que mostrar el avatar')
         ),
     // Execute the command
     execute: async (interaction) => {
@@ -23,14 +23,14 @@ module.exports = {
 
         const avatar = member.avatarURL(image) || member.user.avatarURL(image);
 
-        if (!avatar) return interaction.reply('This user not have an avatar');
-        
+        if (!avatar) return interaction.reply('Este usuario no tiene un avatar');
+
         const embed = new EmbedBuilder()
             .setAuthor({
-                name: `Requested by ${user.username}`,
+                name: `Solicitado por ${user.username}`,
                 iconURL: user.avatarURL()
             })
-            .setTitle(`@${member.user.globalName}'s avatar`)
+            .setTitle(`Avatar de @${member.user.globalName}`)
             .setColor('#335577')
             .setImage(avatar)
 

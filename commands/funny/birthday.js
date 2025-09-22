@@ -9,27 +9,27 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('birthday')
-        .setDescription('Charge the birthday date of a user')
+        .setDescription('Carga, obtiene o elimina la fecha de cumpleaños de un usuario')
         .addSubcommand(option => 
             option.setName('set')
-                .setDescription('Birthday date of the user')
+                .setDescription('Establece la fecha de cumpleaños del usuario')
                 .addNumberOption(opt =>
                 opt.setName('day')
-                    .setDescription('The birthday date')
+                    .setDescription('El día del cumpleaños')
                     .setMinValue(1)
                     .setMaxValue(31)
                     .setRequired(true)
                 )
                 .addNumberOption(opt =>
                     opt.setName('month')
-                    .setDescription('The birthday month')
+                    .setDescription('El mes del cumpleaños')
                     .setMinValue(1)
                     .setMaxValue(12)
                     .setRequired(true)
                 )
                 .addNumberOption(opt =>
                     opt.setName('year')
-                    .setDescription('The birthday year')
+                    .setDescription('El año del cumpleaños')
                     .setMinValue(1900)
                     .setMaxValue(new Date().getFullYear())
                     .setRequired(true)
@@ -37,15 +37,15 @@ module.exports = {
         )
         .addSubcommand(option => 
             option.setName('get')
-                .setDescription('Get the birthday date of the user')
+                .setDescription('Obtiene la fecha de cumpleaños del usuario')
                 .addUserOption(opt =>
                     opt.setName('user')
-                    .setDescription('The user to get the birthday date from')
+                    .setDescription('El usuario del que obtener la fecha de cumpleaños')
                     )
         )
         .addSubcommand(option =>
             option.setName('delete')
-                .setDescription('Delete your birthday date')
+                .setDescription('Elimina tu fecha de cumpleaños')
         ),
     // Execute the command
     execute: async (interaction, userData) => {

@@ -8,7 +8,7 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Show all commands and their descriptions'),
+        .setDescription('Muestra todos los comandos y sus descripciones'),
     // Execute the command
     execute: async (interaction) => {
         const { commands } = interaction.client;

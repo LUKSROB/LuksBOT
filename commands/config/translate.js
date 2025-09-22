@@ -8,42 +8,42 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('translate')
-        .setDescription('Translate text using DeepL API.')
+        .setDescription('Traduce texto a otro idioma')
         .addStringOption(option =>
             option.setName('text')
-                .setDescription('Text to translate')
+                .setDescription('Texto a traducir')
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName('target_language')
-                .setDescription('Target language code (e.g., "es" for Spanish)')
+                .setDescription('Código del idioma de destino (por ejemplo, "es" para español)')
                 .setRequired(true)
                 .setChoices(
-                    {name: 'Arabic', value: 'ar'}, //AR - Arabic
-                    {name: 'Bulgarian', value: 'bg'}, //BG - Bulgarian
-                    {name: 'Czech', value: 'cs'}, //CS - Czech
-                    {name: 'Danish', value: 'da'}, //DA - Danish
-                    {name: 'German', value: 'de'}, //DE - German
-                    {name: 'Greek', value: 'el'}, //EL - Greek
-                    {name: 'English (British)', value: 'en-GB'}, //EN-GB - English (British)
-                    {name: 'English (American)', value: 'en-US'}, //EN-US - English (American)
-                    {name: 'Spanish', value: 'es'}, //ES - Spanish
-                    {name: 'Finnish', value: 'fi'}, //FI - Finnish
-                    {name: 'French', value: 'fr'}, //FR - French
-                    {name: 'Indonesian', value: 'id'}, //ID - Indonesian
-                    {name: 'Italian', value: 'it'}, //IT - Italian
-                    {name: 'Japanese', value: 'ja'}, //JA - Japanese
-                    {name: 'Korean', value: 'ko'}, //KO - Korean
-                    {name: 'Norwegian Bokmål', value: 'nb'}, //NB - Norwegian Bokmål
-                    {name: 'Dutch', value: 'nl'}, //NL - Dutch
-                    {name: 'Polish', value: 'pl'}, //PL - Polish
-                    {name: 'Portuguese (Brazilian)', value: 'pt-BR'}, //PT-BR - Portuguese (Brazilian)
-                    {name: 'Portuguese (European)', value: 'pt-PT'}, //PT-PT - Portuguese (European)
-                    {name: 'Russian', value: 'ru'}, //RU - Russian
-                    {name: 'Swedish', value: 'sv'}, //SV - Swedish
-                    {name: 'Turkish', value: 'tr'}, //TR - Turkish
-                    {name: 'Ukrainian', value: 'uk'}, //UK - Ukrainian
-                    {name: 'Chinese', value: 'zh'}, //ZH - Chinese (unspecified variant for backward compatibility; please select ZH-HANS or ZH-HANT instead)
+                    {name: 'Arabe', value: 'ar'}, //AR - Arabic
+                    {name: 'Búlgaro', value: 'bg'}, //BG - Bulgarian
+                    {name: 'Checo', value: 'cs'}, //CS - Czech
+                    {name: 'Danés', value: 'da'}, //DA - Danish
+                    {name: 'Alemán', value: 'de'}, //DE - German
+                    {name: 'Griego', value: 'el'}, //EL - Greek
+                    {name: 'Inglés (Británico)', value: 'en-GB'}, //EN-GB - English (British)
+                    {name: 'Inglés (Americano)', value: 'en-US'}, //EN-US - English (American)
+                    {name: 'Español', value: 'es'}, //ES - Spanish
+                    {name: 'Finlandés', value: 'fi'}, //FI - Finnish
+                    {name: 'Francés', value: 'fr'}, //FR - French
+                    {name: 'Indonesio', value: 'id'}, //ID - Indonesian
+                    {name: 'Italiano', value: 'it'}, //IT - Italian
+                    {name: 'Japonés', value: 'ja'}, //JA - Japanese
+                    {name: 'Coreano', value: 'ko'}, //KO - Korean
+                    {name: 'Noruego (Bokmål)', value: 'nb'}, //NB - Norwegian Bokmål
+                    {name: 'Neerlandés', value: 'nl'}, //NL - Dutch
+                    {name: 'Polaco', value: 'pl'}, //PL - Polish
+                    {name: 'Portugués (Brasileño)', value: 'pt-BR'}, //PT-BR - Portuguese (Brazilian)
+                    {name: 'Portugués (Europeo)', value: 'pt-PT'}, //PT-PT - Portuguese (European)
+                    {name: 'Ruso', value: 'ru'}, //RU - Russian
+                    {name: 'Sueco', value: 'sv'}, //SV - Swedish
+                    {name: 'Turco', value: 'tr'}, //TR - Turkish
+                    {name: 'Ucraniano', value: 'uk'}, //UK - Ukrainian
+                    {name: 'Chino', value: 'zh'}, //ZH - Chinese (unspecified variant for backward compatibility; please select ZH-HANS or ZH-HANT instead)
                 )
         ),
     // Execute the command

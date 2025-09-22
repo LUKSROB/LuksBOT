@@ -8,7 +8,7 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('ping')
-        .setDescription('Check the bot\'s latency.'),
+        .setDescription('Verifica la latencia del bot'),
     // Execute the command
     execute: async (interaction) => {
         const sent = await interaction.reply({ content: 'Pinging...' });
@@ -16,7 +16,7 @@ module.exports = {
         const apiLatency = Math.round(interaction.client.ws.ping);
 
         await interaction.editReply({
-            content: `**Pong!**\n📡 **API Latency:** ${apiLatency}ms\n⏱️ **Bot Latency:** ${latency}ms`
+            content: `**Pong!**\n📡 **Latencia de la API:** ${apiLatency}ms\n⏱️ **Latencia del Bot:** ${latency}ms`
         });
     },
 }

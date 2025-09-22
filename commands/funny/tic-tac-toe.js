@@ -1,11 +1,21 @@
+// Command tic-tac-toe: Play a game of Tic Tac Toe against another user or the bot
+
+// Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { activeGames, createBoard, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../../utils/functions/tictactoe.js');
 
+// Export the tic-tac-toe command module
 module.exports = {
+    // Define the command structure
     data: new SlashCommandBuilder()
         .setName('tic-tac-toe')
         .setDescription('Juega a Tic Tac Toe')
-        .addUserOption(opt => opt.setName('opponent').setDescription('Usuario contra el que jugar').setRequired(false)),
+        .addUserOption(option =>
+            option.setName('opponent')
+                .setDescription('Usuario contra el que jugar')
+                .setRequired(false)
+        ),
+    // Execute the command
     execute: async (interaction) => {
 
         await interaction.client.user.setActivity({

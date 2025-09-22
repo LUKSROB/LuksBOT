@@ -8,10 +8,10 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('say')
-        .setDescription('Repeat a argument that you provide')
+        .setDescription('Repite un mensaje proporcionado por el usuario')
         .addStringOption(option => 
             option.setName('message')
-                  .setDescription('Message to repeat')
+                  .setDescription('Mensaje a repetir')
                   .setMinLength(1)
                   .setMaxLength(100)
                   .setRequired(true)
