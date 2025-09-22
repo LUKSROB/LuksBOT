@@ -4,7 +4,10 @@
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
+const { Riffy } = require('riffy');
 const config = require('./config.json');
+const { setGuild } = require('./db/guild')
+const { updateCache } = require('./utils/functions/invites')
 
 const fs = require('fs');
 const path = require('path');
@@ -16,6 +19,18 @@ const port = process.env.PORT || 4000;
 // Create a new Discord client
 const client = new Discord.Client({
     intents: 53608447
+});
+
+// Create Riffy instance
+const nodes = config.NODES;
+
+client.riffy = new Riffy(client, nodes, {
+    send: (payload) => {
+        const guild = client.guilds.cache.get(payload.d.guild_id);
+        if (guild) guild.shard.send(payload);
+    },
+    defaultSearchPlatform: "ytmsearch",
+    restVersion: "v4"
 });
 
 // Connect to MongoDB 
@@ -62,7 +77,7 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
     }
 })();
 
-// Load events
+// Load Client events
 fs.readdirSync('./events/client')
   .filter((filename) => filename.endsWith('.js'))
   .forEach((filename) => {
@@ -70,10 +85,42 @@ fs.readdirSync('./events/client')
         const listener = require(`./events/client/${filename}`);
         const eventName = path.basename(filename, '.js');
 
-        client.on(eventName, listener);
+        client.on(eventName, (...args) => listener(...args, client));
     } catch (err) {
         console.log(`Error loading event ${filename}`, err);
     }
+});
+
+// Load Riffy events
+fs.readdirSync('./events/riffy')
+  .filter((filename) => filename.endsWith('.js'))
+  .forEach((filename) => {
+    try {
+        const listener = require(`./events/riffy/${filename}`);
+        const eventName = path.basename(filename, '.js');
+
+        client.riffy.on(eventName, (...args) => listener(...args, client));
+    } catch (err) {
+        console.log(`Error loading event ${filename}`, err);
+    }
+});
+
+// Event handler for bot ready event
+client.once("clientReady", () => {
+    client.riffy.init(client.user.id);
+    console.log(`Connected to Discord! as ${client.user.username}`);
+
+    client.guilds.cache.map(async guild => {
+        await setGuild(guild);
+    });
+
+    updateCache(client);
+});
+
+// Event handler for raw event
+client.on("raw", (d) => {
+    if (![Discord.GatewayDispatchEvents.VoiceStateUpdate, Discord.GatewayDispatchEvents.VoiceServerUpdate,].includes(d.t)) return;
+    client.riffy.updateVoiceState(d);
 });
 
 // Conect to Discord
