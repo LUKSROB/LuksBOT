@@ -1,6 +1,6 @@
 {
   "name": "luksbot",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,11 +13,13 @@
     "canvas": "^2.11.2",
     "deepl-node": "^1.19.0",
     "discord": "^0.8.2",
-    "discord.js": "^14.16.3",
+    "discord.js": "^14.22.1",
     "distube": "^5.0.2",
     "express": "^4.21.1",
     "mongodb": "^6.17.0",
-    "mongoose": "^8.16.3"
+    "mongoose": "^8.16.3",
+    "musicard": "^2.0.5",
+    "riffy": "^1.0.7"
   },
   "engines": {
     "node": "20.x"
