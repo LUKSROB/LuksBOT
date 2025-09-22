@@ -128,7 +128,7 @@ client.login(config.BOT_TOKEN);
 
 // Express server for health check
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send(config.WEB)
 
     const fullUrl = req.get('host') + req.originalUrl;
         
