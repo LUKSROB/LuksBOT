@@ -27,14 +27,14 @@ module.exports = async (player, track, payload, client) => {
     player.musicInterval = setInterval(async () => {
         try {
             const updatedMusicard = await updateMusicard(track, player);
-        if (updatedMusicard) {
-            const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
-            await musicardMessage.edit({ files: [updatedAttachment] });
+            if (updatedMusicard) {
+                const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
+                await musicardMessage.edit({ files: [updatedAttachment] });
+            }
+        } catch (error) {
+            console.error('Error updating music card:', error);
         }
-    } catch (error) {
-        console.error('Error updating music card:', error);
-    }
 
-    }, 2500);
+    }, 5000);
 
 };
