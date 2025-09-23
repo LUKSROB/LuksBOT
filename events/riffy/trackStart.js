@@ -30,6 +30,6 @@ module.exports = async (player, track, payload, client) => {
             const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
             await musicardMessage.edit({ files: [updatedAttachment] });
         }
-    }, 1000);
+    }, 2000);
     
 };
