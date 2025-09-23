@@ -30,7 +30,10 @@ client.riffy = new Riffy(client, nodes, {
         if (guild) guild.shard.send(payload);
     },
     defaultSearchPlatform: "ytmsearch",
-    restVersion: "v4"
+    restVersion: "v4",
+    bypassChecks: {
+        nodeFetchInfo: false // o true, según tu necesidad
+    }
 });
 
 // Connect to MongoDB 
