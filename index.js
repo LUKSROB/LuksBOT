@@ -14,7 +14,7 @@ const path = require('path');
 const express = require('express')
 
 const app = express()
-const port = config.PORT || 4000;
+const port = process.env.PORT || 4000;
 
 // Create a new Discord client
 const client = new Discord.Client({
