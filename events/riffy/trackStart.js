@@ -9,7 +9,7 @@ module.exports = async (player, track, payload, client) => {
 
     const channel = client?.channels?.cache?.get(player.textChannel);
     
-    const musicard = await updateMusicard(track, player);
+    const musicard = await updateMusicard(track, player, true);
 
     client.user.setActivity({
         name: track.info.title,

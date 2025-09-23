@@ -5,7 +5,7 @@ const { Classic } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 
 // Function to update the music card with current track info and progress
-async function updateMusicard(track, player) {
+async function updateMusicard(track, player, init = false) {
     const musicLength = convertTime(track.info.length);
     const timeProgress = convertTime(player.position);
 
@@ -14,7 +14,7 @@ async function updateMusicard(track, player) {
     const musicard = await Classic({
         thumbnailImage: track.info.thumbnail,
         backgroundColor: '#070707',
-        progress: percProgress,
+        progress: init ? 0 :percProgress,
         progressColor: '#FF7A00',
         progressBarColor: '#5F2D00',
         name: track.info.title,
