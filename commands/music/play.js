@@ -2,8 +2,9 @@
 
 // Import necessary modules
 const { SlashCommandBuilder } = require('discord.js');
+const { play } = require('../../utils/functions/music');
 
-// Export the play command module
+// Export the ping command module
 module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
@@ -16,49 +17,23 @@ module.exports = {
         ),
     // Execute the command
     execute: async ( interaction ) => {
-        const { member, client, channel, options, guild, } = interaction;
-        const query = options.getString('query');
-
-        if (!member.voice.channel) {
-            return interaction.reply('¡Debes estar en un canal de voz!');
-        }
+        const { member, guild, client } = interaction;
 
         let player = client.riffy.players.get(guild.id);
 
-        if (!player) {
-            player = client.riffy.createConnection({
-                guildId: guild.id,
-                voiceChannel: member.voice.channel.id,
-                textChannel: channel.id,
-                deaf: true,
-            })
+        if (!member.voice.channel) {
+            return interaction.reply('¡Debes estar en un canal de voz!', { flags: 64 });
+        } else if (guild.members.me.voice.channel && !guild.members.me.voice.channel.equals(member.voice.channel)) {
+            const invite = await guild.members.me.voice.channel.createInvite({
+                maxAge: 300,
+                maxUses: 5,
+                unique: true
+            });
+            return  interaction.reply(`Debes estar en mi mismo canal de voz que yo\nAhora estoy reproduciendo en <#${guild.members.me.voice.channel.id}>\n¡Unete! ${invite.url}`, { flags: 64 });
         }
 
-        const resolve = await client.riffy.resolve({ query: query, requester: member });
-        const { loadType, tracks, playlistInfo } = resolve;
+        interaction.deferReply();
 
-        if (loadType === 'playlist') {
-            for (const track of tracks) {
-                track.info.requester = member;
-                player.queue.add(track);
-            }
-
-            await interaction.reply(`${tracks.length} canciones ${playlistInfo.name} fueron añadidas a la cola.`);
-
-            if (!player.playing && !player.paused) return player.play();
-
-        } else if (loadType === 'search' || loadType === 'track') {
-            const track = tracks.shift();
-            track.info.requester = member;
-
-            player.queue.add(track);
-
-            await interaction.reply(`**${track.info.title}** fue añadida a la cola.`);
-
-            if (!player.playing && !player.paused) return player.play();
-
-        } else {
-            return interaction.reply(`No se encontraron resultados para esa canción.`);
-        }
+        play(interaction, player);
     }
 };
