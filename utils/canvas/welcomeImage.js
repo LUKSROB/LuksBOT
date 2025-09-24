@@ -2,14 +2,14 @@
 
 // Import necessary modules
 const { GuildMember } = require('discord.js');
-const { createCanvas, registerFont, loadImage } = require('canvas');
+const { createCanvas, GlobalFonts, loadImage } = require('@napi-rs/canvas');
 
 const defaultIcon = './assets/images/defaultIcon.png';
 const backgroundPath = './assets/images/welcome.jpg';
 const fontPath = './assets/fonts/Super_Squad.ttf';
 const avatarRadius = 150;
 
-registerFont(fontPath, { family: 'SuperSquad' });
+GlobalFonts.registerFromPath(fontPath, 'SuperSquad');
 
 /**
 @param {GuildMember} member
@@ -120,6 +120,6 @@ module.exports = async (member) => {
     );
 
     // Return image buffer
-    return canvas.toBuffer();
+    return canvas.toBuffer('image/png');
 
 }
