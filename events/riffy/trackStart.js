@@ -35,6 +35,6 @@ module.exports = async (player, track, payload, client) => {
             console.error('Error updating music card:', error);
         }
 
-    }, 5000);
+    }, 7000);
 
 };
