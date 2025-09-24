@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { Classic } = require("musicard");
-const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
+const { convertTime, musicProgress } = require("../functions/convertTime");
 
 // Function to update the music card with current track info and progress
 async function updateMusicard(track, player, init = false) {
