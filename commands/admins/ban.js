@@ -32,6 +32,7 @@ module.exports = {
                     { name: '5 días', value: '432000' },
                     { name: '7 días', value: '604800' })
         ),
+    // Execute the command
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';
