@@ -1,39 +1,31 @@
-// Command loop: Loop the current song or playlist
+// Command resume: Resume the current song
 
 // Import necessary modules
 const { SlashCommandBuilder } = require('discord.js');
 const { resume } = require('../../utils/functions/music');
 
-// Export the pause command module
+// Export the resume command module
 module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
-        .setName('loop')
-        .setDescription('Reproduce la canción o la lista de reproducción en un bucle')
-        .addStringOption(option =>
-            option.setName('mode')
-                .setDescription('Selecciona el modo de bucle')
-                .setChoices(
-                    { name: 'Canción', value: 'track' },
-                    { name: 'Lista de reproducción', value: 'queue' },
-                    { name: 'Desactivar', value: 'none' }
-                )
-        ),
+        .setName('resume')
+        .setDescription('Reanuda la pista actual'),
     // Execute the command
     execute: async (interaction) => {
         const { guild, client } = interaction;
-        const mode = interaction.options.getString('mode')
-        
+
         let player = client.riffy.players.get(guild.id);
 
         try {
+            if (!player || !guild.members.me.voice.channel) {
+                return interaction.reply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+            }
 
-            resume(interaction, player);
+            await resume(interaction, player);
 
         } catch (error) {
-
             console.error(error);
-            interaction.reply({ content: 'Error al cambiar el estado de bucle ❌', flags: 64 });
+            interaction.reply({ content: '❌ ¡Error al reanudar la música!', flags: 64 });
         }
 
     }
