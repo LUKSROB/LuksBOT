@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { AttachmentBuilder } = require("discord.js");
-const { updateMusicard } = require("../../utils/functions/updateMusicard");
+const { updateMusicard } = require("../../utils/canvas/updateMusicard");
 
 // Export the track start event handler
 module.exports = async (player, track, payload, client) => {
