@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
-const WELCOME_CHANNEL = '1286849190156173393';
+const { WELCOME_CHANNEL } = require('../config.json');
 const welcomeImage = require('../../utils/canvas/welcomeImage');
 const invites = require('../../utils/functions/invites');
 const messages = require('../../utils/functions/messages');
