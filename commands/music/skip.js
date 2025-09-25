@@ -13,7 +13,7 @@ module.exports = {
     // Execute the command
     execute: async ( interaction ) => {
 
-        const { member, client } = interaction;
+        const { client } = interaction;
 
         const player = client.riffy.players.get(interaction.guild.id);
 
