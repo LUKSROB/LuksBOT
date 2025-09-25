@@ -2,10 +2,10 @@
 
 // Import necessary modules
 const { Classic } = require("musicard");
-const { convertTime, musicProgress } = require("../functions/convertTime");
+const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 
-// Function to update the music card with current track info and progress
-async function updateMusicard(track, player, init = false) {
+// Function to create or update the music card
+async function updateMusicard(track, player, init = false, color) {
     const musicLength = convertTime(track.info.length);
     const timeProgress = convertTime(player.position);
 
@@ -14,16 +14,16 @@ async function updateMusicard(track, player, init = false) {
     const musicard = await Classic({
         thumbnailImage: track.info.thumbnail,
         backgroundColor: '#070707',
-        progress: init ? 0 :percProgress,
-        progressColor: '#FF7A00',
-        progressBarColor: '#5F2D00',
+        progress: init ? 0 : percProgress,
+        progressColor: color || '#FF7A00',
+        progressBarColor: color + '33' || '#FF7A0033',
         name: track.info.title,
-        nameColor: '#FF7A00',
+        nameColor: color || '#FF7A00',
         author: track.info.author,
         authorColor: '#696969',
         startTime: timeProgress,
         endTime: musicLength,
-        timeColor: '#FF7A00',
+        timeColor: color || '#FF7A00',
     });
 
     return musicard;
