@@ -5,8 +5,6 @@ module.exports = async (player) => {
 
     if (!player) return;
 
-    if (player.message) await player.message.delete();
-
     clearInterval(player.musicInterval);
 
 }
