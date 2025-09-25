@@ -1,7 +1,7 @@
 // Event handler for track start event
 
 // Import necessary modules
-const { AttachmentBuilder } = require("discord.js");
+const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { updateMusicard } = require("../../utils/canvas/updateMusicard");
 const { PALETTE_RAPIDAPI } = require("../../config.json")
 
