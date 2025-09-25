@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder } = require('discord.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the queue end event handler
 module.exports = async (player, client) => {

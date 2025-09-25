@@ -25,7 +25,7 @@ async function play( interaction, player ) {
                 player.queue.add(track);
             }
 
-            await interaction.editReply(`${tracks.length} canciones ${playlistInfo.name} fueron añadidas a la cola.`);
+            await interaction.editReply(`${tracks.length} canciones de ${playlistInfo.name} fueron añadidas a la cola.`);
 
             if (!player.playing && !player.paused) return player.play();
 

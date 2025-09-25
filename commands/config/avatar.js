@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the avatar command module
 module.exports = {

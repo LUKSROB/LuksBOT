@@ -6,7 +6,7 @@ const { WELCOME_CHANNEL } = require('../../config.json');
 const welcomeImage = require('../../utils/canvas/welcomeImage');
 const invites = require('../../utils/functions/invites');
 const messages = require('../../utils/functions/messages');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the guildMemberAdd event handler
 module.exports = async (member) => {

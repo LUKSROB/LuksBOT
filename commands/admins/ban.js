@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the ban command module
 module.exports = {

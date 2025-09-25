@@ -3,7 +3,7 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the birthday command module
 module.exports = {

@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the unban command module
 module.exports = {

@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the translate command module
 module.exports = {

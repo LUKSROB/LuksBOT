@@ -2,7 +2,7 @@
 
 const { EmbedBuilder } = require('discord.js');
 const { activeGames, createBoard, checkWinner, isBoardFull, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../utils/functions/tictactoe.js');
-const { COLORS } = require('../../config.json');
+const { COLORS } = require('../config.json');
 
 module.exports = async (interaction) => {
     const session = activeGames.get(interaction.message.id);

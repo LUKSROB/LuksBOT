@@ -3,7 +3,7 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { activeGames, createBoard, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../../utils/functions/tictactoe.js');
-const { COLORS } = require('../../../config.json');
+const { COLORS } = require('../../config.json');
 
 // Export the tic-tac-toe command module
 module.exports = {
