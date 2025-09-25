@@ -1,5 +1,9 @@
 // Functions to manage music playback
 
+// Import necessary modules
+const { EmbedBuilder } = require('discord.js');
+const { COLORS } = require('../../config.json');
+
 // Function to play a song or playlist
 async function play( interaction, player ) {
     
