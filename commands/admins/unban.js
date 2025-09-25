@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
+const { COLORS } = require('../../../config.json');
 
 // Export the unban command module
 module.exports = {
@@ -41,7 +42,7 @@ module.exports = {
                     **ID:** ${user.id}\n
                     **Razón:** ${reason}\n
                 `)
-                .setColor('#00FF00');
+                .setColor(COLORS.SUCCESS);
 
             interaction
                 .reply({ embeds : [embed] })

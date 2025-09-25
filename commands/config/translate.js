@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { COLORS } = require('../../../config.json');
 
 // Export the translate command module
 module.exports = {
@@ -55,7 +56,7 @@ module.exports = {
         try {
             const result = await client.translator.translateText(text, null, targetLanguage);
             const embed = new EmbedBuilder()
-                .setColor('#0070C9')
+                .setColor(COLORS.PRIMARY)
                 .setDescription(`**Texto Original:**\n${text}\n\n**Texto Traducido:**\n${result.text}`)
                 .setFooter({
                     iconURL: interaction.user.displayAvatarURL(),

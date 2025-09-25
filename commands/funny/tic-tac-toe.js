@@ -3,6 +3,7 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { activeGames, createBoard, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../../utils/functions/tictactoe.js');
+const { COLORS } = require('../../../config.json');
 
 // Export the tic-tac-toe command module
 module.exports = {
@@ -66,7 +67,7 @@ module.exports = {
             `🔵 **Jugador 2 (⭕):** ${isBot ? '🤖 Bot' : opponent}\n\n` +
             `ℹ️ **Cómo jugar:**\n• Haz clic en los botones para colocar tu marca\n• Consigue 3 en línea para ganar\n• El juego expira después de ${GAME_TIMEOUT_SECONDS / 60} minutos de inactividad`
             )
-            .setColor(0x2F3136);
+            .setColor(COLORS.GAMES);
 
         await interaction.reply({
             embeds: [embed],

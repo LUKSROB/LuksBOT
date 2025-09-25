@@ -3,6 +3,7 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
+const { COLORS } = require('../../../config.json');
 
 // Export the birthday command module
 module.exports = {
@@ -98,7 +99,7 @@ module.exports = {
                         iconURL: interaction.user.avatarURL()
                     })
                     .setTitle(reply)
-                    .setColor('#335577')
+                    .setColor(COLORS.PRIMARY)
 
                 interaction
                     .reply({ embeds : [embed] })
@@ -114,10 +115,10 @@ module.exports = {
                     let embed = new EmbedBuilder()
                     if (user.id === interaction.user.id) {
                         embed.setTitle(`No has establecido tu fecha de cumpleaños todavia.`)
-                            .setColor('#335577')
+                            .setColor(COLORS.PRIMARY)
                     } else {
                         embed.setTitle(`El usuario mencionado no ha establecido su fecha de cumpleaños todavia.`)
-                            .setColor('#335577')
+                            .setColor(COLORS.PRIMARY)
                     }
                     interaction
                         .reply({ embeds : [embed] })
@@ -127,7 +128,7 @@ module.exports = {
                     if (user.id === interaction.user.id) {
                         const embed = new EmbedBuilder()
                             .setTitle(`Tu cumpleaños es el ${date[0]} de ${months[date[1]]}.`)
-                            .setColor('#335577')
+                            .setColor(COLORS.PRIMARY)
 
                         interaction
                             .reply({ embeds : [embed] })
@@ -135,7 +136,7 @@ module.exports = {
                     } else {
                         const embed = new EmbedBuilder()
                             .setTitle(`El cumpleaños de ${user.username} es el ${date[0]} de ${months[date[1]]}.`)
-                            .setColor('#335577')
+                            .setColor(COLORS.PRIMARY)
 
                         interaction
                             .reply({ embeds : [embed] })

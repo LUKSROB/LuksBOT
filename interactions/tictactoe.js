@@ -2,6 +2,7 @@
 
 const { EmbedBuilder } = require('discord.js');
 const { activeGames, createBoard, checkWinner, isBoardFull, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../utils/functions/tictactoe.js');
+const { COLORS } = require('../../config.json');
 
 module.exports = async (interaction) => {
     const session = activeGames.get(interaction.message.id);
@@ -49,7 +50,7 @@ module.exports = async (interaction) => {
     const embed = new EmbedBuilder()
         .setTitle('🎮 Tic Tac Toe')
         .setDescription(desc)
-        .setColor(isWinner ? 0x00FF00 : isDraw ? 0xFFFF00 : nextPlayer === session.player1Id ? 0xFF0000 : 0x0000FF);
+        .setColor(isWinner ? COLORS.SUCCESS : isDraw ? COLORS.WARNING : nextPlayer === session.player1Id ? COLORS.DANGER : COLORS.GAMES);
 
     await interaction.update({
         embeds: [embed],

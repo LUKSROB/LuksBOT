@@ -6,6 +6,7 @@ const { WELCOME_CHANNEL } = require('../../config.json');
 const welcomeImage = require('../../utils/canvas/welcomeImage');
 const invites = require('../../utils/functions/invites');
 const messages = require('../../utils/functions/messages');
+const { COLORS } = require('../../../config.json');
 
 // Export the guildMemberAdd event handler
 module.exports = async (member) => {
@@ -29,8 +30,8 @@ module.exports = async (member) => {
         .setTitle(messages.welcomeMessage(member))
         .setDescription(messages.descriptionMessage())
         .setImage('attachment://welcome-image.png')
-        .setColor('#4B054F');
-    
+        .setColor(COLORS.WELCOMEIMG);
+
     if (usedInvite && usedInvite.inviter) {
         embed.setFooter({
             text: `Invited by ${usedInvite.inviter.username}`,

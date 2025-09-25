@@ -3,6 +3,7 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { getInvites } = require('../../db/invites');
+const { COLORS } = require('../../../config.json');
 
 // Export the invites command module
 module.exports = {
@@ -36,7 +37,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Top Invitadores del Servidor')
             .setDescription(description)
-            .setColor('#fbd9ff');
+            .setColor(COLORS.INVITES);
 
         await interaction.reply({ embeds: [embed] });
     }

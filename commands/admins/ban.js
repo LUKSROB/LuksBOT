@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { COLORS } = require('../../../config.json');
 
 // Export the ban command module
 module.exports = {
@@ -69,7 +70,7 @@ module.exports = {
                         **Razón:** ${reason}\n
                         **Duración:** ${duration ? time : 'Permanentemente'}
                     `)
-                    .setColor('#FF0000')
+                    .setColor(COLORS.DANGER)
                     .setFooter({ text: 'Si crees que esto es un error, contacta con un administrador.' });
 
                 await user.send({ embeds: [userDM] });
@@ -95,7 +96,7 @@ module.exports = {
                     **Duración:** ${duration ? time : 'Permanentemente'}
                     ${userDMerror ? `\n${userDMerror}` : ''}
                 `)
-                .setColor('#FF0000');
+                .setColor(COLORS.DANGER);
 
             interaction
                 .reply({ embeds : [embed] })
@@ -113,7 +114,7 @@ module.exports = {
                                     **ID:** ${user.id}\n
                                     **Razón:** ${reason}\n
                                 `)
-                                .setColor('#00FF00');
+                                .setColor(COLORS.SUCCESS);
 
                         interaction.channel.send({ embeds : [embed] })
                     } catch (err) {

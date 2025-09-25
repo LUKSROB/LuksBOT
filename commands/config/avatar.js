@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { COLORS } = require('../../../config.json');
 
 // Export the avatar command module
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
                 iconURL: user.avatarURL()
             })
             .setTitle(`Avatar de @${member.user.globalName}`)
-            .setColor('#335577')
+            .setColor(COLORS.PRIMARY)
             .setImage(avatar)
 
         interaction
