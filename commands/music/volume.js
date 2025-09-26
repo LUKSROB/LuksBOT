@@ -29,15 +29,15 @@ module.exports = {
 
         const player = interaction.client.riffy.players.get(interaction.guild.id);
 
-        interaction.deferReply();
+        await interaction.deferReply();
 
         if (!player || !player.playing) {
-            return interaction.editReply({ content: '❌ No hay música reproduciéndose.', flags: 64 });
+            return await interaction.editReply({ content: '❌ No hay música reproduciéndose.', flags: 64 });
 
         }
 
         const volumeLevel = interaction.options.getNumber('nivel');
 
-        await volume( interaction, player, volumeLevel);
+        await volume(interaction, player, volumeLevel);
     }
 }

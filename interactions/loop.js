@@ -9,10 +9,10 @@ module.exports = async (interaction) => {
 
     let player = client.riffy.players.get(guild.id);
 
-    interaction.deferReply();
+    await interaction.deferReply();
 
     if (!player || !guild.members.me.voice.channel) {
-        return interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+        return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
     }
 
     await loop(interaction, player);

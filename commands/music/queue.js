@@ -16,7 +16,7 @@ module.exports = {
         
         let player = client.riffy.players.get(guild.id);
 
-        interaction.deferReply();
+        await interaction.deferReply();
 
         try {
             
@@ -25,7 +25,7 @@ module.exports = {
         } catch (error) {
 
             console.error(error);
-            interaction.editReply({ content: 'Error al mostrar la cola de reproducción ❌', flags: 64 });
+            await interaction.editReply({ content: 'Error al mostrar la cola de reproducción ❌', flags: 64 });
         }
 
     }

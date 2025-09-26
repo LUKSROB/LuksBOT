@@ -17,14 +17,14 @@ module.exports = {
 
         const player = client.riffy.players.get(interaction.guild.id);
 
-        interaction.deferReply();
+        await interaction.deferReply();
 
         if (!player) {
-            return interaction.editReply({ content: "No estoy reproduciendo nada actualmente.", flags: 64 });
+            return await interaction.editReply({ content: "No estoy reproduciendo nada actualmente.", flags: 64 });
         }
 
         if (player.queue.size === 0) {
-            return interaction.editReply({ content: "La cola está vacía.", flags: 64 });
+            return await interaction.editReply({ content: "La cola está vacía.", flags: 64 });
         };
 
         await skip(interaction, player);

@@ -9,15 +9,17 @@ module.exports = async (interaction) => {
         
     let player = client.riffy.players.get(guild.id);
 
-    interaction.deferReply();
+    await interaction.deferReply();
 
     try {
         if (!player || !guild.members.me.voice.channel) {
-            return interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+            return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
         }
 
         await skip(interaction, player);
 
     } catch (error) {
+        console.error(error);
+        await interaction.editReply({ content: 'Error al saltar la canción ❌', flags: 64 });
     }
 }

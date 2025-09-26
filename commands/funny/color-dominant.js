@@ -30,6 +30,8 @@ module.exports = {
             return await interaction.reply('Debes proporcionar una URL o subir una imagen.', { flags: 64 });
         }
 
+        await interaction.deferReply();
+
         try {
             const colorData = await getDominantColor(url || image);
             const { r, g, b } = colorData;
@@ -46,10 +48,10 @@ module.exports = {
                 .setThumbnail('attachment://color.png')
                 .setColor(hexColor);
 
-            await interaction.reply({ embeds: [embed], files: [attachment] });
+            await interaction.editReply({ embeds: [embed], files: [attachment] });
         } catch (error) {
             console.log(error);
-            await interaction.reply(error.message, { flags: 64 });
+            await interaction.editReply({ content: error.message, flags: 64 });
         }
         
     }
