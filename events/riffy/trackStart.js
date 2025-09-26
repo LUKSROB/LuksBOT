@@ -3,7 +3,7 @@
 // Import necessary modules
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { updateMusicard } = require("../../utils/canvas/updateMusicard");
-const { PALETTE_RAPIDAPI } = require("../../config.json")
+const { getDominantColor, rgbToHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
 
 // Export the track start event handler
 module.exports = async (player, track, payload, client) => {
@@ -31,30 +31,12 @@ module.exports = async (player, track, payload, client) => {
             .setEmoji('📃')
     )
 
-    const options = {
-        method: 'POST',
-        headers: {
-            'x-rapidapi-key': PALETTE_RAPIDAPI.rapidapi_key,
-            'x-rapidapi-host': 'color-detection-from-image.p.rapidapi.com',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            imageUrl: track.rawData.info.artworkUrl
-        })
-    };
-
-    const { url } = PALETTE_RAPIDAPI;
-    let color = "#"
-    try {
-        const response = await fetch(url, options);
-        const result = await response.json();
-        color += result?.accentColor || 'FF7A00';
-    } catch (error) {
-        console.error(error);
-    }
+    const { r, g, b } = await getDominantColor(track.info.thumbnail);
+    let color = rgbToHex(r, g, b);
+    const isDark = isDarkHex(color);
+    color = isDark ? brightnessHex(color, 1.7) : color;
 
     const channel = client?.channels?.cache?.get(player.textChannel);
-
     const musicard = await updateMusicard(track, player, true, color);
 
     client.user.setActivity({
