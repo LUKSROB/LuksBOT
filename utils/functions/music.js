@@ -21,6 +21,14 @@ async function play( interaction, player ) {
         })
     }
 
+    if (!player.connected) {
+        try {
+            await player.connect();
+        } catch (error) {
+            return await interaction.editReply('No se pudo conectar al canal de voz.', { flags: 64 });
+        }
+    }
+
     if (volumeLevel) {
         reply = await volume(interaction, player, volumeLevel, true);
     }
