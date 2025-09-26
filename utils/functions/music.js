@@ -58,10 +58,14 @@ async function play( interaction, player ) {
             if (!player.playing && !player.paused) return player.play();
         
         } else {
-            return await interaction.editReply(`No se encontraron resultados para esa canción.`);
+            await interaction.editReply(`No se encontraron resultados para esa canción.`);
         }
     } catch (error) {
-        return await interaction.editReply('Ocurrió un error al intentar reproducir la canción.');
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply('Ocurrió un error al intentar reproducir la canción.');
+        } else {
+            await interaction.editReply('Ocurrió un error al intentar reproducir la canción.');
+        }
     }
 }
 
