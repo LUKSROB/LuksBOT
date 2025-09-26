@@ -38,6 +38,10 @@ async function getDominantColor(input) {
     }
 }
 
+// Function to get a color palette from an image URL or buffer
+async function getPaletteColor(input) {
+}
+
 // Function to convert HEX color to RGB
 function hexToRgb( color ) {
     color = validateHex(color);
