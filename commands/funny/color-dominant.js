@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { getDominantColor, rgbToHex, isDarkHex } = require('../../utils/functions/colors');
+const { getDominantColor, rgbToHex } = require('../../utils/functions/colors');
 const { generateColorImage } = require('../../utils/canvas/colorImage');
 
 // Export the color dominant command module
@@ -37,14 +37,12 @@ module.exports = {
             const { r, g, b } = colorData;
 
             const hexColor = rgbToHex(r, g, b);
-            const isDark = await isDarkHex(hexColor);
-
             const colorImage = generateColorImage(hexColor);
             const attachment = new AttachmentBuilder(colorImage, { name: 'color.png' });
 
             const embed = new EmbedBuilder()
                 .setTitle('Color Dominante')
-                .setDescription(`El color dominante de la imagen es: ${hexColor}\n es oscuro: ${isDark}`)
+                .setDescription(`El color dominante de la imagen es: ${hexColor}`)
                 .setThumbnail('attachment://color.png')
                 .setColor(hexColor);
 
