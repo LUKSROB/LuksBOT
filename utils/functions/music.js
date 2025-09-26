@@ -111,7 +111,7 @@ async function stop( interaction, player ) {
 }
 
 // Function to adjust the volume
-async function volume( volume, player ) {
+async function volume( interaction, player, volume) {
 
     try {
         await player.setVolume(volume);
