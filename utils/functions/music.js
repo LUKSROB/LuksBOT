@@ -187,7 +187,7 @@ async function queue( interaction, player ) {
     const embed = new EmbedBuilder()
         .setTitle('Cola de reproducción')
         .setDescription(tracks.join('\n'))
-        .setFooter(`Total de canciones: ${tracks.length}`)
+        .setFooter({ text: `Total de canciones: ${tracks.length}` })
         .setColor(COLORS.PRIMARY);
 
     return await interaction.editReply({ embeds: [embed] });
