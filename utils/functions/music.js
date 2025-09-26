@@ -119,12 +119,17 @@ async function stop( interaction, player ) {
 }
 
 // Function to adjust the volume
-async function volume( interaction, player, volume) {
+async function volume( interaction, player, volume, isCommand = false ) {
 
     try {
-        await player.setVolume(volume);
-        return interaction.editReply(`Volumen ajustado a ${volume} 🔊`);
-
+        if (isCommand) {
+            await player.setVolume(volume);
+            return `Volumen ajustado a ${volume} 🔊`;
+        } else {
+            await player.setVolume(volume);
+            return interaction.editReply(`Volumen ajustado a ${volume} 🔊`);
+        }
+        
     } catch (err) {
         return interaction.editReply({ content: `❌ ¡Error al ajustar el volumen!`, flags: 64 });
     }
