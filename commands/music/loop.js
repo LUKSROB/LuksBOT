@@ -26,14 +26,15 @@ module.exports = {
         
         let player = client.riffy.players.get(guild.id);
 
+        interaction.deferReply();
+
         try {
-            
-            loop(interaction, player, mode );
+            await loop(interaction, player, mode );
 
         } catch (error) {
 
             console.error(error);
-            interaction.reply({ content: 'Error al cambiar el estado de bucle ❌', flags: 64 });
+            interaction.editReply({ content: 'Error al cambiar el estado de bucle ❌', flags: 64 });
         }
 
     }

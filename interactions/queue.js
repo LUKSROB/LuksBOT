@@ -5,6 +5,8 @@ module.exports = async (interaction) => {
 
     let player = client.riffy.players.get(guild.id);
 
-    queue(interaction, player);
+    interaction.deferReply();
+
+    await queue(interaction, player);
 
 }

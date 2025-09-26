@@ -16,16 +16,18 @@ module.exports = {
 
         let player = client.riffy.players.get(guild.id);
 
+        interaction.deferReply();
+
         try {
             if (!player || !guild.members.me.voice.channel) {
-                return interaction.reply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+                return interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
             }
 
             await resume(interaction, player);
 
         } catch (error) {
             console.error(error);
-            interaction.reply({ content: '❌ ¡Error al reanudar la música!', flags: 64 });
+            interaction.editReply({ content: '❌ ¡Error al reanudar la música!', flags: 64 });
         }
 
     }

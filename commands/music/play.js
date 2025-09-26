@@ -20,20 +20,20 @@ module.exports = {
         const { member, guild, client } = interaction;
 
         let player = client.riffy.players.get(guild.id);
+        
+        interaction.deferReply();
 
         if (!member.voice.channel) {
-            return interaction.reply('¡Debes estar en un canal de voz!', { flags: 64 });
+            return interaction.editReply('¡Debes estar en un canal de voz!', { flags: 64 });
         } else if (guild.members.me.voice.channel && !guild.members.me.voice.channel.equals(member.voice.channel)) {
             const invite = await guild.members.me.voice.channel.createInvite({
                 maxAge: 300,
                 maxUses: 5,
                 unique: true
             });
-            return  interaction.reply(`Debes estar en mi mismo canal de voz que yo\nAhora estoy reproduciendo en <#${guild.members.me.voice.channel.id}>\n¡Unete! ${invite.url}`, { flags: 64 });
+            return  interaction.editReply(`Debes estar en mi mismo canal de voz que yo\nAhora estoy reproduciendo en <#${guild.members.me.voice.channel.id}>\n¡Unete! ${invite.url}`, { flags: 64 });
         }
 
-        interaction.deferReply();
-
-        play(interaction, player);
+        await play(interaction, player);
     }
 };

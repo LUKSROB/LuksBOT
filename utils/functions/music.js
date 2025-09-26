@@ -9,6 +9,8 @@ async function play( interaction, player ) {
     
     const { member, client, channel, options, guild, } = interaction;
     const query = options.getString('query');
+    const volumeLevel = interaction.options.getNumber('volume');
+    let reply
 
     if (!player) {
         player = client.riffy.createConnection({
@@ -19,6 +21,10 @@ async function play( interaction, player ) {
         })
     }
 
+    if (volumeLevel) {
+        reply = await volume(interaction, player, volumeLevel, true);
+    }
+
     try {
         const resolve = await client.riffy.resolve({ query: query, requester: member });
         const { loadType, tracks, playlistInfo } = resolve;
@@ -26,10 +32,10 @@ async function play( interaction, player ) {
         if (loadType === 'playlist') {
             for (const track of tracks) {
                 track.info.requester = member;
-                player.queue.add(track);
+                await player.queue.add(track);
             }
 
-            await interaction.editReply(`${tracks.length} canciones de ${playlistInfo.name} fueron añadidas a la cola.`);
+            await interaction.editReply(`${tracks.length} canciones de ${playlistInfo.name} fueron añadidas a la cola.\n${reply ? reply : ''}`);
 
             if (!player.playing && !player.paused) return player.play();
 
@@ -37,9 +43,9 @@ async function play( interaction, player ) {
             const track = tracks.shift();
             track.info.requester = member;
 
-            player.queue.add(track);
+            await player.queue.add(track);
 
-            await interaction.editReply(`**${track.info.title}** fue añadida a la cola.`);
+            await interaction.editReply(`**${track.info.title}** fue añadida a la cola.\n${reply ? reply : ''}`);
 
             if (!player.playing && !player.paused) return player.play();
         
@@ -47,7 +53,7 @@ async function play( interaction, player ) {
             return interaction.editReply(`No se encontraron resultados para esa canción.`);
         }
     } catch (error) {
-        return interaction.followUp('Ocurrió un error al intentar reproducir la canción.');
+        return interaction.editReply('Ocurrió un error al intentar reproducir la canción.');
     }
 }
 
@@ -55,10 +61,10 @@ async function play( interaction, player ) {
 async function pause( interaction, player ) {
     try {
         player.paused ? await player.pause(false) : await player.pause(true);
-        return interaction.reply(player.paused ? 'Canción pausada ⏸️' : 'Canción reanudada ▶️');
+        return interaction.editReply(player.paused ? 'Canción pausada ⏸️' : 'Canción reanudada ▶️');
 
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al pausar/reanudar la música!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al pausar/reanudar la música!`, flags: 64 });
     }
 }
 
@@ -66,14 +72,14 @@ async function pause( interaction, player ) {
 async function resume( interaction, player ) {
     try {
         if (!player.paused) {
-            return interaction.reply({ content: 'La música ya está en reproducción.', flags: 64 });
+            return interaction.editReply({ content: 'La música ya está en reproducción.', flags: 64 });
         }
 
         await player.pause(false);
-        return interaction.reply('Canción reanudada ▶️');
+        return interaction.editReply('Canción reanudada ▶️');
 
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al reanudar la música!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al reanudar la música!`, flags: 64 });
     }
 
 }
@@ -81,32 +87,34 @@ async function resume( interaction, player ) {
 // Function to skip the current track
 async function skip( interaction, player ) {
     const { member } = interaction;
+
     if (player.current.info.requester !== member) {
-        return interaction.reply({ content: "Solo el que solicitó la canción puede saltarla.", flags: 64 });
+        return interaction.editReply({ content: "Solo el que solicitó la canción puede saltarla.", flags: 64 });
     }
 
     try {
-        await interaction.reply({ content: `Canción saltada: ${player.current.info.title}` });
-        return player.stop();
-    
+        await player.stop();
+        return interaction.editReply({ content: `Canción saltada: ${player.current.info.title}` });
+
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al saltar la canción!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al saltar la canción!`, flags: 64 });
     }
 }
 
 // Function to stop the current playback
 async function stop( interaction, player ) {
     const { member } = interaction;
+    
     if (player.current.info.requester !== member) {
-        return interaction.reply({ content: "Solo el que solicitó la canción puede detenerla.", flags: 64 });
+        return interaction.editReply({ content: "Solo el que solicitó la canción puede detenerla.", flags: 64 });
     }
     
     try {
         await player.destroy();
-        return interaction.reply('Reproducción detenida ⏹️');
-    
+        return interaction.editReply('Reproducción detenida ⏹️');
+
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al detener la reproducción!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al detener la reproducción!`, flags: 64 });
     }
 }
 
@@ -115,10 +123,10 @@ async function volume( interaction, player, volume) {
 
     try {
         await player.setVolume(volume);
-        return interaction.reply(`Volumen ajustado a ${volume} 🔊`);
+        return interaction.editReply(`Volumen ajustado a ${volume} 🔊`);
 
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al ajustar el volumen!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al ajustar el volumen!`, flags: 64 });
     }
 }
 
@@ -127,24 +135,24 @@ async function loop( interaction, player, mode = null ) {
 
     try {
         if (mode) {
-            player.setLoop(mode);
-            await interaction.reply(`Bucle de ${mode} activado 🔁`);
+            await player.setLoop(mode);
+            return interaction.editReply(`Bucle de ${mode} activado 🔁`);
         
         } else if (player.loop === 'track') {
-            player.setLoop('queue');
-            await interaction.reply('Bucle de lista de reproducción activado 🔂');
-        
+            await player.setLoop('queue');
+            return interaction.editReply('Bucle de lista de reproducción activado 🔂');
+
         } else if (player.loop === 'queue') {
-            player.setLoop('none');
-            await interaction.reply('Bucle desactivado ⏹️');
-        
+            await player.setLoop('none');
+            return interaction.editReply('Bucle desactivado ⏹️');
+
         } else if (player.loop === 'none') {
-            player.setLoop('track');
-            await interaction.reply('Bucle de canción activado 🔁');
+            await player.setLoop('track');
+            return interaction.editReply('Bucle de canción activado 🔁');
         }
         
     } catch (err) {
-        return interaction.reply({ content: `❌ ¡Error al cambiar el estado de bucle!`, flags: 64 });
+        return interaction.editReply({ content: `❌ ¡Error al cambiar el estado de bucle!`, flags: 64 });
     }
 }
 
@@ -152,7 +160,7 @@ async function loop( interaction, player, mode = null ) {
 async function queue( interaction, player ) {
     
     if (player.queue.size === 0) {
-        return interaction.reply({ content: 'La cola está vacía.', flags: 64 });
+        return interaction.editReply({ content: 'La cola está vacía.', flags: 64 });
     }
 
     const tracks = player.queue.map(track => {
@@ -165,7 +173,7 @@ async function queue( interaction, player ) {
         .setFooter(`Total de canciones: ${tracks.length}`)
         .setColor(COLORS.PRIMARY);
 
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
 }
 
 // Export the functions for use in other modules

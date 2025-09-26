@@ -16,14 +16,16 @@ module.exports = {
         
         let player = client.riffy.players.get(guild.id);
 
+        interaction.deferReply();
+
         try {
             
-            queue(interaction, player);
+            await queue(interaction, player);
 
         } catch (error) {
 
             console.error(error);
-            interaction.reply({ content: 'Error al mostrar la cola de reproducción ❌', flags: 64 });
+            interaction.editReply({ content: 'Error al mostrar la cola de reproducción ❌', flags: 64 });
         }
 
     }
