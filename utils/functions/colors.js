@@ -40,6 +40,39 @@ async function getDominantColor(input) {
 
 // Function to get a color palette from an image URL or buffer
 async function getPaletteColor(input) {
+
+    let buffer;
+
+    try {
+        if (input && typeof input === "object" && input.url) {
+            const response = await fetch(input.url);
+            if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
+            buffer = await response.buffer();
+        } else if (typeof input === "string") {
+            const response = await fetch(input);
+            if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
+            buffer = await response.buffer();
+        }
+
+        const response = await sharp(buffer)
+            .resize(colorCount, 1, { fit: 'cover' })
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+
+        let palette = [];
+        for (let i = 0; i < response.info.width; i++) {
+            const idx = i * response.info.channels;
+            const r = response.data[idx];
+            const g = response.data[idx + 1];
+            const b = response.data[idx + 2];
+            palette.push({ r, g, b });
+        }
+
+        return palette;
+
+    } catch (error) {
+        throw new Error('No se pudo obtener la imagen. Asegúrate de que sea una imagen o URL válida.');
+    }
 }
 
 // Function to convert HEX color to RGB
