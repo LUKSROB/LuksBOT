@@ -182,11 +182,16 @@ async function queue( interaction, player ) {
 
     const tracks = player.queue.map(track => {
         return `• **${track.info.title.length < 26 ? track.info.title : track.info.title.slice(0, 26) + '...'}** - ${track.info.author}`;
-    });
+    }).slice(0, 30);
+
+    let description = tracks.join('\n');
+    if (player.queue.size > 30) {
+        description += `\n\n...y ${player.queue.size - 30} más`;
+    }
 
     const embed = new EmbedBuilder()
         .setTitle('Cola de reproducción')
-        .setDescription(tracks.join('\n'))
+        .setDescription(description)
         .setFooter({ text: `Total de canciones: ${tracks.length}` })
         .setColor(COLORS.PRIMARY);
 
