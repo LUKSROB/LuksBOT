@@ -45,11 +45,14 @@ module.exports = async (player, track, payload, client) => {
         status: 'online'
     });
 
-    let musicardMessage = null
-
     if (musicard) {
         const attachment = new AttachmentBuilder(musicard, { name: 'musicard.png' });
-        musicardMessage = await channel.send({ files: [attachment], components: [buttons] });
+        if (player.message) {
+            player.message.edit({ files: [attachment] });
+        } else {
+            const message = await channel.send({ files: [attachment], components: [buttons] });
+            player.message = message;
+        }
     }
 
     player.musicInterval = setInterval(async () => {
@@ -57,7 +60,7 @@ module.exports = async (player, track, payload, client) => {
             const updatedMusicard = await updateMusicard(track, player, false, color);
             if (updatedMusicard) {
                 const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
-                await musicardMessage.edit({ files: [updatedAttachment] });
+                await player.message.edit({ files: [updatedAttachment] });
             }
         } catch (error) {
             console.error('Error updating music card:', error);
