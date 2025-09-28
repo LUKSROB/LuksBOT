@@ -13,8 +13,17 @@ module.exports = async (player, client) => {
         .setTitle('Lista de reproducción vacía')
         .setDescription('No hay más canciones en la cola.')
         .setTimestamp();
-    
-    channel.send({ embeds: [embed] });
-    player.destroy();
 
+    clearInterval(player.musicInterval);
+
+    if (player.message) {
+        await player.message.edit({ components: []}).catch((e) => {
+            console.log("No pude editar el mensaje anterior.", e);
+        });
+    }
+    
+    setTimeout(() => {
+        channel.send({ embeds: [embed] });
+        player.destroy();
+    }, 5000);
 };
