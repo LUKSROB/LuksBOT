@@ -4,6 +4,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { setBirthday, getBirthday, delBirthday } = require('../../db/birthday');
 const { COLORS } = require('../../config.json');
+const { getMonths } = require('../../utils/functions/months');
 
 // Export the birthday command module
 module.exports = {
@@ -51,21 +52,6 @@ module.exports = {
     // Execute the command
     execute: async (interaction, userData) => {
 
-        months = {
-            "1": "Enero",
-            "2": "Febrero",
-            "3": "Marzo",
-            "4": "Abril",
-            "5": "Mayo",
-            "6": "Junio",
-            "7": "Julio",
-            "8": "Agosto",
-            "9": "Septiembre",
-            "10": "Octubre",
-            "11": "Noviembre",
-            "12": "Diciembre"
-        };
-
         const subcommand = interaction.options.getSubcommand();
 
         switch (subcommand) {
@@ -79,10 +65,12 @@ module.exports = {
 
                 let reply
 
+                const months = getMonths(month);
+
                 if (birthday) {
-                    reply = `Tu cumpleaños se ha actualizado correctamente: ${day} de ${months[month]} de ${year}.`;
+                    reply = `Tu cumpleaños se ha actualizado correctamente: ${day} de ${months} de ${year}.`;
                 } else {
-                    reply = `Tu cumpleaños ha sido establecido correctamente: ${day} de ${months[month]} de ${year}.`;
+                    reply = `Tu cumpleaños ha sido establecido correctamente: ${day} de ${months} de ${year}.`;
                 }
 
                 await setBirthday(interaction.user.id, {
@@ -125,9 +113,11 @@ module.exports = {
                         .catch(console.error);
 
                 } else {
+                    const months = getMonths(date[1]);
+
                     if (user.id === interaction.user.id) {
                         const embed = new EmbedBuilder()
-                            .setTitle(`Tu cumpleaños es el ${date[0]} de ${months[date[1]]}.`)
+                            .setTitle(`Tu cumpleaños es el ${date[0]} de ${months}.`)
                             .setColor(COLORS.PRIMARY)
 
                         interaction
@@ -135,7 +125,7 @@ module.exports = {
                             .catch(console.error);
                     } else {
                         const embed = new EmbedBuilder()
-                            .setTitle(`El cumpleaños de ${user.username} es el ${date[0]} de ${months[date[1]]}.`)
+                            .setTitle(`El cumpleaños de ${user.username} es el ${date[0]} de ${months}.`)
                             .setColor(COLORS.PRIMARY)
 
                         interaction
