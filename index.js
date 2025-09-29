@@ -141,7 +141,7 @@ app.get('/', (req, res) => {
             type: 3,
             status: 'online',
         });
-    }, 1000);
+    }, 5000);
     
 });
 
