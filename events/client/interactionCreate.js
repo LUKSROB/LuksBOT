@@ -14,10 +14,10 @@ module.exports = async (interaction) => {
     // Chat input command handling
     if (interaction.isChatInputCommand()) {
         try {
-            const userData = await getUser(interaction.user.id);
+            const userData = await getUser(interaction.user);
             command.execute(interaction, userData);
 
-            await incCmdCount(interaction.user.id);
+            await incCmdCount(interaction.user);
         } catch (error) {
             console.error(error);
         }
