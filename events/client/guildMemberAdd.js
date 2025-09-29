@@ -39,6 +39,8 @@ module.exports = async (member) => {
         })
     }
 
+    await getUser(member);
+
     channel.send({
         content: `<@${member.id}>`,
         embeds: [embed],
