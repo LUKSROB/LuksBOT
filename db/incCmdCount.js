@@ -9,18 +9,18 @@ async function incCmdCount(user) {
     const userId = user.id;
     const userName = user.username;
 
-    const user = await User.findOne({ userId, userName });
+    const userData = await User.findOne({ userId, userName });
 
-    if (user.commandCount == undefined) {
-        await user.updateOne(
+    if (userData.commandCount == undefined) {
+        await userData.updateOne(
             { userId, userName },
             { $set: { commandCount: 1 } }
         );
 
-        return user;
+        return userData;
     }
 
-    await user.updateOne(
+    await userData.updateOne(
         { userId, userName },
         { $inc: { commandCount: 1 } }
     );
