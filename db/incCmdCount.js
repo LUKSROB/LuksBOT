@@ -4,21 +4,24 @@
 const User = require('../models/user');
 
 // Function to increment command count for a user in a server
-async function incCmdCount(userId) {
+async function incCmdCount(user) {
 
-    const user = await User.findOne({ userId });
+    const userId = user.id;
+    const userName = user.username;
+
+    const user = await User.findOne({ userId, userName });
 
     if (user.commandCount == undefined) {
         await user.updateOne(
-            { userId },
-            { $set: { commandCount: 0 } }
+            { userId, userName },
+            { $set: { commandCount: 1 } }
         );
 
         return user;
     }
 
     await user.updateOne(
-        { userId },
+        { userId, userName },
         { $inc: { commandCount: 1 } }
     );
 }
