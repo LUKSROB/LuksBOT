@@ -4,17 +4,20 @@
 const User = require('../models/user');
 
 // Function to get or create a user in the database
-async function getUser(userId) {
-    let user = await User.findOne({ userId });
+async function getUser(user) {
+    const userId = user.id;
+    const userName = user.username;
+    let userData = await User.findOne({ userId, userName });
 
-    if (!user) {
-        user = new User({
+    if (!userData) {
+        userData = new User({
             userId,
+            userName
         });
-        await user.save();
-        
+        await userData.save();
+
     }
-        return user;
+    return userData;
 }
 
 // Export the getUser function for use in other modules
