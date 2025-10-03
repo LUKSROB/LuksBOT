@@ -3,6 +3,6 @@
 // Export the node connect event handler
 module.exports = async (node) => {
 
-    console.log(`Node "${node.name}" connected.`);
+    console.log(`[Lavalink] ✅ Nodo "${node.name}" conectado.`);
 
 }
