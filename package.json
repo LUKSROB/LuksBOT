@@ -13,7 +13,6 @@
     "@napi-rs/canvas": "^0.1.80",
     "body-parser": "^2.2.2",
     "deepl-node": "^1.19.0",
-    "discord": "^0.8.2",
     "discord.js": "^14.22.1",
     "distube": "^5.0.2",
     "express": "^5.2.1",
