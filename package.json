@@ -11,15 +11,17 @@
   "description": "",
   "dependencies": {
     "@napi-rs/canvas": "^0.1.80",
+    "body-parser": "^2.2.2",
     "canvas": "^2.11.2",
     "deepl-node": "^1.19.0",
     "discord": "^0.8.2",
     "discord.js": "^14.22.1",
     "distube": "^5.0.2",
-    "express": "^4.21.1",
+    "express": "^5.2.1",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.3",
     "musicard": "^2.0.5",
+    "qs": "^6.15.0",
     "riffy": "^1.0.7",
     "sharp": "^0.34.4"
   },
