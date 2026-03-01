@@ -109,7 +109,7 @@ fs.readdirSync('./events/riffy')
 });
 
 // Event handler for bot ready event
-client.once("clientReady", () => {
+client.once("Ready", () => {
     client.riffy.init(client.user.id);
     console.log(`Connected to Discord! as ${client.user.username}`);
 
