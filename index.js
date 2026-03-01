@@ -108,18 +108,6 @@ fs.readdirSync('./events/riffy')
     }
 });
 
-// Event handler for bot ready event
-client.on("ready", () => {
-    client.riffy.init(client.user.id);
-    console.log(`Connected to Discord! as ${client.user.username}`);
-
-    client.guilds.cache.map(async guild => {
-        await setGuild(guild);
-    });
-
-    updateCache(client);
-});
-
 // Event handler for raw event
 client.on("raw", (d) => {
     if (![Discord.GatewayDispatchEvents.VoiceStateUpdate, Discord.GatewayDispatchEvents.VoiceServerUpdate,].includes(d.t)) return;
@@ -135,7 +123,7 @@ app.get('/', (req, res) => {
 
     const fullUrl = req.get('host') + req.originalUrl;
 
-    if (client.user) {
+    if (client.isReady()) {
         setTimeout(() => {
             client.user.setActivity({
                 name: fullUrl,
