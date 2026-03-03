@@ -123,15 +123,14 @@ app.get('/', (req, res) => {
 
     const fullUrl = req.get('host') + req.originalUrl;
 
-    if (client.isReady()) {
+
         setTimeout(() => {
             client.user.setActivity({
                 name: fullUrl,
                 type: 3,
                 status: 'online',
             });
-        }, 30000);
-    }
+        }, 1000);
 });
 
 app.listen(port, () => {
