@@ -144,8 +144,23 @@ app.get('/', (req, res) => {
     }
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`App listening on port ${port}`)
+
+    client.rest.on('restDebug', console.log);
+    client.rest.on('rateLimited', console.log);
+
+    console.log("--> Testing raw fetch to Discord API...");
+    try {
+        // Enforce IPv4 locally for this fetch as well
+        const response = await fetch('https://discord.com/api/v10/gateway/bot', {
+            headers: { Authorization: `Bot ${config.BOT_TOKEN}` }
+        });
+        const data = await response.json();
+        console.log("--> Raw fetch response:", response.status, data);
+    } catch (e) {
+        console.error("--> Raw fetch ERROR:", e.message);
+    }
 
     client.login(config.BOT_TOKEN)
         .then(() => console.log('Bot logged in to Discord successfully!'))
