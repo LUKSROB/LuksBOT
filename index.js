@@ -125,14 +125,15 @@ app.get('/', (req, res) => {
 
     const fullUrl = req.get('host') + req.originalUrl;
 
-
-    setTimeout(() => {
-        client.user.setActivity({
-            name: fullUrl,
-            type: 3,
-            status: 'online',
-        });
-    }, 1000);
+    if (client.isReady()) {
+        setTimeout(() => {
+            client.user.setActivity({
+                name: fullUrl,
+                type: 3,
+                status: 'online',
+            });
+        }, 1000);
+    }
 });
 
 app.listen(port, () => {
