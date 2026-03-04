@@ -64,6 +64,7 @@ fs.readdirSync('./commands')
         }
     });
 
+/*
 // Charge commands
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
@@ -83,6 +84,7 @@ client.on('debug', console.log);
         console.error(err);
     }
 })();
+*/
 
 // Load Client events
 fs.readdirSync('./events/client')
