@@ -31,5 +31,13 @@
   },
   "engines": {
     "node": "20.x"
+  },
+  "overrides": {
+    "discord.js": {
+      "undici": "^6.23.0"
+    },
+    "@discordjs/rest": {
+      "undici": "^6.23.0"
+    }
   }
 }
