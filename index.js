@@ -43,7 +43,7 @@ client.riffy = new Riffy(client, nodes, {
         console.log('Connected to MongoDB');
     } catch (err) {
         console.error('Error connecting to Mongoose:', err);
-    } 
+    }
 })();
 
 // Set up DeepL translator
@@ -54,15 +54,15 @@ console.log('DeepL Translator initialized')
 client.commands = new Discord.Collection();
 
 fs.readdirSync('./commands')
-  .forEach((commandfile) => {
-    const cmd = fs.readdirSync(`./commands/${commandfile}`);
+    .forEach((commandfile) => {
+        const cmd = fs.readdirSync(`./commands/${commandfile}`);
 
-    for (const file of cmd) {
-        const command = require(`./commands/${commandfile}/${file}`);
+        for (const file of cmd) {
+            const command = require(`./commands/${commandfile}/${file}`);
 
-        client.commands.set(command.data.name, command);
-    }
-});
+            client.commands.set(command.data.name, command);
+        }
+    });
 
 // Charge commands
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
@@ -71,7 +71,7 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
     try {
         await REST.put(
             Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
-            { body: client.commands.map(cmd => cmd.data.toJSON())}
+            { body: client.commands.map(cmd => cmd.data.toJSON()) }
         );
         console.log(`Loaded ${client.commands.size} commands`);
     } catch (err) {
@@ -82,31 +82,31 @@ const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
 // Load Client events
 fs.readdirSync('./events/client')
-  .filter((filename) => filename.endsWith('.js'))
-  .forEach((filename) => {
-    try {
-        const listener = require(`./events/client/${filename}`);
-        const eventName = path.basename(filename, '.js');
+    .filter((filename) => filename.endsWith('.js'))
+    .forEach((filename) => {
+        try {
+            const listener = require(`./events/client/${filename}`);
+            const eventName = path.basename(filename, '.js');
 
-        client.on(eventName, (...args) => listener(...args, client));
-    } catch (err) {
-        console.log(`Error loading event ${filename}`, err);
-    }
-});
+            client.on(eventName, (...args) => listener(...args, client));
+        } catch (err) {
+            console.log(`Error loading event ${filename}`, err);
+        }
+    });
 
 // Load Riffy events
 fs.readdirSync('./events/riffy')
-  .filter((filename) => filename.endsWith('.js'))
-  .forEach((filename) => {
-    try {
-        const listener = require(`./events/riffy/${filename}`);
-        const eventName = path.basename(filename, '.js');
+    .filter((filename) => filename.endsWith('.js'))
+    .forEach((filename) => {
+        try {
+            const listener = require(`./events/riffy/${filename}`);
+            const eventName = path.basename(filename, '.js');
 
-        client.riffy.on(eventName, (...args) => listener(...args, client));
-    } catch (err) {
-        console.log(`Error loading event ${filename}`, err);
-    }
-});
+            client.riffy.on(eventName, (...args) => listener(...args, client));
+        } catch (err) {
+            console.log(`Error loading event ${filename}`, err);
+        }
+    });
 
 // Event handler for raw event
 client.on("raw", (d) => {
@@ -115,7 +115,9 @@ client.on("raw", (d) => {
 });
 
 // Conect to Discord
-client.login(config.BOT_TOKEN);
+client.login(config.BOT_TOKEN)
+    .then(() => console.log('Bot logged in to Discord successfully!'))
+    .catch(err => console.error('ERROR: Failed to login to Discord:', err));
 
 // Express server for health check
 app.get('/', (req, res) => {
@@ -124,13 +126,13 @@ app.get('/', (req, res) => {
     const fullUrl = req.get('host') + req.originalUrl;
 
 
-        setTimeout(() => {
-            client.user.setActivity({
-                name: fullUrl,
-                type: 3,
-                status: 'online',
-            });
-        }, 1000);
+    setTimeout(() => {
+        client.user.setActivity({
+            name: fullUrl,
+            type: 3,
+            status: 'online',
+        });
+    }, 1000);
 });
 
 app.listen(port, () => {
