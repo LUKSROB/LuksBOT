@@ -113,12 +113,12 @@ client.on("raw", (d) => {
     if (![Discord.GatewayDispatchEvents.VoiceStateUpdate, Discord.GatewayDispatchEvents.VoiceServerUpdate,].includes(d.t)) return;
     client.riffy.updateVoiceState(d);
 });
-
+/*
 // Conect to Discord
 client.login(config.BOT_TOKEN)
     .then(() => console.log('Bot logged in to Discord successfully!'))
     .catch(err => console.error('ERROR: Failed to login to Discord:', err));
-
+*/
 // Express server for health check
 app.get('/', (req, res) => {
     res.send(config.WEB)
@@ -138,5 +138,9 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
+
+    client.login(config.BOT_TOKEN)
+        .then(() => console.log('Bot logged in to Discord successfully!'))
+        .catch(err => console.error('ERROR: Failed to login to Discord:', err));
 });
 
