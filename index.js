@@ -67,6 +67,10 @@ fs.readdirSync('./commands')
 // Charge commands
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
+// Enable debug logs for REST and Client
+REST.on('restDebug', console.log);
+client.on('debug', console.log);
+
 (async () => {
     try {
         await REST.put(
