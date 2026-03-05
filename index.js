@@ -1,5 +1,13 @@
 // File index for the bot
 
+// Prevent bot from crashing on unhandled errors (e.g. Riffy voice disconnects)
+process.on('uncaughtException', (err) => {
+    console.error('[UNCAUGHT EXCEPTION]', err.message);
+});
+process.on('unhandledRejection', (err) => {
+    console.error('[UNHANDLED REJECTION]', err?.message ?? err);
+});
+
 // Dependencies
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
@@ -32,7 +40,7 @@ client.riffy = new Riffy(client, nodes, {
     defaultSearchPlatform: "ytmsearch",
     restVersion: "v4",
     bypassChecks: {
-        nodeFetchInfo: false // o true, según tu necesidad
+        nodeFetchInfo: true // bypass strict node info validation to allow next-track playback
     }
 });
 
