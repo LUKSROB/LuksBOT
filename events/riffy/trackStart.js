@@ -31,8 +31,8 @@ module.exports = async (player, track, payload, client) => {
             .setEmoji('📃')
     )
 
-    const { r, g, b } = await getDominantColor(track.info.thumbnail);
-    let color = rgbToHex(r, g, b);
+    const dominantColor = await getDominantColor(track.info.thumbnail);
+    let color = dominantColor ? rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b) : '#5865F2';
     const isDark = isDarkHex(color);
     color = isDark ? brightnessHex(color, 1.7) : color;
 
