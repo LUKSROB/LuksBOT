@@ -2,7 +2,6 @@
 
 // Import necessary modules
 const sharp = require('sharp');
-const fetch = require('node-fetch');
 
 /**
  * Detecta color promedio desde link o buffer de imagen
@@ -18,17 +17,17 @@ async function getDominantColor(input) {
         if (input && typeof input === "object" && input.url) {
             const response = await fetch(input.url);
             if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
-            buffer = await response.buffer();
+            buffer = Buffer.from(await response.arrayBuffer());
         } else if (typeof input === "string") {
             const response = await fetch(input);
             if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
-            buffer = await response.buffer();
+            buffer = Buffer.from(await response.arrayBuffer());
         }
 
         const { data } = await sharp(buffer)
-        .resize(1, 1)
-        .raw()
-        .toBuffer({ resolveWithObject: true });
+            .resize(1, 1)
+            .raw()
+            .toBuffer({ resolveWithObject: true });
 
         const [r, g, b] = data;
         return { r, g, b };
@@ -47,24 +46,24 @@ async function getPaletteColor(input) {
         if (input && typeof input === "object" && input.url) {
             const response = await fetch(input.url);
             if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
-            buffer = await response.buffer();
+            buffer = Buffer.from(await response.arrayBuffer());
         } else if (typeof input === "string") {
             const response = await fetch(input);
             if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
-            buffer = await response.buffer();
+            buffer = Buffer.from(await response.arrayBuffer());
         }
 
-        const response = await sharp(buffer)
-            .resize(colorCount, 1, { fit: 'cover' })
+        const sharpResponse = await sharp(buffer)
+            .resize(10, 1, { fit: 'cover' }) // Fixed undefined colorCount
             .raw()
             .toBuffer({ resolveWithObject: true });
 
         let palette = [];
-        for (let i = 0; i < response.info.width; i++) {
-            const idx = i * response.info.channels;
-            const r = response.data[idx];
-            const g = response.data[idx + 1];
-            const b = response.data[idx + 2];
+        for (let i = 0; i < sharpResponse.info.width; i++) {
+            const idx = i * sharpResponse.info.channels;
+            const r = sharpResponse.data[idx];
+            const g = sharpResponse.data[idx + 1];
+            const b = sharpResponse.data[idx + 2];
             palette.push({ r, g, b });
         }
 
@@ -76,18 +75,18 @@ async function getPaletteColor(input) {
 }
 
 // Function to convert HEX color to RGB
-function hexToRgb( color ) {
+function hexToRgb(color) {
     color = validateHex(color);
 
-    const r = parseInt(color.substr(0,2), 16);
-    const g = parseInt(color.substr(2,2), 16);
-    const b = parseInt(color.substr(4,2), 16);
+    const r = parseInt(color.substr(0, 2), 16);
+    const g = parseInt(color.substr(2, 2), 16);
+    const b = parseInt(color.substr(4, 2), 16);
 
     return validateRgb(r, g, b);
 }
 
 // Function to convert RGB color to HEX
-function rgbToHex( r, g, b ) {
+function rgbToHex(r, g, b) {
     ({ r, g, b } = validateRgb(r, g, b));
 
     return `#${[r, g, b].map(item =>
@@ -107,7 +106,7 @@ function isDarkRgb(r, g, b) {
     ({ r, g, b } = validateRgb(r, g, b));
     let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     luminance = parseInt(luminance);
-    
+
     return (luminance < 60);
 }
 
