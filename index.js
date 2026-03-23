@@ -57,7 +57,7 @@ client.riffy = new Riffy(client, nodes, {
 // Set up DeepL translator
 client.translator = new deepl.Translator(config.DeepL_API_KEY);
 console.log('DeepL Translator initialized')
-
+/*
 // Load commands
 client.commands = new Discord.Collection();
 
@@ -71,7 +71,7 @@ fs.readdirSync('./commands')
             client.commands.set(command.data.name, command);
         }
     });
-
+*/
 // Charge commands
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
@@ -144,6 +144,9 @@ app.listen(port, () => {
 
     client.login(config.BOT_TOKEN)
         .then(() => console.log('Bot logged in to Discord successfully!'))
-        .catch(err => console.error('ERROR: Failed to login to Discord:', err));
+        .catch(err => {
+            console.error('ERROR: Failed to login to Discord:', err);
+            process.exit(1);
+        });
 });
 
