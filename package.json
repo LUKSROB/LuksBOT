@@ -33,10 +33,10 @@
   },
   "overrides": {
     "discord.js": {
-      "undici": "^6.23.0"
+      "undici": "^6.24.0"
     },
     "@discordjs/rest": {
-      "undici": "^6.23.0"
+      "undici": "^6.24.0"
     }
   }
 }
