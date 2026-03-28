@@ -14,8 +14,6 @@ const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
 const config = require('./config.json');
-const { setGuild } = require('./db/guild')
-const { updateCache } = require('./utils/functions/invites')
 
 const fs = require('fs');
 const path = require('path');
@@ -57,7 +55,7 @@ client.riffy = new Riffy(client, nodes, {
 // Set up DeepL translator
 client.translator = new deepl.Translator(config.DeepL_API_KEY);
 console.log('DeepL Translator initialized')
-/*
+
 // Load commands
 client.commands = new Discord.Collection();
 
@@ -71,7 +69,7 @@ fs.readdirSync('./commands')
             client.commands.set(command.data.name, command);
         }
     });
-*/
+
 // Charge commands
 const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
