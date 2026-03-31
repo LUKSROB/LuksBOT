@@ -23,10 +23,14 @@
     "musicard": "^2.0.5",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
+    "path-to-regexp": "8.4.0",
     "qs": "^6.15.0",
     "riffy": "^1.0.7",
     "sharp": "^0.34.4",
     "undici": "^7.24.0"
+  },
+  "devDependencies": {
+    "path-to-regexp": "8.4.0"
   },
   "engines": {
     "node": "20.x"
