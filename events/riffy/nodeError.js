@@ -5,14 +5,8 @@ module.exports = async (node, error) => {
 
     console.error(`[Lavalink] ❌ Nodo "${node.name}" tuvo un error: ${error.message}.`);
 
+    // Avoid duplicate reconnect storms: Riffy already retries connections internally.
     if (error?.message?.includes("Unable to connect")) {
-        console.log(`[Lavalink] 🔄 Forzando reconexión manual en 5s...`);
-        setTimeout(() => {
-            try {
-                node.connect();
-            } catch (err) {
-                console.log(`[Lavalink] ❌ Error al reconectar: ${err.message}`);
-            }
-        }, 5000);
+        console.log(`[Lavalink] ℹ️ Reintento automático manejado por Riffy.`);
     }
 }
