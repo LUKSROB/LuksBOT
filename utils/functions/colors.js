@@ -119,10 +119,10 @@ function isVeryDarkHex(color) {
 // Function to determine if an RGB color is very dark
 function isVeryDarkRgb(r, g, b) {
     ({ r, g, b } = validateRgb(r, g, b));
-    let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
     luminance = parseInt(luminance);
 
-    return (luminance < 30);
+    return (luminance < 25);
 }
 
 // Function to adjust the brightness of a HEX color
