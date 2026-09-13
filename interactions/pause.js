@@ -19,5 +19,7 @@ module.exports = async (interaction) => {
         await pause(interaction, player);
 
     } catch (error) {
+        console.error(error);
+        await interaction.editReply({ content: 'Error al pausar/reanudar la música ❌', flags: 64 });
     }
 }
