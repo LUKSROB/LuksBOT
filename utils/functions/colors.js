@@ -107,7 +107,7 @@ function isDarkRgb(r, g, b) {
     let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     luminance = parseInt(luminance);
 
-    return (luminance < 60);
+    return (luminance < 50);
 }
 
 // Function to determine if a HEX color is very dark
