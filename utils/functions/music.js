@@ -34,7 +34,7 @@ async function play( interaction, player ) {
     }
 
     try {
-        const resolve = await client.riffy.resolve({ query: query, requester: member });
+        const resolve = await client.riffy.resolve({ query: query, requester: member.user.tag });
         const { loadType, tracks, playlistInfo } = resolve;
 
         if (loadType === 'playlist') {
@@ -45,7 +45,9 @@ async function play( interaction, player ) {
 
             await interaction.editReply(`${tracks.length} canciones de ${playlistInfo.name} fueron añadidas a la cola.\n${reply ? reply : ''}`);
 
-            if (!player.playing && !player.paused) return player.play();
+            if (!player.playing && !player.paused) {
+                player.play();
+            }
 
         } else if (loadType === 'search' || loadType === 'track') {
             const track = tracks.shift();
@@ -55,7 +57,9 @@ async function play( interaction, player ) {
 
             await interaction.editReply(`**${track.info.title}** fue añadida a la cola.\n${reply ? reply : ''}`);
 
-            if (!player.playing && !player.paused) return player.play();
+            if (!player.playing && !player.paused) {
+                player.play();
+            }
         
         } else {
             await interaction.editReply(`No se encontraron resultados para esa canción.`);
