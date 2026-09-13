@@ -15,7 +15,8 @@ module.exports = async (interaction) => {
     if (interaction.isChatInputCommand()) {
         try {
             const userData = await getUser(interaction.user);
-            command.execute(interaction, userData);
+            
+            await command.execute(interaction, userData);
 
             await incCmdCount(interaction.user);
         } catch (error) {
