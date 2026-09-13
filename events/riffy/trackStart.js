@@ -3,7 +3,7 @@
 // Import necessary modules
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { updateMusicard } = require("../../utils/canvas/updateMusicard");
-const { getDominantColor, rgbToHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
+const { getDominantColor, rgbToHex, isVeryDarkHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
 
 // Export the track start event handler
 module.exports = async (player, track, payload, client) => {
@@ -34,7 +34,8 @@ module.exports = async (player, track, payload, client) => {
     const dominantColor = await getDominantColor(track.info.thumbnail);
     let color = dominantColor ? rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b) : '#5865F2';
     const isDark = isDarkHex(color);
-    color = isDark ? brightnessHex(color, 1.7) : color;
+    const isVeryDark = isVeryDarkHex(color);
+    color = isVeryDark ? brightnessHex(color, 2) : (isDark ? brightnessHex(color, 5) : color);
 
     const channel = client?.channels?.cache?.get(player.textChannel);
     const musicard = await updateMusicard(track, player, true, color);
