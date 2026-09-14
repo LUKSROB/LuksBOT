@@ -17,9 +17,9 @@ const config = require('./config.json');
 
 const fs = require('fs');
 const path = require('path');
-const express = require('express')
+const express = require('express');
 
-const app = express()
+const app = express();
 const port = process.env.PORT || 4000;
 
 // Create a new Discord client
