@@ -19,12 +19,12 @@ module.exports = {
         .addNumberOption(option =>
             option.setName('amount')
                 .setDescription('Cantidad para ajustar el brillo')
-                .min_value(1)
-                .max_value(100)
+                .setMinValue(1)
+                .setMaxValue(100)
                 .setRequired(true)
         )
         .addBooleanOption(option =>
-            option.setName('is_dark')
+            option.setName('isdark')
                 .setDescription('Indica si el color es muy oscuro')
                 .setRequired(false)
         ),
@@ -33,7 +33,7 @@ module.exports = {
     execute: async (interaction) => {
         const color = interaction.options.getString('color');
         const amount = interaction.options.getNumber('amount');
-        const isDarkOption = interaction.options.getBoolean('is_dark');
+        const isDarkOption = interaction.options.getBoolean('isdark');
 
         if (!color) {
             return await interaction.reply({ content: 'Debes proporcionar un color.', flags: MessageFlags.Ephemeral });
