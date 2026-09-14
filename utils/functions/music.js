@@ -1,7 +1,7 @@
 // Functions to manage music playback
 
 // Import necessary modules
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 
 // Function to play a song or playlist
@@ -80,7 +80,7 @@ async function pause( interaction, player ) {
         return await interaction.editReply(player.paused ? 'Canción pausada ⏸️' : 'Canción reanudada ▶️');
 
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al pausar/reanudar la música!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al pausar/reanudar la música!`, flags: MessageFlags.Ephemeral });
     }
 }
 
@@ -88,14 +88,14 @@ async function pause( interaction, player ) {
 async function resume( interaction, player ) {
     try {
         if (!player.paused) {
-            return await interaction.editReply({ content: 'La música ya está en reproducción.', flags: 64 });
+            return await interaction.editReply({ content: 'La música ya está en reproducción.', flags: MessageFlags.Ephemeral });
         }
 
         await player.pause(false);
         return await interaction.editReply('Canción reanudada ▶️');
 
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al reanudar la música!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al reanudar la música!`, flags: MessageFlags.Ephemeral });
     }
 
 }
@@ -107,12 +107,12 @@ async function skip( interaction, player ) {
     const currentTrack = player.current;
     
     if (!currentTrack) {
-        return await interaction.editReply({ content: 'No hay ninguna canción reproduciéndose.', flags: 64 });
+        return await interaction.editReply({ content: 'No hay ninguna canción reproduciéndose.', flags: MessageFlags.Ephemeral });
     }
 
     const requesterId = currentTrack.info?.requester?.id || currentTrack.info?.requester?.user?.id;
     if (requesterId && requesterId !== member.id) {
-        return await interaction.editReply({ content: "Solo el que solicitó la canción puede saltarla.", flags: 64 });
+        return await interaction.editReply({ content: "Solo el que solicitó la canción puede saltarla.", flags: MessageFlags.Ephemeral });
     }
 
     try {
@@ -128,17 +128,22 @@ async function skip( interaction, player ) {
 // Function to stop the current playback
 async function stop( interaction, player ) {
     const { member } = interaction;
+
+    if (!player.current) {
+        return await interaction.editReply({ content: 'No hay ninguna canción reproduciéndose.', flags: MessageFlags.Ephemeral });
+    }
     
-    if (player.current.info.requester !== member) {
-        return await interaction.editReply({ content: "Solo el que solicitó la canción puede detenerla.", flags: 64 });
+    const requesterId = player.current.info?.requester?.id || player.current.info?.requester?.user?.id;
+    if (requesterId && requesterId !== member.id) {
+        return await interaction.editReply({ content: "Solo el que solicitó la canción puede detenerla.", flags: MessageFlags.Ephemeral });
     }
     
     try {
         await player.destroy();
-        return await interaction.editReply('Reproducción detenida ⏹️');
+        return await interaction.editReply({ content: 'Reproducción detenida ⏹️', flags: MessageFlags.Ephemeral });
 
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al detener la reproducción!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al detener la reproducción!`, flags: MessageFlags.Ephemeral });
     }
 }
 
@@ -155,7 +160,7 @@ async function volume( interaction, player, volume, isCommand = false ) {
         }
         
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al ajustar el volumen!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al ajustar el volumen!`, flags: MessageFlags.Ephemeral });
     }
 }
 
@@ -181,7 +186,7 @@ async function loop( interaction, player, mode = null ) {
         }
         
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al cambiar el estado de bucle!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al cambiar el estado de bucle!`, flags: MessageFlags.Ephemeral });
     }
 }
 
@@ -189,7 +194,7 @@ async function loop( interaction, player, mode = null ) {
 async function queue( interaction, player ) {
     
     if (player.queue.size === 0) {
-        return await interaction.editReply({ content: 'La cola está vacía.', flags: 64 });
+        return await interaction.editReply({ content: 'La cola está vacía.', flags: MessageFlags.Ephemeral });
     }
 
     const tracks = player.queue.map(track => {
