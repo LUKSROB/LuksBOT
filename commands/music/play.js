@@ -1,7 +1,7 @@
 // Command play: Play a song
 
 // Import necessary modules
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { play } = require('../../utils/functions/music');
 
 // Export the ping command module
@@ -41,16 +41,12 @@ module.exports = {
         await interaction.deferReply();
 
         if (!member.voice.channel) {
-            return await interaction.editReply('¡Debes estar en un canal de voz!', { flags: 64 });
+            return await interaction.editReply({ content: '¡Debes estar en un canal de voz!', flags: MessageFlags.Ephemeral });
         } else if (guild.members.me.voice.channel && !guild.members.me.voice.channel.equals(member.voice.channel)) {
-            const invite = await guild.members.me.voice.channel.createInvite({
-                maxAge: 300,
-                maxUses: 5,
-                unique: true
-            });
-            return await interaction.editReply(`Debes estar en mi mismo canal de voz que yo\nAhora estoy reproduciendo en <#${guild.members.me.voice.channel.id}>\n¡Unete! ${invite.url}`, { flags: 64 });
+            
+            return await interaction.editReply({ content: `Debes estar en mi mismo canal de voz que yo\nAhora estoy reproduciendo en <#${guild.members.me.voice.channel.id}>\n¡Unete!`, flags: MessageFlags.Ephemeral });
         }
 
-        await play(interaction, player);
+        player = await play(interaction, player);
     }
 };
