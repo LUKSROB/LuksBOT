@@ -20,6 +20,8 @@ module.exports = {
                 .setDescription('Nivel de volumen (0-100)')
                 .setRequired(false)
                 .setChoices(
+                    { name: '3', value: 3 },
+                    { name: '6', value: 6 },
                     { name: '10', value: 10 },
                     { name: '20', value: 20 },
                     { name: '30', value: 30 },
@@ -37,7 +39,7 @@ module.exports = {
         const { member, guild, client } = interaction;
 
         let player = client.riffy.players.get(guild.id);
-        
+
         await interaction.deferReply();
 
         if (!member.voice.channel) {
