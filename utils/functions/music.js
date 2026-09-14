@@ -71,6 +71,8 @@ async function play( interaction, player ) {
             await interaction.editReply('Ocurrió un error al intentar reproducir la canción.');
         }
     }
+
+    return player;
 }
 
 // Function to pause or resume the current track
