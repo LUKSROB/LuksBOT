@@ -104,13 +104,21 @@ async function resume( interaction, player ) {
 async function skip( interaction, player ) {
     const { member } = interaction;
 
-    if (player.current.info.requester !== member) {
+    const currentTrack = player.current;
+    
+    if (!currentTrack) {
+        return await interaction.editReply({ content: 'No hay ninguna canción reproduciéndose.', flags: 64 });
+    }
+
+    const requesterId = currentTrack.info?.requester?.id || currentTrack.info?.requester?.user?.id;
+    if (requesterId && requesterId !== member.id) {
         return await interaction.editReply({ content: "Solo el que solicitó la canción puede saltarla.", flags: 64 });
     }
 
     try {
+        const title = currentTrack.info.title;
         await player.stop();
-        return await interaction.editReply({ content: `Canción saltada: ${player.current.info.title}` });
+        return await interaction.editReply({ content: `Canción saltada: ${title}` });
 
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al saltar la canción!`, flags: 64 });
