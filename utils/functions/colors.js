@@ -74,6 +74,10 @@ async function getPaletteColor(input) {
     }
 }
 
+function isRgb(color) {
+    return color.match(/(\d{1,3})[,\s]+(\d{1,3})[,\s]+(\d{1,3})/);
+}
+
 // Function to convert HEX color to RGB
 function hexToRgb(color) {
     color = validateHex(color);
@@ -166,6 +170,7 @@ function validateRgb(r, g, b) {
 module.exports = {
     getDominantColor,
     getPaletteColor,
+    isRgb,
     hexToRgb,
     rgbToHex,
     isDarkHex,
