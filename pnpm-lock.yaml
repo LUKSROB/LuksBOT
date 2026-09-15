@@ -66,7 +66,7 @@ importers:
         specifier: 8.4.0
         version: 8.4.0
       qs:
-        specifier: ^6.15.0
+        specifier: '>=6.16.0'
         version: 6.16.0
       riffy:
         specifier: ^1.0.7
@@ -77,6 +77,9 @@ importers:
       undici:
         specifier: '>=7.29.0'
         version: 7.29.1
+      uuid:
+        specifier: '>=11.1.1'
+        version: 14.0.2
       ws:
         specifier: '>=8.21.0'
         version: 8.21.3
@@ -1036,6 +1039,10 @@ packages:
 
   util@0.10.4:
     resolution: {integrity: sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==}
+
+  uuid@14.0.2:
+    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
+    hasBin: true
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -2057,6 +2064,8 @@ snapshots:
   util@0.10.4:
     dependencies:
       inherits: 2.0.3
+
+  uuid@14.0.2: {}
 
   vary@1.1.2: {}
 
