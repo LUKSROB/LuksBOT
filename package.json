@@ -31,7 +31,7 @@
     "qs": "^6.15.0",
     "riffy": "^1.0.7",
     "sharp": ">=0.35.4",
-    "undici": "^7.24.0",
+    "undici": ">=7.29.0",
     "ws": ">=8.21.0"
   },
   "devDependencies": {
@@ -41,6 +41,7 @@
     "lodash": "^4.18.0",
     "path-to-regexp": "8.4.0",
     "sharp": ">=0.35.4",
+    "undici": ">=7.29.0",
     "ws": ">=8.21.0"
   },
   "engines": {
@@ -48,10 +49,10 @@
   },
   "overrides": {
     "discord.js": {
-      "undici": "^6.24.0"
+      "undici": ">=7.29.0"
     },
     "@discordjs/rest": {
-      "undici": "^6.24.0"
+      "undici": ">=7.29.0"
     }
   }
 }
