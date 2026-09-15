@@ -21,7 +21,7 @@ importers:
         specifier: ^1.18.0
         version: 1.20.0
       body-parser:
-        specifier: ^2.2.2
+        specifier: '>=2.3.0'
         version: 2.3.0
       brace-expansion:
         specifier: '>=5.0.9'
