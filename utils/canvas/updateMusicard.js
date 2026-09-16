@@ -7,27 +7,36 @@ const { brightnessHex } = require("../functions/colors");
 
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
-    const musicLength = convertTime(track.info.length);
-    const timeProgress = convertTime(player.position);
-    const percProgress = musicProgress(player.position, track.info.length);
-    const colorBright = brightnessHex(color || '#FF7A00', 0.3);
+    if (!track?.info?.thumbnail) {
+        return null;
+    }
 
-    const musicard = await Classic({
-        thumbnailImage: track.info.thumbnail,
-        backgroundColor: '#070707',
-        progress: init ? 0 : percProgress,
-        progressColor: color || '#FF7A00',
-        progressBarColor: colorBright,
-        name: track.info.title,
-        nameColor: color || '#FF7A00',
-        author: track.info.author,
-        authorColor: '#696969',
-        startTime: timeProgress,
-        endTime: musicLength,
-        timeColor: color || '#FF7A00',
-    });
+    try {
+        const musicLength = convertTime(track.info.length);
+        const timeProgress = convertTime(player.position);
+        const percProgress = musicProgress(player.position, track.info.length);
+        const colorBright = brightnessHex(color || '#FF7A00', 0.3);
 
-    return musicard;
+        const musicard = await Classic({
+            thumbnailImage: track.info.thumbnail,
+            backgroundColor: '#070707',
+            progress: init ? 0 : percProgress,
+            progressColor: color || '#FF7A00',
+            progressBarColor: colorBright,
+            name: track.info.title,
+            nameColor: color || '#FF7A00',
+            author: track.info.author,
+            authorColor: '#696969',
+            startTime: timeProgress,
+            endTime: musicLength,
+            timeColor: color || '#FF7A00',
+        });
+
+        return musicard;
+    } catch (error) {
+        console.warn('[music] No se pudo renderizar la tarjeta de música:', error.message || error);
+        return null;
+    }
 }
 
 // Export the function for use in other modules
