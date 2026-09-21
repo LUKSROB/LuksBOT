@@ -1,7 +1,7 @@
 // Function to generate and update a music card image for the currently playing track
 
 // Import necessary modules
-const { Classic } = require("musicard");
+const { Bloom } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 const { brightnessHex } = require("../functions/colors");
 
@@ -17,7 +17,19 @@ async function updateMusicard(track, player, init = false, color) {
         const percProgress = musicProgress(player.position, track.info.length);
         const colorBright = brightnessHex(color || '#FF7A00', 0.3);
 
-        const musicard = await Classic({
+        const musicard = await Bloom({
+            trackName: track.info.title,
+            artistName: track.info.author,
+            albumArt: track.info.thunbnail,
+            isExplicit: track,
+            timeAdjust: {
+                timeStart: timeProgress,
+                timeEnd: musicLength,
+            },
+            progressBar: track,
+            volumeBar: volume,
+        })
+/*
             thumbnailImage: track.info.thumbnail,
             backgroundColor: '#070707',
             progress: init ? 0 : percProgress,
@@ -30,8 +42,7 @@ async function updateMusicard(track, player, init = false, color) {
             startTime: timeProgress,
             endTime: musicLength,
             timeColor: color || '#FF7A00',
-        });
-
+*/
         return musicard;
     } catch (error) {
         console.warn('[music] No se pudo renderizar la tarjeta de música:', error.message || error);
