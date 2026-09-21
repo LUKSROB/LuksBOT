@@ -30,13 +30,15 @@ async function updateMusicard(track, player, init = false, color) {
                 artistStyle: {
                     textColor: #696969
                 }
-                trackStyle:
+                trackStyle: {
+                    textColor: color || #FF7A00
+                }
                 progressBarStyle: {
                     barColor: colorBright
                 }
             }
             progressBar: init ? 0 : percProgress,
-            volume0,
+            volume: 0,
             backgroundColor: #070707
         })
 /*
