@@ -28,31 +28,21 @@ async function updateMusicard(track, player, init = false, color) {
             },
             styleConfig: {
                 artistStyle: {
-                    textColor: #696969
+                    textColor: '#696969'
                 }
                 trackStyle: {
-                    textColor: color || #FF7A00
+                    textColor: color || '#FF7A00'
                 }
                 progressBarStyle: {
-                    barColor: colorBright
+                    barColor: color || '#FF7A00'
                 }
             }
             progressBar: init ? 0 : percProgress,
             volume: 0,
-            backgroundColor: #070707
+            backgroundColor: '#070707'
         })
 /*
-            thumbnailImage: track.info.thumbnail,
-            backgroundColor: '#070707',
-            progress: init ? 0 : percProgress,
-            progressColor: color || '#FF7A00',
             progressBarColor: colorBright,
-            name: track.info.title,
-            nameColor: color || '#FF7A00',
-            author: track.info.author,
-            authorColor: '#696969',
-            startTime: timeProgress,
-            endTime: musicLength,
             timeColor: color || '#FF7A00',
 */
         return musicard;
