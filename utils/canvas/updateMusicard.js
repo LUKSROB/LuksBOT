@@ -1,12 +1,14 @@
 // Function to generate and update a music card image for the currently playing track
 
 // Import necessary modules
-const { Bloom } = require("musicard");
+const { Bloom, initializeFonts } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 const { brightnessHex } = require("../functions/colors");
 
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
+    initializeFonts();
+
     if (!track?.info?.thumbnail) {
         return null;
     }
