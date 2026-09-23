@@ -35,7 +35,7 @@ module.exports = async (player, track, payload, client) => {
     let color = dominantColor ? rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b) : '#5865F2';
     const isDark = isDarkHex(color);
     const isVeryDark = isVeryDarkHex(color);
-    color = isVeryDark ? brightnessHex(color, 2) : (isDark ? brightnessHex(color, 5) : color);
+    color = isVeryDark ? brightnessHex(color, 6) : (isDark ? brightnessHex(color, 3) : color);
 
     const channel = client?.channels?.cache?.get(player.textChannel);
     const musicard = await updateMusicard(track, player, true, color);
