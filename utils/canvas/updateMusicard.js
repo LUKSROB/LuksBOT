@@ -39,7 +39,7 @@ async function updateMusicard(track, player, init = false, color) {
                 },
                 progressBarStyle: {
                     barColor: color || '#FF7A00'
-                }, look
+                },
             },
             progressBar: init ? 0 : percProgress,
             volume: 0,
