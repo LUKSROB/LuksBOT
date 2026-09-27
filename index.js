@@ -9,7 +9,6 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
-import registerFont from 'musicard';
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
@@ -60,10 +59,6 @@ console.clear();
     // Set up DeepL translator
     client.translator = new deepl.Translator(config.DeepL_API_KEY);
     console.log('DeepL Translator initialized')
-
-    // Set font in proyect
-    registerFont('YujiSyuku-Regular.ttf', 'YujiSyuku');
-    console.log('Fonts loaded');
 
     // Load commands
     client.commands = new Discord.Collection();
