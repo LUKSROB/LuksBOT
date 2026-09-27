@@ -9,11 +9,11 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
+import registerFont from 'musicard';
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
-const { registerFont } = require('musicard');
 const config = require('./config.json');
 
 const fs = require('fs');
