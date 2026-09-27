@@ -9,7 +9,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
-import { GlobalFonts } from 'musicard';
+import { GlobalFonts } from 'musicard/dist/fonts';
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
