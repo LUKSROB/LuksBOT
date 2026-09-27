@@ -7,7 +7,6 @@ const { brightnessHex } = require("../functions/colors");
 
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
-    registerFont('YujiSyuku-Regular.ttf', 'YujiSyuku');
 
     initializeFonts();
 

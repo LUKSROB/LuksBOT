@@ -2,10 +2,10 @@
 
 // Prevent bot from crashing on unhandled errors (e.g. Riffy voice disconnects)
 process.on('uncaughtException', (err) => {
-    console.error('[UNCAUGHT EXCEPTION]', err.message);
+    console.error('[UNCAUGHT EXCEPTION]', err);
 });
 process.on('unhandledRejection', (err) => {
-    console.error('[UNHANDLED REJECTION]', err?.message ?? err);
+    console.error('[UNHANDLED REJECTION]', err);
 });
 
 // Dependencies
@@ -13,6 +13,7 @@ const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
+const { registerFont } = require('musicard');
 const config = require('./config.json');
 
 const fs = require('fs');
@@ -59,6 +60,10 @@ console.clear();
     // Set up DeepL translator
     client.translator = new deepl.Translator(config.DeepL_API_KEY);
     console.log('DeepL Translator initialized')
+
+    // Set font in proyect
+    registerFont('YujiSyuku-Regular.ttf', 'YujiSyuku');
+    console.log('Fonts loaded');
 
     // Load commands
     client.commands = new Discord.Collection();
