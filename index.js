@@ -9,7 +9,10 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
+<<<<<<< HEAD
 import { GlobalFonts } from 'musicard/dist/fonts';
+=======
+>>>>>>> parent of 347cb1e (add global fonts function)
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
@@ -60,8 +63,6 @@ console.clear();
     // Set up DeepL translator
     client.translator = new deepl.Translator(config.DeepL_API_KEY);
     console.log('DeepL Translator initialized')
-
-    console.log(GlobalFonts());
 
     // Load commands
     client.commands = new Discord.Collection();
