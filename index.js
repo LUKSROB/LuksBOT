@@ -9,10 +9,6 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
-<<<<<<< HEAD
-import { GlobalFonts } from 'musicard/dist/fonts';
-=======
->>>>>>> parent of 347cb1e (add global fonts function)
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');

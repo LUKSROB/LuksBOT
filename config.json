@@ -1,0 +1,83 @@
+{
+    "PORT": 4000,
+    "BOT_TOKEN": "", // Add your bot token
+    "APP_ID": "", // Add your application ID
+    "GUILD_ID": "", // Add your guild ID
+    "TICKETS_ID": "", // Add your tickets channel ID
+    "MOD_ROLE": "", // Add your moderator role ID
+    "WELCOME_CHANNEL": "", // Add your welcome channel ID
+    "GOODBYE_CHANNEL": "", // Add your goodbye channel ID
+    "TICKET_CHANNEL": "", // Add your ticket channel ID
+    "MONGO_URL": "", // Add your MongoDB connection URL
+    "DeepL_API_KEY": "", // Add your DeepL API key
+    "PALETTE_RAPIDAPI": {
+        "url": "", // Add your Palette RapidAPI URL
+        "rapidapi_key": "" // Add your Palette RapidAPI key
+    },
+    "COLORS": {
+        "PRIMARY": "#0070C9",
+        "SUCCESS": "#00C851",
+        "WARNING": "#FFBB33",
+        "DANGER": "#FF3333",
+        "WELCOMEIMG": "#4B054F",
+        "INVITES": "#FDBC9C",
+        "GAMES": "#AA96FF",
+        "MUSIC": "#FF7A00",
+        "BKMUSIC": "#070707",
+        "ARTMUSIC": "#696969"
+    },
+    "WORDS_FILTER": [
+        "porno",
+        "porn",
+        "xxx",
+        "pornhub",
+        "xvideos",
+        "xnxx",
+        "blowjob",
+        "hentaila",
+        "nhentai",
+        "livesex",
+        "nsfw",
+        "sexo",
+        "sex",
+        "semen",
+        "tits",
+        "cowgirl",
+        "titsjob",
+        "pornogratisdiario",
+        "youporn",
+        "iplogger",
+        "xnxx",
+        "xvideos",
+        "pornhub",
+        "nhentai",
+        "hentai.",
+        "nhentai.com"
+    ],
+    "WEBS_FILTER": [
+        "pornogratisdiario.com",
+        "youporn.com",
+        "goku.com",
+        "iplogger.org",
+        "xnxx.com",
+        "xvideos.com",
+        "pornhub.com",
+        "nhentai.to",
+        "bingoporno.com",
+        "porn.com",
+        "pampaporno.com",
+        "xvideos2.com",
+        "nhentai.net",
+        "hentaila.com",
+        "nhentai.com"
+    ],
+    "NODES": [
+        {
+            "host": "lavalinkv4.serenetia.com",
+            "port": 443,
+            "password": "https://seretia.link/discord",
+            "secure": true
+        }
+    ],
+    "WEB": "" // Add your web page content or URL if you have this
+}
