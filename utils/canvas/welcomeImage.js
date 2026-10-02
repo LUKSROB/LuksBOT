@@ -6,10 +6,10 @@ const { createCanvas, GlobalFonts, loadImage } = require('@napi-rs/canvas');
 
 const defaultIcon = './assets/images/defaultIcon.png';
 const backgroundPath = './assets/images/welcome.jpg';
-const fontPath = './assets/fonts/Super_Squad.ttf';
+const fontPath = './assets/fonts/YujiSyuku-Regular.ttf';
 const avatarRadius = 150;
 
-GlobalFonts.registerFromPath(fontPath, 'SuperSquad');
+GlobalFonts.registerFromPath(fontPath, 'YujiSyuku');
 
 /**
 @param {GuildMember} member
