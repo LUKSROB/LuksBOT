@@ -13,7 +13,6 @@ const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
-const { registerFont } = require("musicard");
 const config = require('./config.json');
 
 const fs = require('fs');
@@ -60,10 +59,6 @@ console.clear();
     // Set up DeepL translator
     client.translator = new deepl.Translator(config.DeepL_API_KEY);
     console.log('DeepL Translator initialized');
-
-    // Register custom font for musicard
-    await registerFont('YujiSyuku-Regular.ttf', 'YujiSyuku');
-    console.log('Custom font YujiSyuku registered');
 
     // Load commands
     client.commands = new Discord.Collection();
