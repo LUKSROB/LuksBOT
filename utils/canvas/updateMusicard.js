@@ -4,6 +4,7 @@
 const { Bloom, initializeFonts, registerFont } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 const { brightnessHex } = require("../functions/colors");
+const { COLORS } = require("../../config.json");
 
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
@@ -18,7 +19,7 @@ async function updateMusicard(track, player, init = false, color) {
         const musicLength = convertTime(track.info.length);
         const timeProgress = convertTime(player.position);
         const percProgress = musicProgress(player.position, track.info.length);
-        const colorBright = brightnessHex(color || '#FF7A00', 0.3);
+        const colorBright = brightnessHex(color || COLORS.MUSIC, 0.3);
 
         const musicard = await Bloom({
             trackName: track.info.title,
@@ -31,18 +32,18 @@ async function updateMusicard(track, player, init = false, color) {
             },
             styleConfig: {
                 artistStyle: {
-                    textColor: '#696969'
+                    textColor: COLORS.ARTMUSIC
                 },
                 trackStyle: {
-                    textColor: color || '#FF7A00'
+                    textColor: color || COLORS.MUSIC
                 },
                 progressBarStyle: {
-                    barColor: color || '#FF7A00'
+                    barColor: color || COLORS.MUSIC
                 },
             },
             progressBar: init ? 0 : percProgress,
             volume: 0,
-            backgroundColor: '#070707'
+            backgroundColor: COLORS.BKMUSIC
         })
 /*
             progressBarColor: colorBright,
