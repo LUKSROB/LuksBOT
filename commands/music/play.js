@@ -40,7 +40,9 @@ module.exports = {
 
         let player = client.riffy.players.get(guild.id);
 
-        await interaction.deferReply();
+        if (!interaction.deferred && !interaction.replied) {
+            await interaction.deferReply();
+        }
 
         if (!member.voice.channel) {
             return await interaction.editReply({ content: '¡Debes estar en un canal de voz!', flags: MessageFlags.Ephemeral });
