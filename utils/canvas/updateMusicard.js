@@ -1,15 +1,12 @@
 // Function to generate and update a music card image for the currently playing track
 
 // Import necessary modules
-const { Bloom, initializeFonts, registerFont } = require("musicard");
+const { Bloom } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
-const { brightnessHex } = require("../functions/colors");
 const { COLORS } = require("../../config.json");
 
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
-
-    initializeFonts();
 
     if (!track?.info?.thumbnail) {
         return null;
@@ -19,13 +16,11 @@ async function updateMusicard(track, player, init = false, color) {
         const musicLength = convertTime(track.info.length);
         const timeProgress = convertTime(player.position);
         const percProgress = musicProgress(player.position, track.info.length);
-        const colorBright = brightnessHex(color || COLORS.MUSIC, 0.3);
 
         const musicard = await Bloom({
             trackName: track.info.title,
             artistName: track.info.author,
-            albumArt: track.info.thunbnail,
-            isExplicit: track,
+            albumArt: track.info.thumbnail,
             timeAdjust: {
                 timeStart: timeProgress,
                 timeEnd: musicLength,
@@ -37,6 +32,9 @@ async function updateMusicard(track, player, init = false, color) {
                 trackStyle: {
                     textColor: color || COLORS.MUSIC
                 },
+                timeStyle: {
+                    textColor: color || COLORS.MUSIC
+                },
                 progressBarStyle: {
                     barColor: color || COLORS.MUSIC
                 },
@@ -45,10 +43,7 @@ async function updateMusicard(track, player, init = false, color) {
             volume: 0,
             backgroundColor: COLORS.BKMUSIC
         })
-/*
-            progressBarColor: colorBright,
-            timeColor: color || '#FF7A00',
-*/
+        
         return musicard;
     } catch (error) {
         console.warn('[music] No se pudo renderizar la tarjeta de música:', error.message || error);
