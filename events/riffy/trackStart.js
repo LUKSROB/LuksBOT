@@ -49,11 +49,13 @@ module.exports = async (player, track, payload, client) => {
     if (musicard) {
         const attachment = new AttachmentBuilder(musicard, { name: 'musicard.png' });
         if (player.message) {
-            player.message.edit({ files: [attachment] });
+            await player.message.edit({ files: [attachment] });
         } else {
             const message = await channel.send({ files: [attachment], components: [buttons] });
             player.message = message;
         }
+    } else {
+        console.error('Error: Musicard not generated');
     }
 
     player.musicInterval = setInterval(async () => {
