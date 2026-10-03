@@ -49,7 +49,7 @@ module.exports = async (player, track, payload, client) => {
     if (musicard) {
         const attachment = new AttachmentBuilder(musicard, { name: 'musicard.png' });
         if (player.message) {
-            await player.message.edit({ files: [attachment] });
+            await player.message.edit({ files: [attachment], components: [buttons] });
         } else {
             const message = await channel.send({ files: [attachment], components: [buttons] });
             player.message = message;
