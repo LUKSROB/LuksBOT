@@ -9,10 +9,14 @@ module.exports = async (interaction) => {
 
     const client = interaction.client;
 
-    const command = client.commands.get(interaction.commandName);
-
     // Chat input command handling
     if (interaction.isChatInputCommand()) {
+        const command = client.commands.get(interaction.commandName);
+
+        if (!command) {
+            return;
+        }
+
         try {
             const userData = await getUser(interaction.user);
             
@@ -27,10 +31,10 @@ module.exports = async (interaction) => {
         try {
             if (interaction.customId && interaction.customId.startsWith('tictactoe:')) {
                 const execute = require('../../interactions/tictactoe.js');
-                execute(interaction);
+                await execute(interaction);
             } else {
                 const execute = require(`../../interactions/${interaction.customId}.js`);
-                execute(interaction);
+                await execute(interaction);
             }
         } catch (error) {
             console.error(error);
