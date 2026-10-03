@@ -209,6 +209,11 @@ async function queue( interaction, player ) {
     return await interaction.editReply({ embeds: [embed] });
 }
 
+async function destroy(player, channel, embed) {
+    await player.destroy();
+    await channel.send({ embeds: [embed] });
+}
+
 // Export the functions for use in other modules
 module.exports = {
     play,
@@ -218,5 +223,6 @@ module.exports = {
     skip,
     volume,
     loop,
-    queue
+    queue,
+    destroy
 };

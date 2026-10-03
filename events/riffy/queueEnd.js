@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder } = require('discord.js');
+const { destroy } = require('../../utils/functions/music');
 const { COLORS } = require('../../config.json');
 
 // Export the queue end event handler
@@ -12,7 +13,6 @@ module.exports = async (player, client) => {
         .setColor(COLORS.WARNING)
         .setTitle('Lista de reproducción vacía')
         .setDescription('No hay más canciones en la cola.')
-        .setTimestamp();
 
     clearInterval(player.musicInterval);
 
@@ -22,8 +22,12 @@ module.exports = async (player, client) => {
         });
     }
     
-    setTimeout(() => {
-        channel.send({ embeds: [embed] });
-        player.destroy();
-    }, 5000);
+
+    setTimeout(async () => {
+        if (player.playing === false) {
+            await destroy(player, channel, embed);
+        }
+        
+    }, 10000, player);
+
 };
