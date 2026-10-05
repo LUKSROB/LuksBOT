@@ -41,7 +41,16 @@ module.exports = {
         let player = client.riffy.players.get(guild.id);
 
         if (!interaction.deferred && !interaction.replied) {
-            await interaction.deferReply();
+            try {
+                await interaction.deferReply();
+            } catch (error) {
+                if (error?.code === 10062) {
+                    console.warn('[music/play] Interacción expirada antes de deferReply (10062).');
+                    return;
+                }
+
+                throw error;
+            }
         }
 
         if (!member.voice.channel) {
