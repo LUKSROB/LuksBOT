@@ -5,10 +5,36 @@ const { Bloom } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
 const { COLORS } = require("../../config.json");
 
+function normalizeAlbumArtUrl(rawUrl) {
+    if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
+        return null;
+    }
+
+    let url = rawUrl.trim();
+
+    if (url.startsWith('//')) {
+        url = `https:${url}`;
+    }
+
+    if (url.includes('ytimg.com/vi_webp/')) {
+        url = url.replace('/vi_webp/', '/vi/').replace('.webp', '.jpg');
+    }
+
+    if (!/^https?:\/\//i.test(url)) {
+        return null;
+    }
+
+    return url;
+}
+
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
 
-    if (!track?.info?.thumbnail) {
+    console.log(track.info.thumbnail);
+
+    const albumArt = normalizeAlbumArtUrl(track?.info?.thumbnail);
+
+    if (!albumArt) {
         return null;
     }
 
@@ -20,7 +46,7 @@ async function updateMusicard(track, player, init = false, color) {
         const musicard = await Bloom({
             trackName: track.info.title,
             artistName: track.info.author,
-            albumArt: track.info.thumbnail,
+            albumArt: albumArt,
             timeAdjust: {
                 timeStart: timeProgress,
                 timeEnd: musicLength,
