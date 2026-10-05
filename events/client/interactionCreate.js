@@ -18,9 +18,12 @@ module.exports = async (interaction) => {
         }
 
         try {
-            const userData = await getUser(interaction.user);
-            
+            const userDataPromise = getUser(interaction.user);
+            const needsUserData = typeof command.execute === 'function' && command.execute.length >= 2;
+            const userData = needsUserData ? await userDataPromise : undefined;
+
             await command.execute(interaction, userData);
+            await userDataPromise;
 
             await incCmdCount(interaction.user);
         } catch (error) {
