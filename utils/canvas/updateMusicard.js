@@ -30,8 +30,6 @@ function normalizeAlbumArtUrl(rawUrl) {
 // Function to create or update the music card
 async function updateMusicard(track, player, init = false, color) {
 
-    console.log(track.info.thumbnail);
-
     const albumArt = normalizeAlbumArtUrl(track?.info?.thumbnail);
 
     if (!albumArt) {
