@@ -13,6 +13,7 @@ const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
+const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const config = require('./config.json');
 
 const fs = require('fs');
@@ -25,6 +26,9 @@ const port = process.env.PORT || 4000;
 console.clear();
 
 (async () => {
+    // Patch Riffy REST to handle transient network errors gracefully
+    patchRiffyRest();
+    
     // Create a new Discord client
     const client = await new Discord.Client({
         intents: 53608447
