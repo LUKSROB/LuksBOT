@@ -9,7 +9,7 @@ module.exports = {
     // Define the command structure
 	data: new SlashCommandBuilder()
         .setName("skip")
-        .setDescription("Skip the current playing track"),
+        .setDescription("Salta la pista actual"),
     // Execute the command
     execute: async ( interaction ) => {
 

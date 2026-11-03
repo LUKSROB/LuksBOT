@@ -9,7 +9,7 @@ module.exports = {
     // Define the command structure
     data: new SlashCommandBuilder()
         .setName('pause')
-        .setDescription('Pause the current track'),
+        .setDescription('Pausa la pista actual'),
     // Execute the command
     execute: async (interaction) => {
         const { guild, client } = interaction;

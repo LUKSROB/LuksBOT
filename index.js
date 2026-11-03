@@ -17,6 +17,7 @@ const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const config = require('./config.json');
 
 const fs = require('fs');
+const fsp = fs.promises;
 const path = require('path');
 const express = require('express');
 
@@ -140,7 +141,7 @@ async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
     
     // Create a new Discord client
     const client = await new Discord.Client({
-        intents: 53608447
+        intents: 53608447 // All intents enabled for the client
     });
 
     // Create Riffy instance
