@@ -42,5 +42,13 @@ module.exports = async (interaction) => {
         } catch (error) {
             console.error(error);
         }
+        
+    } else if (interaction.isStringSelectMenu()) {
+        try {
+            const execute = require(`../../interactions/${interaction.customId}.js`);
+            await execute(interaction);
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

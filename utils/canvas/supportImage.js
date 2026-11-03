@@ -1,7 +1,7 @@
 // Create image for support ticket
 
 // Import necessary modules
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage } = require('@napi-rs/canvas');
 
 const image = './assets/images/support.png';
 
@@ -30,6 +30,6 @@ module.exports = async () => {
     );
 
     // Return image buffer
-    return canvas.toBuffer();
+    return canvas.toBuffer('image/png');
     
 }
