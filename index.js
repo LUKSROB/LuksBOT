@@ -25,6 +25,115 @@ const port = process.env.PORT || 4000;
 
 console.clear();
 
+async function indexCommands() {
+    const commands = new Discord.Collection();
+    const commandData = [];
+    const commandsRoot = path.join(__dirname, 'commands');
+    let totalIndexed = 0;
+    let totalInvalid = 0;
+
+    let folders = [];
+
+    try {
+        const commandEntries = await fsp.readdir(commandsRoot, { withFileTypes: true });
+        folders = commandEntries.filter((entry) => entry.isDirectory());
+    } catch (err) {
+        console.error('Error reading command folders:', err);
+        return { commands, commandData };
+    }
+
+    const filesByFolder = await Promise.all(
+        folders.map(async (folder) => {
+            const folderPath = path.join(commandsRoot, folder.name);
+
+            try {
+                const fileEntries = await fsp.readdir(folderPath, { withFileTypes: true });
+                return fileEntries
+                    .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
+                    .map((entry) => path.join(folderPath, entry.name));
+            } catch (err) {
+                console.error(`Error reading command folder ${folderPath}:`, err.message);
+                totalInvalid++;
+                return [];
+            }
+        })
+    );
+
+    for (const modulePath of filesByFolder.flat()) {
+        try {
+            delete require.cache[require.resolve(modulePath)];
+            const command = require(modulePath);
+
+            const isValid =
+                command &&
+                command.data &&
+                command.data.name &&
+                typeof command.execute === 'function' &&
+                typeof command.data.toJSON === 'function';
+
+            if (!isValid) {
+                console.warn(`Invalid command: ${modulePath}`);
+                totalInvalid++;
+                continue;
+            }
+
+            if (commands.has(command.data.name)) {
+                console.warn(`Duplicate command: ${command.data.name} (${modulePath})`);
+                totalInvalid++;
+                continue;
+            }
+
+            const json = command.data.toJSON();
+
+            commands.set(command.data.name, {
+                modulePath,
+                data: json
+            });
+            commandData.push(json);
+            totalIndexed++;
+
+            // Clave para lazy real: descargar del cache tras indexar metadata
+            delete require.cache[require.resolve(modulePath)];
+        } catch (err) {
+            console.error(`Error indexing ${modulePath}:`, err.message);
+            totalInvalid++;
+        }
+    }
+
+    console.log(`Commands indexed: ${totalIndexed}`);
+    if (totalInvalid > 0) {
+        console.warn(`Files invalid/erroneous: ${totalInvalid}`);
+    }
+
+    return { commands, commandData };
+}
+
+async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
+    let eventEntries = [];
+
+    try {
+        eventEntries = await fsp.readdir(eventsPath, { withFileTypes: true });
+    } catch (err) {
+        console.error(`Error reading events from ${emitterLabel}:`, err);
+        return;
+    }
+
+    const eventFiles = eventEntries.filter((entry) => entry.isFile() && entry.name.endsWith('.js'));
+
+    for (const file of eventFiles) {
+        const modulePath = path.join(eventsPath, file.name);
+
+        try {
+            const listener = require(modulePath);
+            const eventName = path.basename(file.name, '.js');
+
+            emitter.on(eventName, (...args) => listener(...args, client));
+        } catch (err) {
+            console.log(`Error loading ${emitterLabel} event ${file.name}`, err);
+        }
+    }
+}
+
 (async () => {
     // Patch Riffy REST to handle transient network errors gracefully
     patchRiffyRest();
@@ -64,63 +173,66 @@ console.clear();
     client.translator = new deepl.Translator(config.DeepL_API_KEY);
     console.log('DeepL Translator initialized');
 
-    // Load commands
-    client.commands = new Discord.Collection();
+    // Load commands with Hybrid System
+    console.log('Indexing commands for lazy loading...');
+    const { commands: commandIndex, commandData } = await indexCommands();
+    client.commands = commandIndex;
 
-    fs.readdirSync('./commands')
-        .forEach((commandfile) => {
-            const cmd = fs.readdirSync(`./commands/${commandfile}`);
+    const commandCache = new Map();
 
-            for (const file of cmd) {
-                const command = require(`./commands/${commandfile}/${file}`);
+    client.getCommand = (commandName) => {
+        if (commandCache.has(commandName)) {
+            return commandCache.get(commandName);
+        }
 
-                client.commands.set(command.data.name, command);
+        const meta = client.commands.get(commandName);
+        if (!meta) {
+            return null;
+        }
+
+        try {
+            const command = require(meta.modulePath);
+
+            if (!command || typeof command.execute !== 'function') {
+                console.error(`Invalid command when loading at runtime: ${commandName}`);
+                return null;
             }
-        });
 
-    // Charge commands
+            commandCache.set(commandName, command);
+            console.log(`⚡ Lazy loaded: ${commandName}`);
+            return command;
+        } catch (err) {
+            console.error(`Error doing lazy load of "${commandName}":`, err);
+            return null;
+        }
+    };
+
+    // Register commands with Discord
     const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
     (async () => {
         try {
+            if (commandData.length === 0) {
+                console.warn('No valid commands found to register');
+                return;
+            }
+            
             await REST.put(
                 Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
-                { body: client.commands.map(cmd => cmd.data.toJSON()) }
+                { body: commandData }
             );
-            console.log(`Loaded ${client.commands.size} commands`);
+            console.log(`Registered ${commandData.length} commands on Discord`);
         } catch (err) {
-            console.log('Error loading commands');
+            console.log('Error registering commands');
             console.error(err);
         }
     })();
 
-    // Load Client events
-    fs.readdirSync('./events/client')
-        .filter((filename) => filename.endsWith('.js'))
-        .forEach((filename) => {
-            try {
-                const listener = require(`./events/client/${filename}`);
-                const eventName = path.basename(filename, '.js');
-
-                client.on(eventName, (...args) => listener(...args, client));
-            } catch (err) {
-                console.log(`Error loading event ${filename}`, err);
-            }
-        });
-
-    // Load Riffy events
-    fs.readdirSync('./events/riffy')
-        .filter((filename) => filename.endsWith('.js'))
-        .forEach((filename) => {
-            try {
-                const listener = require(`./events/riffy/${filename}`);
-                const eventName = path.basename(filename, '.js');
-
-                client.riffy.on(eventName, (...args) => listener(...args, client));
-            } catch (err) {
-                console.log(`Error loading event ${filename}`, err);
-            }
-        });
+    // Load events
+    await Promise.all([
+        loadEventHandlers(client, path.join(__dirname, 'events', 'client'), client, 'client'),
+        loadEventHandlers(client.riffy, path.join(__dirname, 'events', 'riffy'), client, 'riffy')
+    ]);
 
     // Event handler for raw event
     client.on("raw", (d) => {

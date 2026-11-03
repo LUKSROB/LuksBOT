@@ -11,7 +11,10 @@ module.exports = async (interaction) => {
 
     // Chat input command handling
     if (interaction.isChatInputCommand()) {
-        const command = client.commands.get(interaction.commandName);
+        // Obtener el comando (compatible con sistema híbrido)
+        const command = typeof client.getCommand === 'function'
+        ? client.getCommand(interaction.commandName)
+        : null;
 
         if (!command) {
             return;
