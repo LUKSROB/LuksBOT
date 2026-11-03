@@ -112,10 +112,10 @@ async function skip( interaction, player ) {
     try {
         const title = currentTrack.info.title;
         await player.stop();
-        return await interaction.editReply({ content: `Canción saltada: ${title}` });
+        return await interaction.editReply({ content: `Canción saltada: ${title} ${player.queue?.length !== 0 ? `\nReproduciendo: ${player.queue[0].info.title}` : ''}`, flags: MessageFlags.Ephemeral });
 
     } catch (err) {
-        return await interaction.editReply({ content: `❌ ¡Error al saltar la canción!`, flags: 64 });
+        return await interaction.editReply({ content: `❌ ¡Error al saltar la canción!`, flags: MessageFlags.Ephemeral });
     }
 }
 
