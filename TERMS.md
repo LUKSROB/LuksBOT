@@ -1,56 +1,76 @@
-# Términos de Servicio del Bot LuksBot
+# Términos de Servicio de LuksBot
 
-Última actualización: 23 de marzo de 2026
+**Última actualización:** 3 de noviembre de 2026
 
-Al usar LuksBot, aceptas estos términos. Si no estás de acuerdo, por favor, no lo uses.
+Al usar LuksBot, aceptas estos términos.  
+Si no estás de acuerdo con ellos, no utilices el bot.
 
-## 1. Uso del Bot
+## 1) Descripción del servicio
 
-- El bot está diseñado para servidores de Discord.
-- Puedes usarlo para comandos limitados, reproducción de música y funciones informativas.
-- No está permitido el uso malintencionado, spam, acoso o actividades ilegales.
+LuksBot es un bot para Discord que ofrece funciones de música, utilidades de servidor, comandos interactivos y herramientas administrativas básicas.
 
-## 2. Almacenamiento de Datos
+## 2) Elegibilidad y cumplimiento
 
-- Recopilamos datos necesarios para el funcionamiento del bot, como:
-  - IDs de usuarios, servidores y canales.
-  - Historial limitado de comandos.
-  - Datos ingresados como:
-    - Fechas de cumpleaños.
-    - Invitaciones.
-- Estos datos se usan **exclusivamente para mejorar la experiencia del bot** y no se comparten ni venden.
-- Los datos se almacenan de forma segura y puedes solicitar su eliminación en cualquier momento.
+- Debes cumplir los términos de Discord y la normativa aplicable en tu jurisdicción.
+- Los administradores del servidor son responsables de habilitar y moderar el uso del bot en su comunidad.
 
-## 3. Música y Servicios Externos
+## 3) Uso permitido
 
-- El bot reproduce música desde YouTube.
-- No alojamos ni distribuimos contenido protegido. Actuamos bajo el uso justo.
-- El bot puede dejar de funcionar si cambian las políticas de estas plataformas.
+Está permitido usar LuksBot para las funciones previstas por sus comandos y módulos oficiales.
 
-## 4. Limitaciones
+Está prohibido:
 
-- El bot es gratuito y se ofrece "tal cual".
-- No garantizamos disponibilidad, precisión o funcionamiento continuo.
-- Nos reservamos el derecho de suspender el bot o modificar funciones sin previo aviso.
+- Usar el bot para spam, acoso, fraude o actividades ilegales.
+- Intentar vulnerar, sobrecargar o degradar el servicio de forma intencional.
+- Automatizar abuso de comandos o evadir restricciones del bot.
+- Utilizar el bot para infringir derechos de terceros.
 
-## 5. Cambios en los Términos
+## 4) Uso restringido / autorización
 
-- Podemos actualizar estos términos. Los cambios se publicarán aquí.
-- El uso continuado implica aceptación de las nuevas condiciones.
+LuksBot es un proyecto de uso controlado.  
+Su incorporación a servidores puede estar limitada a aquellos autorizados por el propietario o mantenedor del bot.
 
-## 6. Contacto
+## 5) Integraciones y servicios de terceros
 
-¿Preguntas o solicitudes de eliminación de datos?  
-Contáctanos en: [lukasrob025@gmail.com](mailto:lukasrob025@gmail.com)
+LuksBot depende de servicios externos (por ejemplo Discord API, DeepL o infraestructura de audio/Lavalink).  
+No garantizamos disponibilidad continua de dichas integraciones ni compatibilidad permanente con cambios de terceros.
 
-## Uso Restringido
+## 6) Contenido musical y propiedad intelectual
 
-Este bot es de uso privado. Solo está autorizado su uso por parte del propietario o en servidores específicamente permitidos. No se permite su adición a servidores públicos sin autorización expresa.
+- LuksBot no otorga licencias sobre contenido de terceros.
+- La reproducción de contenido depende de la fuente y sus políticas.
+- Cada usuario/servidor es responsable de usar el bot conforme a derechos de autor y normas de su país/plataforma.
 
-## Exclusión de Responsabilidad
+## 7) Datos y privacidad
 
-No asumimos ninguna responsabilidad por el uso no autorizado, malintencionado o indebido del bot por terceros. El bot se ofrece "tal cual" y sin garantías de disponibilidad, precisión o seguridad.
+El tratamiento de datos se rige por la [Política de Privacidad](./PRIVACY.md).  
+Al usar LuksBot, aceptas también esa política.
 
-## Atribución
+## 8) Disponibilidad, cambios y soporte
 
-El uso del bot no implica respaldo, afiliación o responsabilidad del propietario hacia servidores, usuarios o contenido generado por terceros.
+- El servicio se ofrece **“tal cual”** y **“según disponibilidad”**.
+- Podemos agregar, modificar, limitar o retirar funciones en cualquier momento.
+- Podemos suspender temporal o permanentemente el bot (global o por servidor), con o sin aviso previo.
+
+## 9) Limitación de responsabilidad
+
+En la máxima medida permitida por la ley:
+
+- No garantizamos ausencia total de errores, interrupciones o pérdidas de datos.
+- No respondemos por daños indirectos, incidentales o consecuenciales derivados del uso o imposibilidad de uso del bot.
+- No asumimos responsabilidad por acciones de usuarios, administradores o terceros que utilicen el bot de forma indebida.
+
+## 10) Terminación o bloqueo de acceso
+
+Podemos restringir o revocar el acceso a LuksBot en casos de abuso, incumplimiento de estos términos, riesgos técnicos o razones operativas.
+
+## 11) Modificaciones de estos términos
+
+Podemos actualizar estos términos en cualquier momento.  
+La versión vigente será la publicada en este archivo con su fecha de actualización.  
+El uso continuado tras cambios implica aceptación de la versión actualizada.
+
+## 12) Contacto
+
+Para consultas legales, uso del bot o solicitudes relacionadas:  
+[lukasrob025@gmail.com](mailto:lukasrob025@gmail.com)

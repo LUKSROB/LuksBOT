@@ -1,60 +1,98 @@
-# Política de Privacidad del Bot LuksBot
+# Política de Privacidad de LuksBot
 
-Última actualización: 23 de marzo de 2026
+**Última actualización:** 3 de noviembre de 2026
 
-Esta Política de Privacidad describe cómo LuksBot recopila, utiliza y protege los datos de los usuarios y servidores en Discord.
+Esta política explica qué datos puede tratar LuksBot, para qué se usan y qué opciones tienen los usuarios y administradores de servidores.
 
-## 1. Datos que Recopilamos
+## 1) Alcance
 
-### De Usuarios
+Esta política aplica al uso de LuksBot dentro de Discord, incluyendo comandos slash, funciones de música, utilidades de servidor y funciones opcionales como cumpleaños.
 
-- **ID de usuario de Discord** (obligatorio para funcionamiento).
-- **Nombre de usuario y apodo (nick)** en el servidor.
-- **Enlace a la imagen de perfil** (usado solo para funciones visuales como el sistema de cumpleaños o bienvenidas).
-- **Cantidad de comandos usados** (para estadísticas internas del bot).
-- **Fecha de nacimiento** (si se proporciona voluntariamente para el sistema de cumpleaños).
+## 2) Datos que podemos tratar
 
-### De Servidores
+### 2.1 Datos de usuario (Discord)
 
-- **ID del servidor**.
-- **Nombre del servidor**.
-- **Otros datos necesarios para el funcionamiento** (como roles, canales, configuraciones personalizadas).
+- ID de usuario de Discord.
+- Nombre de usuario y/o apodo visible en el servidor.
+- Avatar o URL de avatar (cuando una función lo requiere).
+- Conteo de uso de comandos (métrica interna).
+- Fecha de cumpleaños (solo si el usuario la registra de forma voluntaria).
 
-## 2. Finalidad del Uso de Datos
+### 2.2 Datos del servidor
 
-- Permitir funciones básicas del bot (música, comandos limitados).
-- Activar recordatorios de cumpleaños.
-- Mejorar la experiencia del usuario mediante estadísticas internas.
-- Garantizar el correcto funcionamiento en los servidores donde está agregado.
+- ID del servidor.
+- Nombre del servidor.
+- IDs de canales, roles y configuraciones necesarias para ejecutar funciones del bot.
 
-## 3. Música y Servicios Externos
+### 2.3 Datos de interacción técnica
 
-- El bot reproduce música a través de **YouTube**, utilizando un **nodo Lavalink**.
-- No almacenamos ni descargamos contenido de audio.
-- Solo accedemos a metadatos (título, duración, URL) para mostrar en la cola de reproducción.
-- El acceso es limitado y respetamos las políticas de uso justo.
+- Errores técnicos y eventos de ejecución para diagnóstico.
+- Metadatos de reproducción (por ejemplo: título, URL y duración del contenido reproducido).
 
-## 4. Almacenamiento y Seguridad
+## 3) Finalidades del tratamiento
 
-- Los datos se almacenan en servidores seguros.
-- No compartimos ni vendemos información a terceros.
-- Los datos personales solo se usan para el funcionamiento del bot.
-- Puedes solicitar la eliminación de tus datos en cualquier momento.
+Usamos los datos únicamente para:
 
-## 5. Derechos de los Usuarios
+- Ejecutar correctamente comandos y funcionalidades del bot.
+- Mantener configuraciones por servidor.
+- Brindar funciones opcionales solicitadas por usuarios (como cumpleaños).
+- Medir uso y estabilidad para mejorar el servicio.
+- Detectar y mitigar abuso o uso indebido.
 
-Tienes derecho a:
+## 4) Base y minimización
 
-- **Rectificar** información incorrecta.
-- **Eliminar** tus datos (envía una solicitud a [lukasrob025@gmail.com](mailto:lukasrob025@gmail.com)).
-- **No ser discriminado** por ejercer estos derechos.
+- Se trata solo la información necesaria para operar LuksBot.
+- No se solicita información personal sensible fuera de lo estrictamente funcional.
+- Funciones opcionales (como cumpleaños) dependen de datos aportados voluntariamente.
 
-## 6. Cambios en esta Política
+## 5) Servicios y proveedores externos
 
-- Actualizaremos esta política si cambia el uso de datos.
-- Los cambios se publicarán aquí.
+LuksBot puede interactuar con servicios de terceros para habilitar funciones, por ejemplo:
 
-## 7. Contacto
+- **DeepL** (traducción).
+- **Lavalink/Riffy** (audio/reproducción).
+- **Discord API** (plataforma base).
 
-¿Preguntas o solicitudes sobre tus datos?  
-Contáctanos en: [lukasrob025@gmail.com](mailto:lukasrob025@gmail.com)
+Cada proveedor aplica sus propios términos y políticas de privacidad.
+
+## 6) Música y contenido de terceros
+
+- LuksBot no almacena ni distribuye archivos de audio como biblioteca propia.
+- El bot usa metadatos para gestionar cola y reproducción.
+- El contenido depende de plataformas externas y de su disponibilidad/políticas.
+
+## 7) Conservación de datos
+
+- Los datos se conservan solo el tiempo necesario para las finalidades descritas.
+- Al desinstalar el bot de un servidor o recibir una solicitud válida, se puede proceder a la eliminación de datos asociados, salvo obligación técnica o legal en contrario.
+
+## 8) Seguridad
+
+Aplicamos medidas razonables para proteger la información contra acceso no autorizado, pérdida o alteración.  
+No existe un sistema 100% infalible, pero buscamos mantener prácticas de seguridad adecuadas al contexto del proyecto.
+
+## 9) Compartición de datos
+
+- No vendemos datos personales.
+- No compartimos datos con terceros para fines comerciales.
+- Solo se comparte información cuando es técnicamente necesario para operar integraciones solicitadas por el usuario o cuando exista requerimiento legal aplicable.
+
+## 10) Derechos y solicitudes
+
+Puedes solicitar:
+
+- Acceso a los datos asociados (cuando aplique).
+- Rectificación de información incorrecta.
+- Eliminación de datos vinculados al uso del bot.
+
+Para ejercer estos derechos, contacta a: [lukasrob025@gmail.com](mailto:lukasrob025@gmail.com)
+
+## 11) Menores de edad
+
+LuksBot funciona en Discord y está sujeto a las políticas de edad mínima de la plataforma.  
+Si detectas uso indebido relacionado con menores, contáctanos para revisar el caso.
+
+## 12) Cambios en esta política
+
+Podemos actualizar esta política para reflejar cambios técnicos, legales o funcionales.  
+La versión vigente será siempre la publicada en este archivo, con su fecha de actualización.
