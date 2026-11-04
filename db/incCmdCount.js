@@ -20,9 +20,14 @@ async function incCmdCount(userId, userName, guildId) {
         return created;
     }
 
-    await userData.updateOne(
-        { userId, userName },
-        { $inc: { commandCount: 1 } }
+    await User.updateOne(
+        { userId, userName, guildId },
+        {
+            $set: {
+                lastInteractionAt: new Date()
+            },
+            $inc: { commandCount: 1 }
+        }
     );
 
     return userData;
