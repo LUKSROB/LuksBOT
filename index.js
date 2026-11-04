@@ -155,16 +155,20 @@ async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
         },
         defaultSearchPlatform: "ytmsearch",
         restVersion: "v4",
-        migrateOnDisconnect: true,
-        migrateOnFailure: true,
+        migrateOnDisconnect: false,
+        migrateOnFailure: false,
         bypassChecks: {
             nodeFetchInfo: true
         }
     });
 
     client.lavalinkFailover = createLavalinkFailoverManager(client, nodes, {
-        connectAttemptTimeoutMs: 15000,
-        retryRoundDelayMs: 5000
+        connectAttemptTimeoutMs: 12000,
+        retryRoundDelayMs: 3000,
+        failureBaseCooldownMs: 15000,
+        failureMaxCooldownMs: 300000,
+        rateLimitCooldownMs: 600000,
+        ignoreFailureWindowMs: 8000
     });
 
 
