@@ -95,7 +95,7 @@ async function processGuildBirthdays(guildId, currentDate) {
     if (!settings.birthdayChannelId) {
         for (const record of birthdayRecords) {
             if (record.lastCelebratedYear !== currentDate.year) {
-                await markBirthdayCelebrated(record.guildId, record.userId, currentDate.year);
+                await markBirthdayCelebrated(record.userId, record.userName, record.guildId, currentDate.year);
             }
         }
     }

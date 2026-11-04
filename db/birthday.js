@@ -60,7 +60,7 @@ async function ensureGuildRecord(guildId) {
 }
 
 async function ensureUserRecord(userId, userName, guildId) {
-    const existing = await User.findOne({ userId, userName, guildId });
+    const existing = await User.findOne({ userId, guildId });
 
     if (existing) {
         if (userName && existing.userName !== userName) {
@@ -85,6 +85,45 @@ function getGuildBirthdayEntry(user, guildId) {
     const birthdays = Array.isArray(user.birthdays) ? user.birthdays : [];
     const index = birthdays.findIndex((entry) => entry.guildId === guildId);
     return { birthdays, index };
+}
+
+function getBirthdayFromUser(user, guildId) {
+    if (!user) {
+        return null;
+    }
+
+    const birthdays = Array.isArray(user.birthdays) ? user.birthdays : [];
+    const guildBirthday = birthdays.find((entry) => entry.guildId === guildId);
+    if (
+        guildBirthday &&
+        Number.isInteger(guildBirthday.day) &&
+        Number.isInteger(guildBirthday.month) &&
+        Number.isInteger(guildBirthday.year)
+    ) {
+        return {
+            day: guildBirthday.day,
+            month: guildBirthday.month,
+            year: guildBirthday.year,
+            lastCelebratedYear: guildBirthday.lastCelebratedYear ?? null
+        };
+    }
+
+    if (
+        Array.isArray(user.birthday) &&
+        user.birthday.length >= 3 &&
+        Number.isInteger(Number(user.birthday[0])) &&
+        Number.isInteger(Number(user.birthday[1])) &&
+        Number.isInteger(Number(user.birthday[2]))
+    ) {
+        return {
+            day: Number(user.birthday[0]),
+            month: Number(user.birthday[1]),
+            year: Number(user.birthday[2]),
+            lastCelebratedYear: null
+        };
+    }
+
+    return null;
 }
 
 async function setBirthday( userId, userName, guildId, birthday) {
@@ -124,16 +163,18 @@ async function setBirthday( userId, userName, guildId, birthday) {
 }
 
 async function getBirthday( userId, userName, guildId) {
-    const user = await User.findOne({ userId, userName, guildId }).lean();
-    if (!user || !Array.isArray(user.birthday)) {
+    const user = await User.findOne({ userId, guildId }).lean();
+    const birthday = getBirthdayFromUser(user, guildId);
+
+    if (!birthday) {
         return undefined;
     }
 
-    return user.birthday;
+    return [birthday.day, birthday.month, birthday.year];
 }
 
 async function delBirthday( userId, userName, guildId) {
-    const user = await User.findOne({ userId, userName, guildId });
+    const user = await User.findOne({ userId, guildId });
     if (!user) {
         return;
     }
@@ -149,67 +190,78 @@ async function delBirthday( userId, userName, guildId) {
 
 async function getUpcomingBirthdays(guildId, limit = 10) {
     const users = await User.find(
-        { 'birthdays.guildId': guildId },
-        { userId: 1, userName: 1, birthdays: 1 }
+        { guildId },
+        { userId: 1, userName: 1, guildId: 1, birthdays: 1, birthday: 1 }
     ).lean();
 
     const now = new Date();
-    const upcoming = [];
+    const startTodayUtc = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+    ));
+    const upcomingByUser = new Map();
 
     for (const user of users) {
-        const birthdays = Array.isArray(user.birthdays) ? user.birthdays : [];
+        const birthday = getBirthdayFromUser(user, guildId);
+        if (!birthday) {
+            continue;
+        }
 
-        for (const birthday of birthdays) {
-            if (birthday.guildId !== guildId) {
-                continue;
-            }
+        const nextBirthday = getNextOccurrenceDate(birthday.day, birthday.month, now);
+        const diffMs = nextBirthday.getTime() - startTodayUtc.getTime();
+        const daysUntil = Math.max(0, Math.round(diffMs / (24 * 60 * 60 * 1000)));
+        const nextItem = {
+            userId: user.userId,
+            userName: user.userName,
+            guildId,
+            day: birthday.day,
+            month: birthday.month,
+            year: birthday.year,
+            lastCelebratedYear: birthday.lastCelebratedYear ?? null,
+            nextBirthday,
+            daysUntil: Math.max(0, daysUntil)
+        };
 
-            const nextBirthday = getNextOccurrenceDate(birthday.day, birthday.month, now);
-            const diffMs = nextBirthday.getTime() - now.getTime();
-            const daysUntil = Math.ceil(diffMs / (24 * 60 * 60 * 1000));
+        const existing = upcomingByUser.get(user.userId);
+        if (!existing) {
+            upcomingByUser.set(user.userId, nextItem);
+            continue;
+        }
 
-            upcoming.push({
-                userId: user.userId,
-                userName: user.userName,
-                guildId,
-                day: birthday.day,
-                month: birthday.month,
-                year: birthday.year,
-                lastCelebratedYear: birthday.lastCelebratedYear ?? null,
-                nextBirthday,
-                daysUntil: Math.max(0, daysUntil)
-            });
+        if (
+            nextItem.nextBirthday.getTime() < existing.nextBirthday.getTime() ||
+            (nextItem.nextBirthday.getTime() === existing.nextBirthday.getTime() &&
+                String(nextItem.userName || '').length > String(existing.userName || '').length)
+        ) {
+            upcomingByUser.set(user.userId, nextItem);
         }
     }
 
-    return upcoming
+    return [...upcomingByUser.values()]
         .sort((a, b) => a.nextBirthday.getTime() - b.nextBirthday.getTime())
         .slice(0, limit);
 }
 
 async function getBirthdaysByDate(day, month, guildId) {
-    const query = guildId
-        ? { birthdays: { $elemMatch: { guildId, day, month } } }
-        : { birthdays: { $elemMatch: { day, month } } };
-
-    const users = await User.find(query, { userId: 1, userName: 1, birthdays: 1 }).lean();
+    const query = guildId ? { guildId } : {};
+    const users = await User.find(query, { userId: 1, userName: 1, guildId: 1, birthdays: 1, birthday: 1 }).lean();
     const records = [];
 
     for (const user of users) {
-        const birthdays = Array.isArray(user.birthdays) ? user.birthdays : [];
-        for (const birthday of birthdays) {
-            if (birthday.day !== day || birthday.month !== month) {
-                continue;
-            }
-
-            if (guildId && birthday.guildId !== guildId) {
-                continue;
-            }
-
+        const birthday = getBirthdayFromUser(user, guildId || user.guildId);
+        if (!birthday) {
+            continue;
+        }
+        if (birthday.day === day && birthday.month === month) {
             records.push({
                 userId: user.userId,
                 userName: user.userName,
-                guildId: birthday.guildId,
+                guildId: guildId || user.guildId,
                 day: birthday.day,
                 month: birthday.month,
                 year: birthday.year,
@@ -223,7 +275,7 @@ async function getBirthdaysByDate(day, month, guildId) {
 
 async function markBirthdayCelebrated(userId, userName, guildId, year) {
     await User.updateOne(
-        { userId, userName, 'birthdays.guildId': guildId },
+        { userId, guildId, 'birthdays.guildId': guildId },
         { $set: { 'birthdays.$[target].lastCelebratedYear': year } },
         { arrayFilters: [{ 'target.guildId': guildId }] }
     );

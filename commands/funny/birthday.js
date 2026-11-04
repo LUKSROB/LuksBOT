@@ -86,7 +86,7 @@ module.exports = {
         .addSubcommand((option) =>
             option.setName('upcoming')
                 .setDescription('Muestra los próximos cumpleaños del servidor')
-                .addNumberOption((opt) =>
+                .addIntegerOption((opt) =>
                     opt.setName('limit')
                         .setDescription('Cantidad máxima a mostrar (1-20)')
                         .setMinValue(1)
@@ -216,7 +216,7 @@ module.exports = {
             }
 
             case 'upcoming': {
-                const limit = interaction.options.getNumber('limit') || 10;
+                const limit = interaction.options.getInteger('limit') || 10;
                 const birthdays = await getUpcomingBirthdays(guildId, limit);
 
                 if (birthdays.length === 0) {
