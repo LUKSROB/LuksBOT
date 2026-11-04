@@ -4,6 +4,82 @@
 const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function ensurePlayerConnection(client, guild, member, channel, existingPlayer) {
+    let player = existingPlayer;
+    const failover = client.lavalinkFailover;
+
+    if (failover && typeof failover.ensureReady === 'function') {
+        const ready = await failover.ensureReady(7000, `play:${guild.id}`);
+        if (!ready) {
+            return null;
+        }
+    }
+
+    const mustRecreate =
+        !player ||
+        !player.connected ||
+        player.voiceChannel !== member.voice.channel.id;
+
+    if (mustRecreate) {
+        if (player) {
+            try {
+                await player.destroy();
+            } catch (_) {}
+        }
+
+        player = client.riffy.createConnection({
+            guildId: guild.id,
+            voiceChannel: member.voice.channel.id,
+            textChannel: channel.id,
+            deaf: true
+        });
+    }
+
+    // Espera corta para que llegue VoiceState/VoiceServer update
+    let tries = 20;
+    while (tries > 0 && !player.connected) {
+        await sleep(200);
+        tries--;
+    }
+
+    return player;
+}
+
+async function playWithConnectionRetry(interaction, player) {
+    const { guild, member } = interaction;
+
+    try {
+        await player.play();
+        return true;
+    } catch (err) {
+        const message = err?.message || '';
+        const isConnectionNotInitiated = message.includes('Player connection is not initiated');
+
+        if (!isConnectionNotInitiated) {
+            throw err;
+        }
+
+        try {
+            player.connect({
+                guildId: guild.id,
+                voiceChannel: member.voice.channel.id,
+                deaf: true,
+                mute: false
+            });
+            await sleep(1500);
+            await player.play();
+            return true;
+        } catch (_) {
+            await interaction.editReply('No se pudo establecer la conexión de voz con Lavalink. Intenta nuevamente.');
+            return false;
+        }
+    }
+}
+
 // Function to play a song or playlist
 async function play( interaction, player ) {
     
@@ -12,13 +88,11 @@ async function play( interaction, player ) {
     const volumeLevel = interaction.options.getNumber('volume');
     let reply
 
-    if (!player) {
-        player = client.riffy.createConnection({
-            guildId: guild.id,
-            voiceChannel: member.voice.channel.id,
-            textChannel: channel.id,
-            deaf: true,
-        })
+    player = await ensurePlayerConnection(client, guild, member, channel, player);
+
+    if (!player || !player.connected) {
+        await interaction.editReply('No pude iniciar la conexión de voz. Intenta nuevamente en unos segundos.');
+        return null;
     }
 
     if (volumeLevel) {
@@ -38,7 +112,14 @@ async function play( interaction, player ) {
             await interaction.editReply(`${tracks.length} canciones de ${playlistInfo.name} fueron añadidas a la cola.\n${reply ? reply : ''}`);
 
             if (!player.playing && !player.paused) {
-                player.play();
+                if (!player.connected) {
+                    await interaction.editReply('La conexión de voz no está lista todavía. Vuelve a intentarlo.');
+                    return null;
+                }
+                const started = await playWithConnectionRetry(interaction, player);
+                if (!started) {
+                    return null;
+                }
             }
 
         } else if (loadType === 'search' || loadType === 'track') {
@@ -50,7 +131,14 @@ async function play( interaction, player ) {
             await interaction.editReply(`**${track.info.title}** fue añadida a la cola.\n${reply ? reply : ''}`);
 
             if (!player.playing && !player.paused) {
-                player.play();
+                if (!player.connected) {
+                    await interaction.editReply('La conexión de voz no está lista todavía. Vuelve a intentarlo.');
+                    return null;
+                }
+                const started = await playWithConnectionRetry(interaction, player);
+                if (!started) {
+                    return null;
+                }
             }
         
         } else {

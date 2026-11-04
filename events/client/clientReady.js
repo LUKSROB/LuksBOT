@@ -11,6 +11,12 @@ module.exports = async (client) => {
     client.riffy.init(client.user.id);
     console.log(`Connected to Discord! as ${client.user.username}`);
 
+    if (client.lavalinkFailover) {
+        client.lavalinkFailover.bootstrap().catch((err) => {
+            console.error('[Lavalink Failover] Error en bootstrap:', err);
+        });
+    }
+
     await registerFont(fontPath, 'GoogleSans');
 
     client.guilds.cache.map(async guild => {

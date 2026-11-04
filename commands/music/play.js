@@ -61,5 +61,7 @@ module.exports = {
         }
 
         player = await play(interaction, player);
+
+        if (!player) return;
     }
 };

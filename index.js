@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
+const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const config = require('./config.json');
 
 const fs = require('fs');
@@ -145,18 +146,25 @@ async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
     });
 
     // Create Riffy instance
-    const nodes = config.NODES;
+    const nodes = prepareLavalinkNodes(config.NODES);
 
-    client.riffy = new Riffy(client, nodes, {
+    client.riffy = new Riffy(client, [], {
         send: (payload) => {
             const guild = client.guilds.cache.get(payload.d.guild_id);
             if (guild) guild.shard.send(payload);
         },
         defaultSearchPlatform: "ytmsearch",
         restVersion: "v4",
+        migrateOnDisconnect: true,
+        migrateOnFailure: true,
         bypassChecks: {
             nodeFetchInfo: true
         }
+    });
+
+    client.lavalinkFailover = createLavalinkFailoverManager(client, nodes, {
+        connectAttemptTimeoutMs: 15000,
+        retryRoundDelayMs: 5000
     });
 
 
