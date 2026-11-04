@@ -6,32 +6,43 @@ function prepareLavalinkNodes(nodes) {
     return nodes.map((node, index) => ({
         ...node,
         name: node.name || `${index + 1}-${node.host}`,
-        reconnectTries: 0,
+        reconnectTries: 1,
         reconnectTimeout: 1000
     }));
 }
 
 function createLavalinkFailoverManager(client, nodes, options = {}) {
-    const connectAttemptTimeoutMs = Number(options.connectAttemptTimeoutMs) || 15000;
-    const retryRoundDelayMs = Number(options.retryRoundDelayMs) || 5000;
+    const connectAttemptTimeoutMs = Number(options.connectAttemptTimeoutMs) || 12000;
+    const retryRoundDelayMs = Number(options.retryRoundDelayMs) || 3000;
+    const failureBaseCooldownMs = Number(options.failureBaseCooldownMs) || 15000;
+    const failureMaxCooldownMs = Number(options.failureMaxCooldownMs) || 300000;
+    const rateLimitCooldownMs = Number(options.rateLimitCooldownMs) || 10 * 60 * 1000;
+    const ignoreFailureWindowMs = Number(options.ignoreFailureWindowMs) || 8000;
 
     const state = {
         nodes,
         activeIndex: -1,
+        connectedNodeName: null,
         switching: false,
         switchPromise: null,
-        connectedNodeName: null,
-        lastFailureAtByNode: new Map(),
+        attemptingNodeName: null,
+        readyWaiters: new Set(),
         ignoreFailureUntilByNode: new Map(),
-        readyWaiters: new Set()
+        nodeHealth: new Map(),
+        hostCooldownUntil: new Map()
     };
+
+    for (const node of nodes) {
+        state.nodeHealth.set(node.name, {
+            failures: 0,
+            cooldownUntil: 0,
+            lastFailureAt: 0,
+            lastReason: ''
+        });
+    }
 
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    function getNodeIndex(nodeName) {
-        return state.nodes.findIndex((node) => node.name === nodeName);
     }
 
     function normalizeIndex(index) {
@@ -42,14 +53,15 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         return ((index % len) + len) % len;
     }
 
-    function clearNodeReconnect(node) {
-        if (node?.reconnectAttempt) {
-            clearTimeout(node.reconnectAttempt);
-            node.reconnectAttempt = null;
-        }
+    function getNodeIndex(nodeName) {
+        return state.nodes.findIndex((node) => node.name === nodeName);
     }
 
-    function isNodeCurrentlyConnected(nodeName) {
+    function getNodeConfigByName(nodeName) {
+        return state.nodes.find((node) => node.name === nodeName) || null;
+    }
+
+    function isNodeConnected(nodeName) {
         if (!nodeName) {
             return false;
         }
@@ -57,7 +69,133 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         return Boolean(node && node.connected);
     }
 
-    function markNodeFailureIgnored(nodeName, ms = 5000) {
+    function isReady() {
+        return Boolean(
+            state.connectedNodeName &&
+            isNodeConnected(state.connectedNodeName)
+        );
+    }
+
+    function notifyReadyWaiters(ready) {
+        for (const waiter of state.readyWaiters) {
+            try {
+                waiter(Boolean(ready));
+            } catch (_) {}
+        }
+        state.readyWaiters.clear();
+    }
+
+    function waitForReady(timeoutMs) {
+        if (isReady()) {
+            return Promise.resolve(true);
+        }
+
+        return new Promise((resolve) => {
+            let settled = false;
+            let timeoutId = null;
+
+            const finish = (value) => {
+                if (settled) return;
+                settled = true;
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                state.readyWaiters.delete(onReady);
+                resolve(Boolean(value));
+            };
+
+            const onReady = (value) => finish(value);
+            state.readyWaiters.add(onReady);
+
+            timeoutId = setTimeout(() => finish(false), timeoutMs);
+        });
+    }
+
+    function getHealth(nodeName) {
+        if (!state.nodeHealth.has(nodeName)) {
+            state.nodeHealth.set(nodeName, {
+                failures: 0,
+                cooldownUntil: 0,
+                lastFailureAt: 0,
+                lastReason: ''
+            });
+        }
+        return state.nodeHealth.get(nodeName);
+    }
+
+    function markNodeSuccess(nodeName) {
+        const health = getHealth(nodeName);
+        health.failures = 0;
+        health.cooldownUntil = 0;
+        health.lastReason = '';
+        health.lastFailureAt = 0;
+    }
+
+    function markNodeFailure(nodeName, reasonText) {
+        const health = getHealth(nodeName);
+        const now = Date.now();
+
+        health.failures += 1;
+        health.lastFailureAt = now;
+        health.lastReason = reasonText;
+
+        const cooldownMs = Math.min(
+            failureMaxCooldownMs,
+            failureBaseCooldownMs * Math.pow(2, Math.max(0, health.failures - 1))
+        );
+        health.cooldownUntil = now + cooldownMs;
+
+        return cooldownMs;
+    }
+
+    function getNodeCooldownRemainingMs(nodeName) {
+        const health = getHealth(nodeName);
+        return Math.max(0, health.cooldownUntil - Date.now());
+    }
+
+    function getHostCooldownRemainingMs(nodeName) {
+        const nodeConfig = getNodeConfigByName(nodeName);
+        if (!nodeConfig?.host) {
+            return 0;
+        }
+
+        const until = state.hostCooldownUntil.get(nodeConfig.host) || 0;
+        return Math.max(0, until - Date.now());
+    }
+
+    function isNodeCoolingDown(nodeName) {
+        return getNodeCooldownRemainingMs(nodeName) > 0 || getHostCooldownRemainingMs(nodeName) > 0;
+    }
+
+    function nextCooldownDelayMs() {
+        const remaining = [];
+        for (const configuredNode of state.nodes) {
+            const ms = getNodeCooldownRemainingMs(configuredNode.name);
+            if (ms > 0) {
+                remaining.push(ms);
+            }
+        }
+        if (remaining.length === 0) {
+            return retryRoundDelayMs;
+        }
+        return Math.min(...remaining, retryRoundDelayMs);
+    }
+
+    function clearNodeReconnect(node) {
+        if (node?.reconnectAttempt) {
+            clearTimeout(node.reconnectAttempt);
+            node.reconnectAttempt = null;
+        }
+    }
+
+    function stopBackgroundReconnect(nodeName) {
+        const node = client.riffy.nodeMap.get(nodeName);
+        if (node) {
+            clearNodeReconnect(node);
+        }
+    }
+
+    function markNodeFailureIgnored(nodeName, ms = ignoreFailureWindowMs) {
         if (!nodeName) {
             return;
         }
@@ -73,54 +211,52 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         return false;
     }
 
-    function stopBackgroundReconnect(nodeName) {
-        const node = client.riffy.nodeMap.get(nodeName);
-        if (!node) {
+    function decodeReason(value) {
+        if (!value) return 'sin detalle';
+        if (typeof value === 'string') {
+            const normalized = value.trim();
+            return normalized.length > 0 ? normalized : 'sin detalle';
+        }
+        if (Buffer.isBuffer(value)) {
+            const normalized = value.toString('utf8').trim();
+            return normalized.length > 0 ? normalized : 'sin detalle';
+        }
+        if (value.message) return value.message;
+        if (value.reason) return decodeReason(value.reason);
+        return String(value);
+    }
+
+    function stringifyReason(reason) {
+        if (!reason) {
+            return 'sin detalle';
+        }
+
+        if (reason.event !== undefined && reason.reason !== undefined) {
+            return `event=${reason.event}, reason=${decodeReason(reason.reason)}`;
+        }
+
+        return decodeReason(reason);
+    }
+
+    function isRateLimitReason(reason, reasonText) {
+        if (reason?.event === 4000) {
+            return true;
+        }
+
+        const lowerText = String(reasonText || '').toLowerCase();
+        return lowerText.includes('too many websocket connections attempt') ||
+            lowerText.includes('try again later');
+    }
+
+    function applyHostCooldown(nodeName, cooldownMs) {
+        const nodeConfig = getNodeConfigByName(nodeName);
+        if (!nodeConfig?.host) {
             return;
         }
-        clearNodeReconnect(node);
-    }
 
-    function isReady() {
-        return Boolean(
-            state.connectedNodeName &&
-            isNodeCurrentlyConnected(state.connectedNodeName)
-        );
-    }
-
-    function notifyReadyWaiters(ready) {
-        for (const waiter of state.readyWaiters) {
-            try {
-                waiter(ready);
-            } catch (_) {}
-        }
-        state.readyWaiters.clear();
-    }
-
-    function waitForReady(timeoutMs) {
-        if (isReady()) {
-            return Promise.resolve(true);
-        }
-
-        return new Promise((resolve) => {
-            let settled = false;
-            let timeoutId = null;
-
-            const done = (value) => {
-                if (settled) return;
-                settled = true;
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                }
-                state.readyWaiters.delete(onReady);
-                resolve(value);
-            };
-
-            const onReady = (value) => done(Boolean(value));
-            state.readyWaiters.add(onReady);
-
-            timeoutId = setTimeout(() => done(false), timeoutMs);
-        });
+        const nextUntil = Date.now() + cooldownMs;
+        const previousUntil = state.hostCooldownUntil.get(nodeConfig.host) || 0;
+        state.hostCooldownUntil.set(nodeConfig.host, Math.max(previousUntil, nextUntil));
     }
 
     function parkNonActiveNodes(activeNodeName) {
@@ -129,27 +265,30 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
                 continue;
             }
 
-            const node = client.riffy.nodeMap.get(configuredNode.name);
-            if (!node) {
+            const runtimeNode = client.riffy.nodeMap.get(configuredNode.name);
+            if (!runtimeNode) {
                 continue;
             }
 
-            markNodeFailureIgnored(node.name);
-            clearNodeReconnect(node);
+            markNodeFailureIgnored(runtimeNode.name);
+            clearNodeReconnect(runtimeNode);
 
-            if (node.connected || node.ws) {
-                node.destroy(true);
+            if (runtimeNode.connected || runtimeNode.ws) {
+                runtimeNode.destroy(true);
             }
         }
     }
 
-    function stringifyReason(reason) {
-        if (!reason) return 'sin detalle';
-        if (typeof reason === 'string') return reason;
-        if (reason.message) return reason.message;
-        if (reason.reason) return String(reason.reason);
-        if (reason.event && reason.reason) return `code=${reason.event}, reason=${reason.reason}`;
-        return String(reason);
+    function findNextCandidateIndex(startIndex) {
+        const len = state.nodes.length;
+        for (let step = 0; step < len; step++) {
+            const idx = normalizeIndex(startIndex + step);
+            const nodeName = state.nodes[idx].name;
+            if (!isNodeCoolingDown(nodeName)) {
+                return idx;
+            }
+        }
+        return null;
     }
 
     function waitForNodeResult(nodeName, timeoutMs) {
@@ -205,12 +344,28 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
             return { ok: false, reason: 'nodo no encontrado', index: normalizedIndex };
         }
 
+        const cooldownRemainingMs = getNodeCooldownRemainingMs(targetConfig.name);
+        const hostCooldownRemainingMs = getHostCooldownRemainingMs(targetConfig.name);
+        if (cooldownRemainingMs > 0 || hostCooldownRemainingMs > 0) {
+            const source = hostCooldownRemainingMs > cooldownRemainingMs ? 'host' : 'node';
+            const remaining = Math.max(cooldownRemainingMs, hostCooldownRemainingMs);
+            return {
+                ok: false,
+                reason: `cooldown activo ${source} (${Math.ceil(remaining / 1000)}s)`,
+                index: normalizedIndex
+            };
+        }
+
         console.log(`[Lavalink Failover] Intentando conectar nodo "${targetConfig.name}" [${contextLabel}]...`);
+        state.attemptingNodeName = targetConfig.name;
 
         const existingNode = client.riffy.nodeMap.get(targetConfig.name);
         if (existingNode?.connected) {
             state.activeIndex = normalizedIndex;
             state.connectedNodeName = existingNode.name;
+            markNodeSuccess(existingNode.name);
+            parkNonActiveNodes(existingNode.name);
+            notifyReadyWaiters(true);
             console.log(`[Lavalink Failover] Nodo "${existingNode.name}" ya estaba conectado.`);
             return { ok: true, node: existingNode, index: normalizedIndex };
         }
@@ -223,15 +378,25 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
                 client.riffy.createNode(targetConfig);
             }
         } catch (err) {
-            const reason = stringifyReason(err);
-            console.warn(`[Lavalink Failover] Falló conexión inmediata de "${targetConfig.name}": ${reason}`);
-            return { ok: false, reason, index: normalizedIndex };
+            const reasonText = stringifyReason(err);
+            const cooldownMs = markNodeFailure(targetConfig.name, reasonText);
+            if (isRateLimitReason(err, reasonText)) {
+                applyHostCooldown(targetConfig.name, rateLimitCooldownMs);
+            }
+            console.warn(
+                `[Lavalink Failover] Falló conexión inmediata de "${targetConfig.name}": ${reasonText}. Cooldown: ${Math.ceil(cooldownMs / 1000)}s.`
+            );
+            stopBackgroundReconnect(targetConfig.name);
+            state.attemptingNodeName = null;
+            return { ok: false, reason: reasonText, index: normalizedIndex };
         }
 
         const result = await waitForNodeResult(targetConfig.name, connectAttemptTimeoutMs);
+        state.attemptingNodeName = null;
         if (result.ok) {
             state.activeIndex = normalizedIndex;
             state.connectedNodeName = targetConfig.name;
+            markNodeSuccess(targetConfig.name);
             parkNonActiveNodes(targetConfig.name);
             notifyReadyWaiters(true);
             console.log(`[Lavalink Failover] Nodo activo: "${targetConfig.name}".`);
@@ -240,7 +405,13 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
 
         stopBackgroundReconnect(targetConfig.name);
         const reasonText = stringifyReason(result.reason);
-        console.warn(`[Lavalink Failover] Nodo "${targetConfig.name}" no conectó: ${reasonText}`);
+        const cooldownMs = markNodeFailure(targetConfig.name, reasonText);
+        if (isRateLimitReason(result.reason, reasonText)) {
+            applyHostCooldown(targetConfig.name, rateLimitCooldownMs);
+        }
+        console.warn(
+            `[Lavalink Failover] Nodo "${targetConfig.name}" no conectó: ${reasonText}. Cooldown: ${Math.ceil(cooldownMs / 1000)}s.`
+        );
         return { ok: false, reason: reasonText, index: normalizedIndex };
     }
 
@@ -251,30 +422,34 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
 
         if (state.nodes.length === 0) {
             console.error('[Lavalink Failover] No hay nodos configurados para intentar conexión.');
-            return;
+            return false;
         }
 
         state.switching = true;
         state.switchPromise = (async () => {
-            const firstIndex = normalizeIndex(startIndex);
-            let currentIndex = firstIndex;
-            let firstRound = true;
+            let cursor = normalizeIndex(startIndex);
 
             while (true) {
-                const result = await attemptConnectNode(currentIndex, contextLabel);
+                if (isReady()) {
+                    return true;
+                }
+
+                const candidateIndex = findNextCandidateIndex(cursor);
+                if (candidateIndex === null) {
+                    const waitMs = Math.max(500, nextCooldownDelayMs());
+                    console.warn(`[Lavalink Failover] Todos los nodos en cooldown. Reintentando en ${Math.ceil(waitMs / 1000)}s...`);
+                    notifyReadyWaiters(false);
+                    await sleep(waitMs);
+                    continue;
+                }
+
+                const result = await attemptConnectNode(candidateIndex, contextLabel);
                 if (result.ok) {
                     return true;
                 }
 
-                currentIndex = normalizeIndex(currentIndex + 1);
-
-                if (currentIndex === firstIndex) {
-                    const roundText = firstRound ? 'primera ronda' : 'ronda adicional';
-                    console.warn(`[Lavalink Failover] Ningún nodo conectó (${roundText}). Reintentando en ${Math.round(retryRoundDelayMs / 1000)}s...`);
-                    firstRound = false;
-                    notifyReadyWaiters(false);
-                    await sleep(retryRoundDelayMs);
-                }
+                cursor = normalizeIndex(candidateIndex + 1);
+                await sleep(250);
             }
         })().finally(() => {
             state.switching = false;
@@ -285,8 +460,8 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
     }
 
     async function bootstrap() {
-        const preferredStartIndex = state.activeIndex >= 0 ? state.activeIndex : 0;
-        await switchUntilConnected(preferredStartIndex, 'startup');
+        const startIndex = state.activeIndex >= 0 ? state.activeIndex : 0;
+        await switchUntilConnected(startIndex, 'startup');
     }
 
     async function handleFailure(node, reason, eventType) {
@@ -295,27 +470,41 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
             return;
         }
 
-        const now = Date.now();
-        const lastFailure = state.lastFailureAtByNode.get(nodeName) || 0;
-        if (now - lastFailure < 3000) {
+        if (state.attemptingNodeName && nodeName === state.attemptingNodeName) {
             return;
         }
-        state.lastFailureAtByNode.set(nodeName, now);
-
-        const reasonText = stringifyReason(reason);
-        console.warn(`[Lavalink Failover] ${eventType} en "${nodeName}": ${reasonText}`);
 
         const activeNodeName = state.connectedNodeName;
-        if (activeNodeName && activeNodeName !== nodeName && isNodeCurrentlyConnected(activeNodeName)) {
+        if (activeNodeName && activeNodeName !== nodeName && isNodeConnected(activeNodeName)) {
             stopBackgroundReconnect(nodeName);
-            console.log(`[Lavalink Failover] Ignorado: "${nodeName}" falló, pero el nodo activo "${activeNodeName}" sigue conectado.`);
+            const runtimeNode = client.riffy.nodeMap.get(nodeName);
+            if (runtimeNode) {
+                markNodeFailureIgnored(nodeName);
+                runtimeNode.destroy(true);
+            }
+            console.log(`[Lavalink Failover] Ignorado: "${nodeName}" falló, pero "${activeNodeName}" sigue activo.`);
             return;
+        }
+
+        const reasonText = stringifyReason(reason);
+        const cooldownMs = markNodeFailure(nodeName, reasonText);
+        if (isRateLimitReason(reason, reasonText)) {
+            applyHostCooldown(nodeName, rateLimitCooldownMs);
+        }
+        console.warn(
+            `[Lavalink Failover] ${eventType} en "${nodeName}": ${reasonText}. Cooldown: ${Math.ceil(cooldownMs / 1000)}s.`
+        );
+
+        if (activeNodeName === nodeName) {
+            state.connectedNodeName = null;
+            state.activeIndex = -1;
+            notifyReadyWaiters(false);
         }
 
         const failedIndex = getNodeIndex(nodeName);
         const nextIndex = failedIndex >= 0
             ? normalizeIndex(failedIndex + 1)
-            : normalizeIndex(state.activeIndex + 1);
+            : normalizeIndex((state.activeIndex >= 0 ? state.activeIndex + 1 : 0));
 
         await switchUntilConnected(nextIndex, `${eventType}:${nodeName}`);
     }
@@ -327,20 +516,21 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         if (
             activeNodeName &&
             activeNodeName !== node?.name &&
-            isNodeCurrentlyConnected(activeNodeName)
+            isNodeConnected(activeNodeName)
         ) {
             markNodeFailureIgnored(node?.name);
             clearNodeReconnect(node);
             if (node?.connected || node?.ws) {
                 node.destroy(true);
             }
-            console.log(`[Lavalink Failover] Nodo secundario "${node?.name}" detenido (activo actual: "${activeNodeName}").`);
+            console.log(`[Lavalink Failover] Nodo secundario "${node?.name}" detenido (activo: "${activeNodeName}").`);
             return;
         }
 
         if (index >= 0) {
             state.activeIndex = index;
             state.connectedNodeName = node.name;
+            markNodeSuccess(node.name);
             notifyReadyWaiters(true);
         }
 
