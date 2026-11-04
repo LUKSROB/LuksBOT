@@ -3,50 +3,104 @@
 // Import necessary modules
 const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
+const connectionQueueByGuild = new Map();
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ensurePlayerConnection(client, guild, member, channel, existingPlayer) {
-    let player = existingPlayer;
-    const failover = client.lavalinkFailover;
+async function withGuildConnectionLock(guildId, task) {
+    const previous = connectionQueueByGuild.get(guildId) || Promise.resolve();
 
-    if (failover && typeof failover.ensureReady === 'function') {
-        const ready = await failover.ensureReady(7000, `play:${guild.id}`);
-        if (!ready) {
-            return null;
+    let releaseCurrent;
+    const current = new Promise((resolve) => {
+        releaseCurrent = resolve;
+    });
+
+    connectionQueueByGuild.set(guildId, current);
+
+    await previous.catch(() => {});
+
+    try {
+        return await task();
+    } finally {
+        releaseCurrent();
+        if (connectionQueueByGuild.get(guildId) === current) {
+            connectionQueueByGuild.delete(guildId);
         }
     }
+}
 
-    const mustRecreate =
-        !player ||
-        !player.connected ||
-        player.voiceChannel !== member.voice.channel.id;
+async function ensurePlayerConnection(client, guild, member, channel, existingPlayer) {
+    return withGuildConnectionLock(guild.id, async () => {
+        let player = existingPlayer;
+        const failover = client.lavalinkFailover;
 
-    if (mustRecreate) {
+        if (failover && typeof failover.ensureReady === 'function') {
+            const ready = await failover.ensureReady(7000, `play:${guild.id}`);
+            if (!ready) {
+                return null;
+            }
+        }
+
+        if (
+            player &&
+            player.connected &&
+            player.voiceChannel === member.voice.channel.id
+        ) {
+            return player;
+        }
+
+        if (
+            player &&
+            !player.connected &&
+            player.voiceChannel === member.voice.channel.id
+        ) {
+            try {
+                player.connect({
+                    guildId: guild.id,
+                    voiceChannel: member.voice.channel.id,
+                    deaf: true,
+                    mute: false
+                });
+
+                let reconnectTries = 10;
+                while (reconnectTries > 0 && !player.connected) {
+                    await sleep(200);
+                    reconnectTries--;
+                }
+
+                if (player.connected) {
+                    return player;
+                }
+            } catch (_) {}
+        }
+
         if (player) {
             try {
                 await player.destroy();
             } catch (_) {}
         }
 
-        player = client.riffy.createConnection({
-            guildId: guild.id,
-            voiceChannel: member.voice.channel.id,
-            textChannel: channel.id,
-            deaf: true
-        });
-    }
+        try {
+            player = client.riffy.createConnection({
+                guildId: guild.id,
+                voiceChannel: member.voice.channel.id,
+                textChannel: channel.id,
+                deaf: true
+            });
+        } catch (_) {
+            return null;
+        }
 
-    // Espera corta para que llegue VoiceState/VoiceServer update
-    let tries = 20;
-    while (tries > 0 && !player.connected) {
-        await sleep(200);
-        tries--;
-    }
+        let tries = 20;
+        while (tries > 0 && !player.connected) {
+            await sleep(200);
+            tries--;
+        }
 
-    return player;
+        return player;
+    });
 }
 
 async function playWithConnectionRetry(interaction, player) {
