@@ -5,17 +5,14 @@ const Guild = require('../models/guild');
 
 // Function to set or create a guild in the database
 async function setGuild(guild) {
-
-        let guildData = await Guild.findOne({ guildId: guild.id });
-
-        if (!guildData) {
-            guildData = new Guild({
-                guildId: guild.id,
-                guildName: guild.name
-            });
-            await guildData.save();
-
-        }
+    await Guild.updateOne(
+        { guildId: guild.id },
+        {
+            $set: { guildName: guild.name },
+            $setOnInsert: { guildId: guild.id }
+        },
+        { upsert: true }
+    );
 }
 
 // Function to get a guild by its ID
