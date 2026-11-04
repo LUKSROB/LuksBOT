@@ -25,6 +25,7 @@ Bot de Discord multipropósito con enfoque en música, utilidades de servidor, c
 - `events/`: listeners de Discord y Riffy.
 - `utils/`: funciones reutilizables (música, helpers, etc.).
 - `models/` y `db/`: persistencia y modelos relacionados.
+  - El modelo de usuario incluye `lastInteractionAt` para ordenar y filtrar actividad reciente.
 
 ## Requisitos
 
@@ -94,6 +95,7 @@ El proyecto usa `config.json` para definir:
 - `/color-palette`
 - `/color-dominant`
 - `/birthday`
+  - Subcomandos: `set`, `get`, `upcoming`, `set-role`, `clear-role`, `delete`
 
 ### Administración
 

@@ -10,9 +10,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@agendajs/mongo-backend": "^4.0.4",
     "@discordjs/voice": "^0.18.0",
     "@napi-rs/canvas": "^0.1.80",
     "adm-zip": ">=0.6.0",
+    "agenda": "^6.2.7",
     "axios": "^1.18.0",
     "body-parser": ">=2.3.0",
     "brace-expansion": ">=5.0.9",
