@@ -2,6 +2,7 @@
 
 const { updateCache } = require('../../utils/functions/invites')
 const { setGuild } = require('../../db/guild')
+const { startBirthdayScheduler } = require('../../utils/functions/birthdayScheduler');
 const path = require('path')
 const { registerFont } = require('musicard');;
 const fontPath = path.resolve(__dirname, '../../assets/fonts/YujiSyuku-Regular.ttf');
@@ -15,6 +16,8 @@ module.exports = async (client) => {
     client.guilds.cache.map(async guild => {
         await setGuild(guild);
     });
+
+    await startBirthdayScheduler(client);
 
     updateCache(client);
 
