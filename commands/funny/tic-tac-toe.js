@@ -19,12 +19,6 @@ module.exports = {
     // Execute the command when invoked
     execute: async (interaction) => {
 
-        await interaction.client.user.setActivity({
-            name: 'Tic Tac Toe',
-            type: 0,
-            status: 'online',
-        });
-
         const opponent = interaction.options.getUser('opponent');
         if (opponent && opponent.id === interaction.user.id) {
             return interaction.reply({ content: '❌ ¡No puedes jugar contra ti mismo!', flags: MessageFlags.Ephemeral });
@@ -77,7 +71,15 @@ module.exports = {
         const message = await interaction.fetchReply();
         activeGames.set(message.id, session);
 
-        setTimeout(() => activeGames.delete(message.id), GAME_TIMEOUT_SECONDS * 1000);
+        interaction.client.activityManager?.setGame(interaction.guildId, message.id, {
+            name: 'Tic Tac Toe',
+            type: ActivityType.Playing
+        });
+
+        setTimeout(() => {
+            activeGames.delete(message.id);
+            interaction.client.activityManager?.clearGame(interaction.guildId, message.id);
+        }, GAME_TIMEOUT_SECONDS * 1000);
 
         if (isBot && currentPlayer === player2Id) {
             setTimeout(() => handleBotMove(message, session, interaction), 700);

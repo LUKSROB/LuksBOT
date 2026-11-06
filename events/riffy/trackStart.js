@@ -40,11 +40,7 @@ module.exports = async (player, track, payload, client) => {
     const channel = client?.channels?.cache?.get(player.textChannel);
     const musicard = await updateMusicard(track, player, true, color);
 
-    client.user.setActivity({
-        name: track.info.title,
-        type: 1,
-        status: 'online'
-    });
+    client.activityManager?.setMusic(player.guildId, track);
 
     if (musicard) {
         const attachment = new AttachmentBuilder(musicard, { name: 'musicard.png' });
@@ -58,7 +54,7 @@ module.exports = async (player, track, payload, client) => {
         console.error('Error: Musicard not generated');
     }
 
-    player.musicInterval = setInterval(async () => {
+    player.IntervalMusicCard = setInterval(async () => {
         try {
             const updatedMusicard = await updateMusicard(track, player, false, color);
             if (updatedMusicard) {

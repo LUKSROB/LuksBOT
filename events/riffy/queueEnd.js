@@ -8,13 +8,15 @@ const { COLORS } = require('../../config.json');
 // Export the queue end event handler
 module.exports = async (player, client) => {
 
+    client.activityManager?.clearMusic(player.guildId);
+
     const channel = client?.channels?.cache?.get(player.textChannel);
     const embed = new EmbedBuilder()
         .setColor(COLORS.WARNING)
         .setTitle('Lista de reproducción vacía')
         .setDescription('No hay más canciones en la cola.')
 
-    clearInterval(player.musicInterval);
+    clearInterval(player.IntervalMusicCard);
 
     if (player.message) {
         await player.message.edit({ components: []}).catch((e) => {

@@ -15,6 +15,7 @@ module.exports = async (interaction) => {
 
     if (Date.now() - session.lastInteractionTime > GAME_TIMEOUT_SECONDS * 1000) {
         activeGames.delete(interaction.message.id);
+        interaction.client.activityManager?.clearGame(interaction.guildId, interaction.message.id);
 
         return interaction.reply({ content: '⏰ Esta partida ha expirado debido a la inactividad.', flags: MessageFlags.Ephemeral });
     }
@@ -42,9 +43,13 @@ module.exports = async (interaction) => {
     if (isWinner) {
         desc = `🎉 **¡Juego terminado!**\n👑 Ganador: ${interaction.user}`;
         activeGames.delete(interaction.message.id);
+        interaction.client.activityManager?.clearGame(interaction.guildId, interaction.message.id);
+        
     } else if (isDraw) {
         desc = `🤝 **¡Juego terminado!**\n¡Es un empate!`;
         activeGames.delete(interaction.message.id);
+        interaction.client.activityManager?.clearGame(interaction.guildId, interaction.message.id);
+
     } else {
         desc = `📢 **Turno actual:** ${nextPlayer === session.player1Id ? interaction.user : (session.isBot ? '🤖 Bot' : `<@${session.player2Id}>`)}\n\n` +
             `🔴 Jugador 1 (❌): ${interaction.user}\n` +

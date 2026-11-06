@@ -1,12 +1,12 @@
 // Event handler for track end event
 
 // Export the track end event handler
-module.exports = async (player) => {
+module.exports = async (player, client) => {
 
-    clearInterval(player.musicInterval);
+    clearInterval(player.IntervalMusicCard);
 
-    // If the voice connection was lost, destroy the player to avoid crash
     if (!player.connected) {
+        client.activityManager?.clearMusic(player.guildId);
         player.destroy();
     }
 
