@@ -4,24 +4,20 @@
 const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require("discord.js");
 const { TICKET_CHANNEL, MOD_ROLE, COLORS } = require("../config.json");
 const { getOpenTicketByUser, registerTicketOpen } = require("../db/tickets");
-
-const closeButton = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-        .setCustomId('closeTicket')
-        .setLabel('Cerrar ticket')
-        .setStyle(ButtonStyle.Danger)
-        .setEmoji('🔒')
-);
-
-function sanitizePart(value, fallback = 'ticket', max = 20) {
-    return (value || fallback)
-        .toLowerCase()
-        .replace(/[^a-z0-9-_]/g, '')
-        .slice(0, max) || fallback;
-}
+const { sanitizePart } = require("../utils/functions/messages");
 
 // Export the interaction handler for creating a ticket
 module.exports = async (interaction) => {
+
+    const closeButton = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('closeTicket')
+                .setLabel('Cerrar ticket')
+                .setStyle(ButtonStyle.Danger)
+                .setEmoji('🔒')
+    );
+
     try {
         const {user, guild} = interaction;
         const ticketType = interaction.values[0] || 'soporte';

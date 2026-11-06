@@ -102,6 +102,15 @@ function formatError(error) {
 
 }
 
+// Function to sanitize a part of a message
+function sanitizePart(value, fallback = 'ticket', max = 20) {
+
+    return (value || fallback)
+        .toLowerCase()
+        .replace(/[^a-z0-9-_]/g, '')
+        .slice(0, max) || fallback;
+
+}
 
 // Function to normalize album art URL
 function normalizeAlbumArtUrl(rawUrl) {
@@ -135,5 +144,6 @@ module.exports = {
     goodbyeMessage,
     formatReason,
     formatError,
+    sanitizePart,
     normalizeAlbumArtUrl
 };
