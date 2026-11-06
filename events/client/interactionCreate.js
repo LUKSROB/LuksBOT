@@ -4,14 +4,12 @@
 const { getUser } = require('../../db/userHelper.js');
 const { incCmdCount } = require('../../db/incCmdCount.js');
 
-// Export the interaction handler
+// Export the interaction create event handler
 module.exports = async (interaction) => {
 
     const client = interaction.client;
 
-    // Chat input command handling
     if (interaction.isChatInputCommand()) {
-        // Obtener el comando (compatible con sistema híbrido)
         const command = typeof client.getCommand === 'function'
         ? client.getCommand(interaction.commandName)
         : null;
@@ -54,4 +52,5 @@ module.exports = async (interaction) => {
             console.error(error);
         }
     }
+
 };

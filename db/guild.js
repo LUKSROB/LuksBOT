@@ -1,4 +1,5 @@
 // Handler for guild-related database operations
+// guild: Handler for guild-related database operations
 
 // Import necessary modules
 const Guild = require('../models/guild');

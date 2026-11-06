@@ -3,9 +3,9 @@
 // Import necessary modules
 const { updateCache } = require("../../utils/functions/invites");
 
-// Export the inviteDelete event handler
+// Export the invite delete event handler
 module.exports = async (invite) => {
 
     updateCache(invite.client);
-    
+
 };

@@ -1,3 +1,6 @@
+// Function to patch Riffy's Rest to handle transient network errors for PATCH requests
+
+// Import necessary modules
 const { Rest } = require('riffy');
 
 const TRANSIENT_NETWORK_CODES = new Set([
@@ -8,7 +11,9 @@ const TRANSIENT_NETWORK_CODES = new Set([
     'UND_ERR_CONNECT_TIMEOUT',
 ]);
 
+// Function to check if an error is a transient network error for session PATCH requests
 function isTransientError(error) {
+
     const code = error?.cause?.cause?.code || error?.cause?.code || error?.code;
     
     if (!TRANSIENT_NETWORK_CODES.has(code)) return false;
@@ -18,9 +23,12 @@ function isTransientError(error) {
     if (!endpoint) return false;
 
     return /^\/v\d+\/sessions\/[^/]+(?:\/players\/[^/?]+)?(?:\?.*)?$/.test(endpoint);
+
 }
 
+// Function to patch Riffy's Rest to handle transient network errors for session PATCH requests
 function patchRiffyRest() {
+
     if (Rest.prototype.__luksbotPatchRiffy) return;
 
     const originalMakeRequest = Rest.prototype.makeRequest;
@@ -39,8 +47,12 @@ function patchRiffyRest() {
     };
 
     Rest.prototype.__luksbotPatchRiffy = true;
+
 }
 
+// Export the functions for use in other modules
 module.exports = {
+    TRANSIENT_NETWORK_CODES,
+    isTransientError,
     patchRiffyRest,
 };

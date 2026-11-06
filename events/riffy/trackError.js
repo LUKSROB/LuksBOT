@@ -9,7 +9,7 @@ module.exports = ( player, track, error, client ) => {
     const channel = client?.channels?.cache?.get(player.textChannel);
 
     if (channel) channel.send({ content: `Hubo un error al reproducir: **${track.info.title}**`, flags: MessageFlags.Ephemeral });
-    
+
     player.stop();
-    
+
 };

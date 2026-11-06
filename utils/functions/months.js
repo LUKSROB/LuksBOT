@@ -1,7 +1,8 @@
+// Functions for working with months
+
 // Function to get month name from month number
-
-
 function getMonths(month) {
+
     const months = [
         "Enero",
         "Febrero",
@@ -18,6 +19,7 @@ function getMonths(month) {
     ];
 
     return months[month - 1];
+
 }
 
 // Export the function for use in other modules

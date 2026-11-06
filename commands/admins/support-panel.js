@@ -1,14 +1,19 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { COLORS } = require('../../config');
+// Command support-panel: Publishes the support panel for creating tickets
 
+// Import necessary modules
 const supportImage = require('../../utils/canvas/supportImage');
 
+// Export the support-panel command module
 module.exports = {
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('support-panel')
         .setDescription('Publica el panel de soporte para crear tickets')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
+    // Execute the command when invoked
     execute: async (interaction) => {
         const imageBuffer = await supportImage();
         const file = new AttachmentBuilder(imageBuffer, { name: 'support.png' });

@@ -36,6 +36,7 @@ async function ensureAdmin(interaction, errorMessage) {
     if (interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
         return true;
     }
+// Command birthday: Manage birthdays and birthday settings in the server
 
     await interaction.reply({
         content: errorMessage,
@@ -44,8 +45,11 @@ async function ensureAdmin(interaction, errorMessage) {
 
     return false;
 }
+// Import necessary modules
 
+// Export the birthday command module
 module.exports = {
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('birthday')
         .setDescription('Gestiona cumpleaños y configuración de cumpleaños en el servidor')
@@ -148,6 +152,7 @@ module.exports = {
                 .setDescription('Elimina tu fecha de cumpleaños del servidor')
         ),
 
+    // Execute the command when invoked
     execute: async (interaction) => {
         const subcommand = interaction.options.getSubcommand();
         const guildId = interaction.guild.id;

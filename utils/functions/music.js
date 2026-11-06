@@ -5,11 +5,16 @@ const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 const connectionQueueByGuild = new Map();
 
+// Function to sleep for a specified duration (in milliseconds)
 function sleep(ms) {
+
     return new Promise((resolve) => setTimeout(resolve, ms));
+
 }
 
+// Function to execute a task with a lock for a specific guild connection
 async function withGuildConnectionLock(guildId, task) {
+
     const previous = connectionQueueByGuild.get(guildId) || Promise.resolve();
 
     let releaseCurrent;
@@ -29,9 +34,12 @@ async function withGuildConnectionLock(guildId, task) {
             connectionQueueByGuild.delete(guildId);
         }
     }
+
 }
 
+// Function to ensure a player connection for a guild
 async function ensurePlayerConnection(client, guild, member, channel, existingPlayer) {
+
     return withGuildConnectionLock(guild.id, async () => {
         let player = existingPlayer;
         const failover = client.lavalinkFailover;
@@ -101,9 +109,12 @@ async function ensurePlayerConnection(client, guild, member, channel, existingPl
 
         return player;
     });
+
 }
 
+// Function to play with connection retry logic
 async function playWithConnectionRetry(interaction, player) {
+
     const { guild, member } = interaction;
 
     try {
@@ -132,9 +143,10 @@ async function playWithConnectionRetry(interaction, player) {
             return false;
         }
     }
+
 }
 
-// Function to play a song or playlist
+// Function to play a song or playlist with the given player and interaction context
 async function play( interaction, player ) {
     
     const { member, client, channel, options, guild, } = interaction;
@@ -207,10 +219,12 @@ async function play( interaction, player ) {
     }
 
     return player;
+
 }
 
 // Function to pause or resume the current track
 async function pause( interaction, player ) {
+
     try {
         player.paused ? await player.pause(false) : await player.pause(true);
         return await interaction.editReply(player.paused ? 'Canción pausada ⏸️' : 'Canción reanudada ▶️');
@@ -218,10 +232,12 @@ async function pause( interaction, player ) {
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al pausar/reanudar la música!`, flags: MessageFlags.Ephemeral });
     }
+
 }
 
 // Function to resume the current track
 async function resume( interaction, player ) {
+
     try {
         if (!player.paused) {
             return await interaction.editReply({ content: 'La música ya está en reproducción.', flags: MessageFlags.Ephemeral });
@@ -238,6 +254,7 @@ async function resume( interaction, player ) {
 
 // Function to skip the current track
 async function skip( interaction, player ) {
+
     const { member } = interaction;
 
     const currentTrack = player.current;
@@ -259,10 +276,12 @@ async function skip( interaction, player ) {
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al saltar la canción!`, flags: MessageFlags.Ephemeral });
     }
+
 }
 
 // Function to stop the current playback
 async function stop( interaction, player ) {
+
     const { member } = interaction;
 
     if (!player.current) {
@@ -275,12 +294,15 @@ async function stop( interaction, player ) {
     }
     
     try {
+        interaction.client.activityManager?.clearMusic(player.guildId);
+        
         await player.destroy();
         return await interaction.editReply({ content: 'Reproducción detenida ⏹️', flags: MessageFlags.Ephemeral });
 
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al detener la reproducción!`, flags: MessageFlags.Ephemeral });
     }
+
 }
 
 // Function to adjust the volume
@@ -298,6 +320,7 @@ async function volume( interaction, player, volume, isCommand = false ) {
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al ajustar el volumen!`, flags: MessageFlags.Ephemeral });
     }
+
 }
 
 // Function to toggle or set the loop mode
@@ -324,11 +347,12 @@ async function loop( interaction, player, mode = null ) {
     } catch (err) {
         return await interaction.editReply({ content: `❌ ¡Error al cambiar el estado de bucle!`, flags: MessageFlags.Ephemeral });
     }
+
 }
 
 // Function to display the current queue
 async function queue( interaction, player ) {
-    
+
     if (player.queue.size === 0) {
         return await interaction.editReply({ content: 'La cola está vacía.', flags: MessageFlags.Ephemeral });
     }
@@ -349,15 +373,25 @@ async function queue( interaction, player ) {
         .setColor(COLORS.PRIMARY);
 
     return await interaction.editReply({ embeds: [embed] });
+
 }
 
+// Function to destroy the player and clear the music activity
 async function destroy(player, channel, embed) {
+
+    channel?.client?.activityManager?.clearMusic(player.guildId);
+
     await player.destroy();
     await channel.send({ embeds: [embed] });
+
 }
 
 // Export the functions for use in other modules
 module.exports = {
+    sleep,
+    withGuildConnectionLock,
+    ensurePlayerConnection,
+    playWithConnectionRetry,
     play,
     pause,
     resume,

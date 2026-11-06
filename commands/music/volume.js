@@ -1,10 +1,12 @@
-
-
+// Command volume: Adjust the music volume
 
 const { SlashCommandBuilder } = require('discord.js');
+// Import necessary modules
 const { volume } = require('../../utils/functions/music');
 
+// Export the volume command module
 module.exports = {
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('volume')
         .setDescription('Ajusta el volumen de la música.')
@@ -27,6 +29,7 @@ module.exports = {
                     { name: '100', value: 100 }
                 )
             ),
+    // Execute the command when invoked
     execute: async (interaction) => {
 
         const player = interaction.client.riffy.players.get(interaction.guild.id);

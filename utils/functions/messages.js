@@ -2,6 +2,7 @@
 
 // Functions to generate random messages for welcome
 function welcomeMessage(member) {
+
     const user = member.user.username;
     const random = Math.floor(Math.random() * 7);
 
@@ -16,10 +17,12 @@ function welcomeMessage(member) {
         ];
 
     return welcomeMess[random];
+
 }
 
 // Function to generate a random description message
 function descriptionMessage() {
+
     const random = Math.floor(Math.random() * 7);
 
     const descriptionMess = [
@@ -33,10 +36,12 @@ function descriptionMessage() {
     ];
 
     return descriptionMess[random];
+
 }
 
 // Function to generate a goodbye message when a user leaves
 function goodbyeMessage(member) {
+
     const user = member.user.username;
     const random = Math.floor(Math.random() * 7);
 

@@ -5,6 +5,7 @@ const { loop } = require('../utils/functions/music');
 
 // Export the interaction handler for looping music
 module.exports = async (interaction) => {
+
     const { guild, client } = interaction;
 
     let player = client.riffy.players.get(guild.id);

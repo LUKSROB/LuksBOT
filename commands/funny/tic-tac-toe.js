@@ -1,4 +1,4 @@
-// Command tic-tac-toe: Play a game of Tic Tac Toe against another user or the bot
+// Command tic-tac-toe: Play a game of Tic Tac Toe
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
@@ -7,7 +7,7 @@ const { COLORS } = require('../../config.json');
 
 // Export the tic-tac-toe command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('tic-tac-toe')
         .setDescription('Juega a Tic Tac Toe')
@@ -16,7 +16,7 @@ module.exports = {
                 .setDescription('Usuario contra el que jugar')
                 .setRequired(false)
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
 
         await interaction.client.user.setActivity({

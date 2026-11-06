@@ -35,6 +35,7 @@ async function getDominantColor(input) {
     } catch (error) {
         console.log(error);
     }
+
 }
 
 // Function to get a color palette from an image URL or buffer
@@ -72,14 +73,19 @@ async function getPaletteColor(input) {
     } catch (error) {
         throw new Error('No se pudo obtener la imagen. Asegúrate de que sea una imagen o URL válida.');
     }
+
 }
 
+// Function to check if a color is in RGB format
 function isRgb(color) {
+
     return color.match(/(\d{1,3})[,\s]+(\d{1,3})[,\s]+(\d{1,3})/);
+
 }
 
 // Function to convert HEX color to RGB
 function hexToRgb(color) {
+
     color = validateHex(color);
 
     const r = parseInt(color.substr(0, 2), 16);
@@ -87,19 +93,23 @@ function hexToRgb(color) {
     const b = parseInt(color.substr(4, 2), 16);
 
     return validateRgb(r, g, b);
+
 }
 
 // Function to convert RGB color to HEX
 function rgbToHex(r, g, b) {
+
     ({ r, g, b } = validateRgb(r, g, b));
 
     return `#${[r, g, b].map(item =>
         item.toString(16).padStart(2, '0').toUpperCase()
     ).join('')}`;
+
 }
 
 // Function to determine if a HEX color is dark
 function isDarkHex(color) {
+
     const { r, g, b } = hexToRgb(color);
     return isDarkRgb(r, g, b);
 
@@ -107,30 +117,37 @@ function isDarkHex(color) {
 
 // Function to determine if an RGB color is dark
 function isDarkRgb(r, g, b) {
+
     ({ r, g, b } = validateRgb(r, g, b));
     let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     luminance = parseInt(luminance);
 
     return (luminance < 50);
+
 }
 
 // Function to determine if a HEX color is very dark
 function isVeryDarkHex(color) {
+
     const { r, g, b } = hexToRgb(color);
     return isVeryDarkRgb(r, g, b);
+
 }
 
 // Function to determine if an RGB color is very dark
 function isVeryDarkRgb(r, g, b) {
+
     ({ r, g, b } = validateRgb(r, g, b));
     let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
     luminance = parseInt(luminance);
 
     return (luminance < 25);
+
 }
 
 // Function to adjust the brightness of a HEX color
 function brightnessHex(color, amount = 1) {
+
     let { r, g, b } = hexToRgb(color);
 
     r = Math.min(255, Math.max(0, Math.round(r * amount)));
@@ -138,19 +155,23 @@ function brightnessHex(color, amount = 1) {
     b = Math.min(255, Math.max(0, Math.round(b * amount)));
 
     return rgbToHex(r, g, b);
+
 }
 
 // Function to invert a HEX color
 function invertColorHex(color) {
+
     let { r, g, b } = hexToRgb(color);
     r = 255 - r;
     g = 255 - g;
     b = 255 - b;
     return rgbToHex(r, g, b);
+
 }
 
 // Function to validate HEX color format
 function validateHex(color) {
+
     if (typeof color !== 'string') throw new Error('El color debe ser una cadena hexadecimal.');
     if (!/^#?[0-9A-Fa-f]{6}$/.test(color)) throw new Error('El color debe ser una cadena hexadecimal válida de 6 dígitos.');
     if (color.startsWith('#')) color = color.slice(1);
@@ -160,10 +181,12 @@ function validateHex(color) {
 
 // Function to validate RGB color values
 function validateRgb(r, g, b) {
+
     r = Math.min(255, Math.max(0, Math.round(r)));
     g = Math.min(255, Math.max(0, Math.round(g)));
     b = Math.min(255, Math.max(0, Math.round(b)));
     return { r, g, b };
+
 }
 
 // Export the functions for use in other modules

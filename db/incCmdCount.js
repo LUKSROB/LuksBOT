@@ -1,4 +1,4 @@
-// Handler for command count-related database operations
+// incCmdCount: Handler for command count-related database operations
 
 // Import necessary modules
 const User = require('../models/user');
@@ -33,7 +33,7 @@ async function incCmdCount(userId, userName, guildId) {
     return userData;
 }
 
-// Export the incCmdCount function for use in other modules
+// Export the incCmdCount functions for use in other modules
 module.exports = {
     incCmdCount
 };

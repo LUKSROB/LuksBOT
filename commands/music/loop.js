@@ -6,7 +6,7 @@ const { loop } = require('../../utils/functions/music');
 
 // Export the loop command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('loop')
         .setDescription('Reproduce la canción o la lista de reproducción en un bucle')
@@ -19,7 +19,7 @@ module.exports = {
                     { name: 'Desactivar', value: 'none' }
                 )
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const { guild, client } = interaction;
         const mode = interaction.options.getString('mode')

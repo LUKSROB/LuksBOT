@@ -1,8 +1,13 @@
+// Command load-users: Load all server users into the database
+
+// Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const { loadGuildUsers } = require('../../db/userHelper');
 const { COLORS } = require('../../config.json');
 
+// Export the load-users command module
 module.exports = {
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('load-users')
         .setDescription('Carga todos los usuarios del servidor en la base de datos')
@@ -13,7 +18,7 @@ module.exports = {
                 .setDescription('También incluye bots en la carga')
                 .setRequired(false)
         ),
-
+    // Execute the command when invoked
     execute: async (interaction) => {
         const includeBots = interaction.options.getBoolean('include-bots') ?? false;
 

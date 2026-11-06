@@ -1,10 +1,13 @@
 
 
 const { EmbedBuilder } = require('discord.js');
+// Import necessary modules
 const { activeGames, createBoard, checkWinner, isBoardFull, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../utils/functions/tictactoe.js');
 const { COLORS } = require('../config.json');
 
+// Export the interaction handler for Tic Tac Toe game
 module.exports = async (interaction) => {
+
     const session = activeGames.get(interaction.message.id);
     if (!session) {
         return interaction.reply({ content: '⏰ Esta partida ha expirado.', flags: 64 });
@@ -64,4 +67,5 @@ module.exports = async (interaction) => {
             setTimeout(() => handleBotMove(interaction.message, session, interaction), 700);
         }
     }
+
 }

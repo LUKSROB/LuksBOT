@@ -1,4 +1,8 @@
+// Functions to manage Lavalink failover and node health
+
+// Function to prepare Lavalink nodes with default settings if not provided
 function prepareLavalinkNodes(nodes) {
+
     if (!Array.isArray(nodes) || nodes.length === 0) {
         throw new Error('config.NODES debe ser un array con al menos un nodo.');
     }
@@ -9,9 +13,12 @@ function prepareLavalinkNodes(nodes) {
         reconnectTries: 1,
         reconnectTimeout: 1000
     }));
+
 }
 
+// Function to create a Lavalink failover manager with node health tracking and automatic failover
 function createLavalinkFailoverManager(client, nodes, options = {}) {
+
     const connectAttemptTimeoutMs = Number(options.connectAttemptTimeoutMs) || 12000;
     const retryRoundDelayMs = Number(options.retryRoundDelayMs) || 3000;
     const failureBaseCooldownMs = Number(options.failureBaseCooldownMs) || 15000;
@@ -558,8 +565,10 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         handleNodeError: (node, error) => handleFailure(node, error, 'nodeError'),
         handleNodeConnect
     };
+
 }
 
+// Export the functions for use in other modules
 module.exports = {
     prepareLavalinkNodes,
     createLavalinkFailoverManager

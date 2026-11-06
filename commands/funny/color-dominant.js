@@ -1,4 +1,5 @@
 // Command Color-Dominant: Get the dominant color from an image URL or attachment
+// Command color-dominant: Get the dominant color from an image URL or attachment
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
@@ -6,8 +7,10 @@ const { getDominantColor, rgbToHex } = require('../../utils/functions/colors');
 const { generateColorImage } = require('../../utils/canvas/colorImage');
 
 // Export the color dominant command module
+// Export the color-dominant command module
 module.exports = {
     // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('color-dominant')
         .setDescription('Obtiene el color dominante de una imagen')
@@ -22,6 +25,7 @@ module.exports = {
                 .setRequired(false)
         ),
     // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const url = interaction.options.getString('url');
         const image = interaction.options.getAttachment('image');

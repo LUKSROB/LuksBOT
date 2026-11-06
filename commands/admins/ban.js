@@ -1,4 +1,4 @@
-// Command ban: Bans a user from the server
+// Command ban: Ban a user from the server
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
@@ -6,7 +6,7 @@ const { COLORS } = require('../../config.json');
 
 // Export the ban command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('ban')
         .setDescription('Banea un usuario del servidor')
@@ -33,7 +33,7 @@ module.exports = {
                     { name: '5 días', value: '432000' },
                     { name: '7 días', value: '604800' })
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';

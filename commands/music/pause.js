@@ -6,11 +6,11 @@ const { pause } = require('../../utils/functions/music');
 
 // Export the pause command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('pause')
         .setDescription('Pausa la pista actual'),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const { guild, client } = interaction;
         

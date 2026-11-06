@@ -1,9 +1,12 @@
 // Interaction handler for closing a ticket
 
 // Export the interaction handler for closing a ticket
+// Import necessary modules
 const { getTicketByChannel, registerTicketClose } = require('../db/tickets');
 
+// Export the interaction handler for closing a ticket
 module.exports = async (interaction) => {
+
     const { channel, guild, user } = interaction;
 
     try {
@@ -35,6 +38,7 @@ module.exports = async (interaction) => {
         setTimeout(() => {
             channel.delete().catch(console.error);
         }, 1500);
+
     } catch (err) {
         console.error('Error al cerrar ticket:', err);
 
@@ -44,4 +48,5 @@ module.exports = async (interaction) => {
             await interaction.reply({ content: 'No se pudo cerrar el ticket.', ephemeral: true }).catch(() => null);
         }
     }
+
 };

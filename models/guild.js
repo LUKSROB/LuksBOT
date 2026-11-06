@@ -1,9 +1,10 @@
-// Model for user data in MongoDB
+// Model for guild data in MongoDB
 
-// Import dependencies
+// Import necessary modules
 const mongoose = require('mongoose');
 
 // Define the user schema
+// Define the guild schema
 const guildSchema = new mongoose.Schema({
     guildId: { type: String, required: true },
     guildName: { type: String, required: true },

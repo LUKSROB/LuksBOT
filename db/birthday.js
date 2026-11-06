@@ -1,10 +1,15 @@
+// birthday: Handler for birthday-related database operations
+
+// Import necessary modules
 const Guild = require('../models/guild');
 const User = require('../models/user');
 
+// Function to check if a year is a leap year
 function isLeapYear(year) {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
 
+// Function to normalize birthday input into day, month, and year
 function normalizeBirthdayInput(birthday) {
     const day = Number(birthday.day);
     const month = Number(birthday.month);
@@ -13,6 +18,7 @@ function normalizeBirthdayInput(birthday) {
     return { day, month, year };
 }
 
+// Function to validate if the given day, month, and year form a valid date
 function isValidBirthday(day, month, year) {
     const date = new Date(year, month - 1, day);
 
@@ -26,6 +32,7 @@ function isValidBirthday(day, month, year) {
     );
 }
 
+// Function to get the next occurrence date of a birthday
 function getNextOccurrenceDate(day, month, fromDate = new Date()) {
     const year = fromDate.getUTCFullYear();
     const isFeb29 = day === 29 && month === 2;
@@ -51,6 +58,7 @@ function getNextOccurrenceDate(day, month, fromDate = new Date()) {
     return occurrence;
 }
 
+// Function to ensure a guild record exists in the database
 async function ensureGuildRecord(guildId) {
     await Guild.updateOne(
         { guildId },
@@ -59,6 +67,7 @@ async function ensureGuildRecord(guildId) {
     );
 }
 
+// Function to ensure a user record exists in the database
 async function ensureUserRecord(userId, userName, guildId) {
     const existing = await User.findOne({ userId, guildId });
 
@@ -81,12 +90,14 @@ async function ensureUserRecord(userId, userName, guildId) {
     return user;
 }
 
+// Function to get the birthday entry for a user in a specific guild
 function getGuildBirthdayEntry(user, guildId) {
     const birthdays = Array.isArray(user.birthdays) ? user.birthdays : [];
     const index = birthdays.findIndex((entry) => entry.guildId === guildId);
     return { birthdays, index };
 }
 
+// Function to get the birthday of a user in a specific guild
 function getBirthdayFromUser(user, guildId) {
     if (!user) {
         return null;
@@ -126,6 +137,7 @@ function getBirthdayFromUser(user, guildId) {
     return null;
 }
 
+// Function to set the birthday of a user in a specific guild
 async function setBirthday( userId, userName, guildId, birthday) {
     const { day, month, year } = normalizeBirthdayInput(birthday);
 
@@ -162,6 +174,7 @@ async function setBirthday( userId, userName, guildId, birthday) {
     await user.save();
 }
 
+// Function to get the birthday of a user in a specific guild
 async function getBirthday( userId, userName, guildId) {
     const user = await User.findOne({ userId, guildId }).lean();
     const birthday = getBirthdayFromUser(user, guildId);
@@ -173,6 +186,7 @@ async function getBirthday( userId, userName, guildId) {
     return [birthday.day, birthday.month, birthday.year];
 }
 
+// Function to delete the birthday of a user in a specific guild
 async function delBirthday( userId, userName, guildId) {
     const user = await User.findOne({ userId, guildId });
     if (!user) {
@@ -188,6 +202,7 @@ async function delBirthday( userId, userName, guildId) {
     await user.save();
 }
 
+// Function to get upcoming birthdays in a specific guild
 async function getUpcomingBirthdays(guildId, limit = 10) {
     const users = await User.find(
         { guildId },
@@ -247,6 +262,7 @@ async function getUpcomingBirthdays(guildId, limit = 10) {
         .slice(0, limit);
 }
 
+// Function to get birthdays by a specific date in a guild
 async function getBirthdaysByDate(day, month, guildId) {
     const query = guildId ? { guildId } : {};
     const users = await User.find(query, { userId: 1, userName: 1, guildId: 1, birthdays: 1, birthday: 1 }).lean();
@@ -273,6 +289,7 @@ async function getBirthdaysByDate(day, month, guildId) {
     return records;
 }
 
+// Function to mark a user's birthday as celebrated for a specific year
 async function markBirthdayCelebrated(userId, userName, guildId, year) {
     await User.updateOne(
         { userId, guildId, 'birthdays.guildId': guildId },
@@ -281,6 +298,7 @@ async function markBirthdayCelebrated(userId, userName, guildId, year) {
     );
 }
 
+// Function to get the birthday settings for a guild
 async function getBirthdaySettings(guildId) {
     const guild = await Guild.findOne({ guildId }).lean();
     if (!guild) {
@@ -293,11 +311,13 @@ async function getBirthdaySettings(guildId) {
     };
 }
 
+// Function to get the birthday role for a guild
 async function getBirthdayRole(guildId) {
     const settings = await getBirthdaySettings(guildId);
     return settings.birthdayRoleId;
 }
 
+// Function to set the birthday role for a guild
 async function setBirthdayRole(guildId, roleId) {
     await Guild.updateOne(
         { guildId },
@@ -306,6 +326,7 @@ async function setBirthdayRole(guildId, roleId) {
     );
 }
 
+// Function to clear the birthday role for a guild
 async function clearBirthdayRole(guildId) {
     await Guild.updateOne(
         { guildId },
@@ -314,6 +335,7 @@ async function clearBirthdayRole(guildId) {
     );
 }
 
+// Function to set the birthday channel for a guild
 async function setBirthdayChannel(guildId, channelId) {
     await Guild.updateOne(
         { guildId },
@@ -322,6 +344,7 @@ async function setBirthdayChannel(guildId, channelId) {
     );
 }
 
+// Function to clear the birthday channel for a guild
 async function clearBirthdayChannel(guildId) {
     await Guild.updateOne(
         { guildId },
@@ -330,6 +353,7 @@ async function clearBirthdayChannel(guildId) {
     );
 }
 
+// Export the birthday functions for use in other modules
 module.exports = {
     setBirthday,
     getBirthday,

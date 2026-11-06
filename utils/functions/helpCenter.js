@@ -1,10 +1,9 @@
+// Functions for the help center in the bot
+
+// Import necessary modules
 const path = require('path');
-const {
-    EmbedBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle
-} = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { COLORS } = require('../../config.json');
 
 const HELP_CUSTOM_IDS = {
     HOME: 'help_home',
@@ -12,15 +11,20 @@ const HELP_CUSTOM_IDS = {
     GUIDE: 'help_guide'
 };
 
+// Function to format category names for display
 function formatCategoryName(category) {
+
     if (!category || typeof category !== 'string') {
         return 'General';
     }
 
     return category.charAt(0).toUpperCase() + category.slice(1);
+
 }
 
+// Function to normalize a command entry for indexing
 function normalizeCommandEntry(commandName, entry) {
+
     const data = entry && typeof entry === 'object' ? entry.data : null;
     const name = (data && data.name) || commandName;
     const description = (data && data.description) || 'Sin descripción disponible.';
@@ -31,9 +35,12 @@ function normalizeCommandEntry(commandName, entry) {
     }
 
     return { name, description, category };
+
 }
 
+// Function to build an index of commands by category
 function buildCommandIndex(client) {
+
     const byCategory = new Map();
 
     if (!client || !client.commands || typeof client.commands.forEach !== 'function') {
@@ -55,9 +62,12 @@ function buildCommandIndex(client) {
         byCategory: new Map([...byCategory.entries()].sort((a, b) => a[0].localeCompare(b[0]))),
         totalCommands: [...byCategory.values()].reduce((acc, list) => acc + list.length, 0)
     };
+
 }
 
+// Function to create the navigation row for the help center
 function createNavigationRow(activePage) {
+
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setCustomId(HELP_CUSTOM_IDS.HOME)
@@ -78,9 +88,12 @@ function createNavigationRow(activePage) {
             .setStyle(activePage === HELP_CUSTOM_IDS.GUIDE ? ButtonStyle.Primary : ButtonStyle.Secondary)
             .setDisabled(activePage === HELP_CUSTOM_IDS.GUIDE)
     );
+
 }
 
+// Function to create the home embed for the help center
 function createHomeEmbed(client) {
+
     const { byCategory, totalCommands } = buildCommandIndex(client);
 
     const indexLines = [...byCategory.entries()].map(([category, commands]) =>
@@ -88,7 +101,7 @@ function createHomeEmbed(client) {
     );
 
     const embed = new EmbedBuilder()
-        .setColor(0x5865F2)
+        .setColor(COLORS.PRIMARY)
         .setTitle('👋 Centro de ayuda para principiantes')
         .setDescription('Usá los botones de abajo para navegar por la ayuda del servidor y del bot.')
         .addFields(
@@ -108,13 +121,16 @@ function createHomeEmbed(client) {
         .setFooter({ text: `Comandos detectados: ${totalCommands}` });
 
     return embed;
+
 }
 
+// Function to create the command index embed for the help center
 function createCommandIndexEmbed(client) {
+
     const { byCategory, totalCommands } = buildCommandIndex(client);
 
     const embed = new EmbedBuilder()
-        .setColor(0x57F287)
+        .setColor(COLORS.GAMES)
         .setTitle('📚 Índice de comandos')
         .setDescription('Listado de comandos disponibles, organizado por categoría.');
 
@@ -158,11 +174,14 @@ function createCommandIndexEmbed(client) {
 
     embed.setFooter({ text: `Total de comandos: ${totalCommands}` });
     return embed;
+
 }
 
+// Function to create the guide embed for the help center
 function createGuideEmbed() {
+
     return new EmbedBuilder()
-        .setColor(0xFEE75C)
+        .setColor(COLORS.WARNING)
         .setTitle('🧭 Guía práctica: comandos, canales y botones')
         .addFields(
             {
@@ -191,31 +210,49 @@ function createGuideEmbed() {
             }
         )
         .setFooter({ text: 'Tip: Si te perdés, tocá "Inicio".' });
+
 }
 
+// Function to create the payload for the help center home view
 function createHelpHomePayload(client) {
+
     return {
         embeds: [createHomeEmbed(client)],
         components: [createNavigationRow(HELP_CUSTOM_IDS.HOME)]
     };
+
 }
 
+// Function to create the payload for the help center commands view
 function createHelpCommandsPayload(client) {
+
     return {
         embeds: [createCommandIndexEmbed(client)],
         components: [createNavigationRow(HELP_CUSTOM_IDS.COMMANDS)]
     };
+
 }
 
+// Function to create the payload for the help center guide view
 function createHelpGuidePayload() {
+
     return {
         embeds: [createGuideEmbed()],
         components: [createNavigationRow(HELP_CUSTOM_IDS.GUIDE)]
     };
+
 }
 
+// Export the functions for use in other modules
 module.exports = {
     HELP_CUSTOM_IDS,
+    formatCategoryName,
+    normalizeCommandEntry,
+    buildCommandIndex,
+    createNavigationRow,
+    createHomeEmbed,
+    createCommandIndexEmbed,
+    createGuideEmbed,
     createHelpHomePayload,
     createHelpCommandsPayload,
     createHelpGuidePayload

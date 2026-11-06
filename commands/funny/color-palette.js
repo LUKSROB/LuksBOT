@@ -8,6 +8,7 @@ const { generateColorImage } = require('../../utils/canvas/colorImage');
 // Export the color palette command module
 module.exports = {
     // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('color-palette')
         .setDescription('Obtiene la paleta de colores de una imagen')
@@ -29,6 +30,7 @@ module.exports = {
                 .setRequired(false)
         ),
     // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const url = interaction.options.getString('url');
         const image = interaction.options.getAttachment('image');

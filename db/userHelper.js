@@ -1,8 +1,9 @@
-// Handler for user-related database operations
+// userHelper: Handler for user-related database operations
 
 // Import necessary modules
 const User = require('../models/user');
 
+// Function to insert or update a user in the database
 async function upsertUser(userId, userName, guildId, extraData = {}) {
     const query = { userId, guildId };
     const update = {
@@ -64,6 +65,7 @@ async function getUser(userId, userName, guildId, extraData = {}) {
     return existingUser;
 }
 
+// Function to load all users from a guild into the database
 async function loadGuildUsers(guild, options = {}) {
     if (!guild || !guild.members || typeof guild.members.fetch !== 'function') {
         throw new Error('Se requiere un guild válido con members.fetch()');
@@ -125,7 +127,7 @@ async function loadGuildUsers(guild, options = {}) {
     return { created, updated, total: created + updated };
 }
 
-// Export the getUser function for use in other modules
+// Export the user helper functions for use in other modules
 module.exports = {
     getUser,
     upsertUser,

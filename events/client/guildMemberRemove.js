@@ -4,7 +4,7 @@
 const messages = require('../../utils/functions/messages');
 const { GOODBYE_CHANNEL } = require('../../config.json');
 
-// Export the guildMemberRemove event handler
+// Export the guild member remove event handler
 module.exports = async (member) => {
 
     const { guild } = member;

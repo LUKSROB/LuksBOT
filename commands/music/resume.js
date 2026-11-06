@@ -6,11 +6,11 @@ const { resume } = require('../../utils/functions/music');
 
 // Export the resume command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('resume')
         .setDescription('Reanuda la pista actual'),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const { guild, client } = interaction;
 

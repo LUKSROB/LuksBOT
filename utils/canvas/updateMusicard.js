@@ -1,4 +1,4 @@
-// Function to generate and update a music card image for the currently playing track
+// Create and update a music card image for the currently playing track
 
 // Import necessary modules
 const { Bloom } = require("musicard");

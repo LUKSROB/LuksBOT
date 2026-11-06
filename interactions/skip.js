@@ -5,6 +5,7 @@ const { skip } = require('../utils/functions/music');
 
 // Export the interaction handler for skipping music
 module.exports = async (interaction) => {
+
     const { guild, client } = interaction;
         
     let player = client.riffy.players.get(guild.id);
@@ -22,4 +23,5 @@ module.exports = async (interaction) => {
         console.error(error);
         await interaction.editReply({ content: 'Error al saltar la canción ❌', flags: 64 });
     }
+
 }

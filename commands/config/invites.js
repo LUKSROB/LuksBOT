@@ -7,11 +7,11 @@ const { COLORS } = require('../../config.json');
 
 // Export the invites command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('invites')
         .setDescription('Gestiona las invitaciones del servidor'),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) =>{
         const guild = interaction.guild;
         const invites = await getInvites(guild.id);

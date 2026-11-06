@@ -1,7 +1,8 @@
 // Event handler for message creation
 
-// Export the messageCreate event handler
+// Export the message create event handler
 module.exports = async (message) => {
+
     if (message.author.bot) return;
 
     if (message.content.startsWith("/")) {
@@ -18,4 +19,5 @@ module.exports = async (message) => {
             message.reply(`El comando \`${args}\` no fue creado aun, \n si desea solicitarlo, por favor contacte al administrador.`, { ephemeral: true });
         }
     }
+    
 }

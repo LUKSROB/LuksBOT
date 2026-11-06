@@ -5,6 +5,7 @@ const { pause } = require('../utils/functions/music');
 
 // Export the interaction handler for pausing or resuming music
 module.exports = async (interaction) => {
+
     const { guild, client } = interaction;
         
     let player = client.riffy.players.get(guild.id);
@@ -22,4 +23,5 @@ module.exports = async (interaction) => {
         console.error(error);
         await interaction.editReply({ content: 'Error al pausar/reanudar la música ❌', flags: 64 });
     }
+
 }

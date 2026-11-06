@@ -108,6 +108,7 @@ module.exports = async (interaction) => {
         });
 
         await interaction.editReply({ content: `Tu ticket fue creado: ${channel}` });
+
     } catch (error) {
         console.error('Error en createTicket:', error);
 
@@ -117,5 +118,5 @@ module.exports = async (interaction) => {
             await interaction.reply({ content: 'Hubo un error creando tu ticket.', ephemeral: true }).catch(() => null);
         }
     }
-        
+
 };

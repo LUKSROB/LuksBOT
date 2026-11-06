@@ -11,6 +11,7 @@ const Guild = require('../../models/guild');
 
 // Function to update the invite cache for all guilds the bot is in.
 async function updateCache(client) {
+
     const guildId = client.guilds.cache.first()?.id;
 
     await Guild.updateOne(
@@ -27,6 +28,7 @@ async function updateCache(client) {
             await setInvites(guild.id, invite);
         }
     }
+
 }
 
 /**
@@ -36,6 +38,7 @@ async function updateCache(client) {
 
 // Function to get the last used invite in a guild.
 async function getLastUsed(guild) {
+
     const guildInvites = await getInvites(guild.id);
     const guildInvitesUpdated = await guild.invites.fetch();
 
@@ -56,6 +59,7 @@ async function getLastUsed(guild) {
     }
     
     return usedInvite;
+
 }
 
 // Export the functions for use in other modules

@@ -1,13 +1,17 @@
+// tickets: Handler for ticket-related database operations
+
+// Import necessary modules
 const Ticket = require('../models/ticket');
 
+// Function to get an open ticket by user
 async function getOpenTicketByUser(guildId, ownerId) {
     return Ticket.findOne({ guildId, ownerId, status: 'open' });
 }
-
+// Function to get a ticket by channel
 async function getTicketByChannel(channelId) {
     return Ticket.findOne({ channelId });
 }
-
+// Function to register a ticket as opened
 async function registerTicketOpen(data) {
     const payload = {
         guildId: data.guildId,
@@ -31,7 +35,7 @@ async function registerTicketOpen(data) {
         { upsert: true, new: true }
     );
 }
-
+// Function to register a ticket as closed
 async function registerTicketClose({ channelId, closedById, closedByTag, closeReason }) {
     return Ticket.updateOne(
         { channelId, status: 'open' },
@@ -47,6 +51,7 @@ async function registerTicketClose({ channelId, closedById, closedByTag, closeRe
     );
 }
 
+// Export the ticket functions for use in other modules
 module.exports = {
     getOpenTicketByUser,
     getTicketByChannel,

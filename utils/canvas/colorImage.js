@@ -1,10 +1,11 @@
-// Function to generate a image filled with a color
+// Create an image filled with a color
 
 // Import necessary module
 const { createCanvas } = require('@napi-rs/canvas');
 
 // Function to generate a image filled with a specified hex color
-function generateColorImage(palette, colorCount = 1) {
+module.exports = (palette, colorCount = 1) => {
+
     const width = 64
     let height = 0
     colorCount === 1 ? height = 64 : height = 16;
@@ -20,9 +21,5 @@ function generateColorImage(palette, colorCount = 1) {
         }
     } 
     return canvas.toBuffer("image/png");
-}
 
-// Export the function for use in other modules
-module.exports = {
-    generateColorImage
-};
+}

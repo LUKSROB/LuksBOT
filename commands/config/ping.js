@@ -5,11 +5,11 @@ const { SlashCommandBuilder } = require('discord.js');
 
 // Export the command ping
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Verifica la latencia del bot'),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const sent = await interaction.reply({ content: 'Pinging...' });
         const latency = sent.createdTimestamp - interaction.createdTimestamp;

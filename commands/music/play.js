@@ -1,12 +1,12 @@
-// Command play: Play a song
+// Command play: Play or add a song to the queue
 
 // Import necessary modules
 const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { play } = require('../../utils/functions/music');
 
-// Export the ping command module
+// Export the play command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('play')
         .setDescription('Reproduce una canción o agregala a la cola')
@@ -34,7 +34,7 @@ module.exports = {
                     { name: '100', value: 100 },
                 )
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async ( interaction ) => {
         const { member, guild, client } = interaction;
 

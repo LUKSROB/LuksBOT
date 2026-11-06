@@ -8,4 +8,5 @@ module.exports = async (node, client) => {
     if (client?.lavalinkFailover) {
         client.lavalinkFailover.handleNodeConnect(node);
     }
+
 };

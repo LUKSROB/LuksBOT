@@ -21,7 +21,6 @@ module.exports = async (player, client) => {
             console.log("No pude editar el mensaje anterior.", e);
         });
     }
-    
 
     setTimeout(async () => {
         if (player.playing === false) {

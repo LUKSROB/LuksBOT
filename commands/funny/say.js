@@ -5,7 +5,7 @@ const { SlashCommandBuilder } = require('discord.js');
 
 // Export the say command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('say')
         .setDescription('Repite un mensaje proporcionado por el usuario')
@@ -16,7 +16,7 @@ module.exports = {
                   .setMaxLength(100)
                   .setRequired(true)
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const args = interaction.options.getString('message');
 

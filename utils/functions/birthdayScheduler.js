@@ -1,14 +1,20 @@
+// Functions for handling birthday scheduling in the server
+
+// Import necessary modules
 const { once } = require('events');
 const mongoose = require('mongoose');
 const { Agenda } = require('agenda');
 const { MongoBackend } = require('@agendajs/mongo-backend');
 const { getBirthdaysByDate, getBirthdaySettings, markBirthdayCelebrated } = require('../../db/birthday');
+const { get } = require('http');
 
 let agendaInstance;
 let agendaStartPromise;
 let botClient;
 
+// Function to get the current date in UTC
 function getTodayUTC() {
+
     const now = new Date();
 
     return {
@@ -16,9 +22,12 @@ function getTodayUTC() {
         month: now.getUTCMonth() + 1,
         year: now.getUTCFullYear()
     };
+
 }
 
+// Function to wait for the Mongoose connection to be established before proceeding
 async function waitForMongooseConnection() {
+
     if (mongoose.connection.readyState === 1) {
         return;
     }
@@ -28,9 +37,12 @@ async function waitForMongooseConnection() {
     }
 
     await once(mongoose.connection, 'connected');
+
 }
 
+// Function to synchronize the birthday role for the guild based on today's birthdays
 async function syncBirthdayRoleForGuild(guild, birthdayRoleId, birthdayRecords, currentYear) {
+
     if (!birthdayRoleId) {
         return;
     }
@@ -58,9 +70,12 @@ async function syncBirthdayRoleForGuild(guild, birthdayRoleId, birthdayRecords, 
             await member.roles.add(role, 'Asignación automática de rol de cumpleaños').catch(() => null);
         }
     }
+
 }
 
+// Function to send birthday messages to the designated channel for today's birthdays
 async function sendBirthdayMessages(guild, birthdayChannelId, birthdayRecords, currentYear) {
+
     if (!birthdayChannelId) {
         return;
     }
@@ -78,9 +93,12 @@ async function sendBirthdayMessages(guild, birthdayChannelId, birthdayRecords, c
         await channel.send(`🎉 ¡Feliz cumpleaños <@${record.userId}>!`).catch(() => null);
         await markBirthdayCelebrated(record.userId, record.userName, record.guildId, currentYear);
     }
+
 }
 
+// Function to process birthdays for a specific guild on the current date
 async function processGuildBirthdays(guildId, currentDate) {
+
     const guild = await botClient.guilds.fetch(guildId).catch(() => null);
     if (!guild) {
         return;
@@ -99,9 +117,12 @@ async function processGuildBirthdays(guildId, currentDate) {
             }
         }
     }
+
 }
 
+// Function to run the birthday schedule for all guilds
 async function runBirthdaySchedule() {
+
     if (!botClient || !botClient.isReady()) {
         return;
     }
@@ -112,9 +133,12 @@ async function runBirthdaySchedule() {
     for (const guildId of guildIds) {
         await processGuildBirthdays(guildId, currentDate);
     }
+
 }
 
+// Function to start the birthday scheduler with the provided bot client
 async function startBirthdayScheduler(client) {
+
     botClient = client;
 
     if (agendaInstance) {
@@ -146,9 +170,16 @@ async function startBirthdayScheduler(client) {
     })();
 
     return agendaStartPromise;
+
 }
 
+// Export the functions for use in other modules
 module.exports = {
-    startBirthdayScheduler,
-    runBirthdaySchedule
+    getTodayUTC,
+    waitForMongooseConnection,
+    syncBirthdayRoleForGuild,
+    sendBirthdayMessages,
+    processGuildBirthdays,
+    runBirthdaySchedule,
+    startBirthdayScheduler
 };

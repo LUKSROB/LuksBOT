@@ -3,9 +3,9 @@
 // Import necessary modules
 const { updateCache } = require("../../utils/functions/invites");
 
-// Export the inviteCreate event handler
+// Export the invite create event handler
 module.exports = async (invite) => {
 
     updateCache(invite.client);
-    
+
 };

@@ -6,7 +6,7 @@ const { COLORS } = require('../../config.json');
 
 // Export the translate command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('translate')
         .setDescription('Traduce texto a otro idioma')
@@ -47,7 +47,7 @@ module.exports = {
                     {name: 'Chino', value: 'zh'}, //ZH - Chinese (unspecified variant for backward compatibility; please select ZH-HANS or ZH-HANT instead)
                 )
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const { options, client } = interaction;
         const text = options.getString('text');

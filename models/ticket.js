@@ -1,5 +1,9 @@
+// Model for ticket data in MongoDB
+
+// Import necessary modules
 const mongoose = require('mongoose');
 
+// Define the ticket schema
 const ticketSchema = new mongoose.Schema({
     guildId: { type: String, required: true, index: true },
     guildName: { type: String, required: true },
@@ -20,6 +24,8 @@ const ticketSchema = new mongoose.Schema({
     closeReason: { type: String, default: null }
 }, { timestamps: true });
 
+// Create indexes for efficient querying of tickets within guilds
 ticketSchema.index({ guildId: 1, ownerId: 1, status: 1 });
 
+// Export the ticket model
 module.exports = mongoose.model('Ticket', ticketSchema);

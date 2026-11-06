@@ -6,7 +6,7 @@ const { COLORS } = require('../../config.json');
 
 // Export the avatar command module
 module.exports = {
-    // Define the command structure
+    // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('avatar')
         .setDescription('Muestra el avatar de un usuario')
@@ -14,7 +14,7 @@ module.exports = {
             option.setName('user')
                   .setDescription('Usuario del que mostrar el avatar')
         ),
-    // Execute the command
+    // Execute the command when invoked
     execute: async (interaction) => {
         const { user, guild } = interaction;
         const image = { size: 512, dynamic: true };

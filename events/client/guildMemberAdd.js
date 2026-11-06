@@ -8,7 +8,7 @@ const invites = require('../../utils/functions/invites');
 const messages = require('../../utils/functions/messages');
 const { COLORS } = require('../../config.json');
 
-// Export the guildMemberAdd event handler
+// Export the guild member add event handler
 module.exports = async (member) => {
 
     const { client } = member;
