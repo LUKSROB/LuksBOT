@@ -1,51 +1,11 @@
-const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    MessageFlags,
-    ChannelType
-} = require('discord.js');
-const {
-    setBirthday,
-    getBirthday,
-    delBirthday,
-    getUpcomingBirthdays,
-    getBirthdaySettings,
-    setBirthdayRole,
-    clearBirthdayRole,
-    setBirthdayChannel,
-    clearBirthdayChannel
-} = require('../../db/birthday');
-const { COLORS } = require('../../config.json');
-const { getMonths } = require('../../utils/functions/months');
-
-function isValidBirthday(day, month, year) {
-    const date = new Date(year, month - 1, day);
-    return (
-        date.getFullYear() === year &&
-        date.getMonth() === month - 1 &&
-        date.getDate() === day
-    );
-}
-
-function formatBirthday(day, month, year) {
-    return `${day} de ${getMonths(month)} de ${year}`;
-}
-
-async function ensureAdmin(interaction, errorMessage) {
-    if (interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
-        return true;
-    }
 // Command birthday: Manage birthdays and birthday settings in the server
 
-    await interaction.reply({
-        content: errorMessage,
-        flags: MessageFlags.Ephemeral
-    });
-
-    return false;
-}
 // Import necessary modules
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags, ChannelType } = require('discord.js');
+const { setBirthday, getBirthday, delBirthday, getUpcomingBirthdays, getBirthdaySettings, setBirthdayRole, clearBirthdayRole, setBirthdayChannel, clearBirthdayChannel } = require('../../db/birthday');
+const { isValidBirthday, formatBirthday, ensureAdmin } = require('../../utils/functions/birthday');
+const { getMonths } = require('../../utils/functions/months');
+const { COLORS } = require('../../config.json');
 
 // Export the birthday command module
 module.exports = {
@@ -151,7 +111,6 @@ module.exports = {
             option.setName('delete')
                 .setDescription('Elimina tu fecha de cumpleaños del servidor')
         ),
-
     // Execute the command when invoked
     execute: async (interaction) => {
         const subcommand = interaction.options.getSubcommand();
@@ -204,7 +163,7 @@ module.exports = {
                                 : `${user.username} aún no ha establecido su cumpleaños.`
                         );
 
-                    await interaction.reply({ embeds: [embed] });
+                    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
                     return;
                 }
 
