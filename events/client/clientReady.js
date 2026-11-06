@@ -5,6 +5,7 @@ const { registerFont } = require('musicard');
 const { updateCache } = require('../../utils/functions/invites');
 const { setGuild } = require('../../db/guild');
 const { startBirthdayScheduler } = require('../../utils/functions/birthdayScheduler');
+const { startBanScheduler } = require('../../utils/functions/banScheduler');
 const path = require('path');
 const { registerFont } = require('musicard');
 const fontPath = path.resolve(__dirname, '../../assets/fonts/YujiSyuku-Regular.ttf');
@@ -27,6 +28,8 @@ module.exports = async (client) => {
     });
 
     await startBirthdayScheduler(client);
+
+    startBanScheduler(client);
 
     updateCache(client);
 

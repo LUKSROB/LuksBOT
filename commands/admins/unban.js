@@ -3,6 +3,7 @@
 // Import necessary modules
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
+const { markActiveBansAsUnbanned } = require('../../db/guild');
 
 // Export the unban command module
 module.exports = {
@@ -29,8 +30,17 @@ module.exports = {
         try {
             const reason = interaction.options.getString('reason') || 'No se especifica la razón del desbaneo';
 
-            await interaction.guild.bans.remove(user.id);
-            
+            await interaction.guild.bans.remove(user.id, reason);
+
+            await markActiveBansAsUnbanned(interaction.guildId, user.id, {
+                unbanType: 'manual',
+                unbannedById: interaction.user.id,
+                unbannedByTag: interaction.user.tag,
+                unbanReason: reason
+            }).catch((dbError) => {
+                console.error('[unban] No se pudo actualizar el registro del baneo:', dbError);
+            });
+
             const embed = new EmbedBuilder()
                 .setAuthor({
                     name: `${interaction.user.username} acaba de desbanear a un usuario`,
@@ -50,10 +60,23 @@ module.exports = {
        
         } catch (error) {
             if (error instanceof DiscordAPIError && error.code === 10026) {
-                return interaction.reply({ content: 'El usuario no está baneado.', ephemeral: true });
-            } else {
-                console.error('Error al desbanear al usuario:', error);
+                await markActiveBansAsUnbanned(interaction.guildId, user.id, {
+                    unbanType: 'external',
+                    unbanReason: 'El usuario ya no estaba baneado en Discord',
+                    unbannedByTag: 'Fuera del bot / Discord'
+                }).catch((dbError) => {
+                    console.error('[unban] No se pudo actualizar el registro del baneo:', dbError);
+                });
+
+                return interaction.reply({ content: 'El usuario no está baneado.', flags: MessageFlags.Ephemeral });
             }
+
+            console.error('Error al desbanear al usuario:', error);
+
+            return interaction.reply({
+                content: 'Ocurrió un error al intentar desbanear al usuario.',
+                flags: MessageFlags.Ephemeral
+            }).catch(() => {});
         }
     }
 };

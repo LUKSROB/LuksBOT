@@ -3,6 +3,8 @@
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
+const { createBanRecord } = require('../../db/guild');
+const { formatDuration } = require('../../utils/functions/convertTime');
 
 // Export the ban command module
 module.exports = {
@@ -24,20 +26,28 @@ module.exports = {
         )
         .addStringOption(option => 
             option.setName('duration')
-                .setDescription('Duración del baneo (en días)')
+                .setDescription('Duración del baneo (opcional, si se omite es permanente)')
                 .setRequired(false)
                 .setChoices(
-                    { name: '1 Hora', value: '3600' },
+                    { name: '10 minutos', value: '600' },
+                    { name: '30 minutos', value: '1800' },
+                    { name: '1 hora', value: '3600' },
+                    { name: '6 horas', value: '21600' },
+                    { name: '12 horas', value: '43200' },
                     { name: '1 día', value: '86400' },
                     { name: '3 días', value: '259200' },
                     { name: '5 días', value: '432000' },
-                    { name: '7 días', value: '604800' })
+                    { name: '7 días', value: '604800' },
+                    { name: '14 días', value: '1209600' },
+                    { name: '30 días', value: '2592000' })
         ),
     // Execute the command when invoked
     execute: async (interaction) => {
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason') || 'No se especifica la razón del baneo';
         const duration = interaction.options.getString('duration');
+        const durationSeconds = duration ? Number(duration) : null;
+        const durationLabel = formatDuration(durationSeconds);
         const member = await interaction.guild.members.fetch(user.id).catch(() => null);
         
         if (user.id === interaction.client.user.id) {
@@ -54,21 +64,13 @@ module.exports = {
 
         try {
             let userDMerror = '';
-            let time = '';
-            if (duration == '3600') {
-                time = duration / 60 / 60 + ' hora';
-            } else if (duration == '86400') {
-                time = duration / 60 / 24 + ' día';
-            } else {
-                time = duration / 60 / 24 + ' días';
-            }
 
             try {
                 const userDM = new EmbedBuilder()
                     .setTitle(`Has sido baneado de ${interaction.guild.name}`)
                     .setDescription(`
                         **Razón:** ${reason}\n
-                        **Duración:** ${duration ? time : 'Permanentemente'}
+                        **Duración:** ${durationLabel}
                     `)
                     .setColor(COLORS.DANGER)
                     .setFooter({ text: 'Si crees que esto es un error, contacta con un administrador.' });
@@ -83,6 +85,25 @@ module.exports = {
             } else {
                 await interaction.guild.bans.create(user.id, { reason });
             }
+
+            let storageError = false;
+
+            try {
+                await createBanRecord(interaction.guildId, {
+                    guildName: interaction.guild.name,
+                    channelId: interaction.channelId,
+                    userId: user.id,
+                    userTag: user.tag,
+                    moderatorId: interaction.user.id,
+                    moderatorTag: interaction.user.tag,
+                    reason,
+                    durationSeconds
+                });
+            } catch (dbError) {
+                storageError = true;
+                console.error('[ban] No se pudo guardar el registro del baneo:', dbError);
+            }
+
             const embed = new EmbedBuilder()
                 .setAuthor({
                     name: `${interaction.user.username} acaba de banear a un usuario`,
@@ -93,7 +114,8 @@ module.exports = {
                     **Usuario:** ${user.tag}\n
                     **ID:** ${user.id}\n
                     **Razón:** ${reason}\n
-                    **Duración:** ${duration ? time : 'Permanentemente'}
+                    **Duración:** ${durationLabel}
+                    ${storageError ? '\n⚠️ No se pudo guardar el registro del baneo; el desbaneo automático podría no ejecutarse.' : ''}
                     ${userDMerror ? `\n${userDMerror}` : ''}
                 `)
                 .setColor(COLORS.DANGER);
@@ -102,25 +124,12 @@ module.exports = {
                 .reply({ embeds : [embed] })
                 .catch(console.error);
 
-            if (duration) {
+            // Respaldo en memoria si la base de datos falló y el baneo es temporal
+            if (durationSeconds && storageError) {
                 setTimeout(() => {
-                    try {
-                        interaction.guild.members.unban(user.id)
-
-                        const embed = new EmbedBuilder()
-                                .setTitle(`Usuario desbaneado`)
-                                .setDescription(`
-                                    **Usuario:** ${user.tag}\n
-                                    **ID:** ${user.id}\n
-                                    **Razón:** ${reason}\n
-                                `)
-                                .setColor(COLORS.SUCCESS);
-
-                        interaction.channel.send({ embeds : [embed] })
-                    } catch (err) {
-                        console.error();
-                    }
-                }, duration * 1000);
+                    interaction.guild.bans.remove(user.id, 'Desbaneo automático (respaldo)')
+                        .catch(() => {});
+                }, durationSeconds * 1000);
             }
 
         } catch (error) {
