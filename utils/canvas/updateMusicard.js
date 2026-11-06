@@ -3,32 +3,11 @@
 // Import necessary modules
 const { Bloom } = require("musicard");
 const { convertTime, musicProgress } = require("../../utils/functions/convertTime");
+const { normalizeAlbumArtUrl } = require("../../utils/functions/messages");
 const { COLORS } = require("../../config.json");
 
-function normalizeAlbumArtUrl(rawUrl) {
-    if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
-        return null;
-    }
-
-    let url = rawUrl.trim();
-
-    if (url.startsWith('//')) {
-        url = `https:${url}`;
-    }
-
-    if (url.includes('ytimg.com/vi_webp/')) {
-        url = url.replace('/vi_webp/', '/vi/').replace('.webp', '.jpg');
-    }
-
-    if (!/^https?:\/\//i.test(url)) {
-        return null;
-    }
-
-    return url;
-}
-
 // Function to create or update the music card
-async function updateMusicard(track, player, init = false, color) {
+module.exports = async (track, player, init = false, color) => {
 
     const albumArt = normalizeAlbumArtUrl(track?.info?.thumbnail);
 
@@ -69,13 +48,10 @@ async function updateMusicard(track, player, init = false, color) {
         })
         
         return musicard;
+
     } catch (error) {
         console.warn('[music] No se pudo renderizar la tarjeta de música:', error.message || error);
         return null;
     }
-}
 
-// Export the function for use in other modules
-module.exports = {
-    updateMusicard
-};
+}

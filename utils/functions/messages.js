@@ -102,6 +102,30 @@ function formatError(error) {
 
 }
 
+
+// Function to normalize album art URL
+function normalizeAlbumArtUrl(rawUrl) {
+
+    if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
+        return null;
+    }
+
+    let url = rawUrl.trim();
+
+    if (url.startsWith('//')) {
+        url = `https:${url}`;
+    }
+
+    if (url.includes('ytimg.com/vi_webp/')) {
+        url = url.replace('/vi_webp/', '/vi/').replace('.webp', '.jpg');
+    }
+
+    if (!/^https?:\/\//i.test(url)) {
+        return null;
+    }
+
+    return url;
+
 }
 
 // Export the functions for use in other modules
@@ -111,4 +135,5 @@ module.exports = {
     goodbyeMessage,
     formatReason,
     formatError,
+    normalizeAlbumArtUrl
 };

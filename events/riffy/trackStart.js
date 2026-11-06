@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
-const { updateMusicard } = require("../../utils/canvas/updateMusicard");
+const updateMusicard = require("../../utils/canvas/updateMusicard");
 const { getDominantColor, rgbToHex, isVeryDarkHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
 
 // Export the track start event handler
