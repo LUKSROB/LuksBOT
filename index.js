@@ -15,10 +15,9 @@ const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
+const { indexCommands, loadEventHandlers } = require('./utils/functions/handler');
 const config = require('./config.json');
 
-const fs = require('fs');
-const fsp = fs.promises;
 const path = require('path');
 const express = require('express');
 
@@ -26,115 +25,6 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 console.clear();
-
-async function indexCommands() {
-    const commands = new Discord.Collection();
-    const commandData = [];
-    const commandsRoot = path.join(__dirname, 'commands');
-    let totalIndexed = 0;
-    let totalInvalid = 0;
-
-    let folders = [];
-
-    try {
-        const commandEntries = await fsp.readdir(commandsRoot, { withFileTypes: true });
-        folders = commandEntries.filter((entry) => entry.isDirectory());
-    } catch (err) {
-        console.error('Error reading command folders:', err);
-        return { commands, commandData };
-    }
-
-    const filesByFolder = await Promise.all(
-        folders.map(async (folder) => {
-            const folderPath = path.join(commandsRoot, folder.name);
-
-            try {
-                const fileEntries = await fsp.readdir(folderPath, { withFileTypes: true });
-                return fileEntries
-                    .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
-                    .map((entry) => path.join(folderPath, entry.name));
-            } catch (err) {
-                console.error(`Error reading command folder ${folderPath}:`, err.message);
-                totalInvalid++;
-                return [];
-            }
-        })
-    );
-
-    for (const modulePath of filesByFolder.flat()) {
-        try {
-            delete require.cache[require.resolve(modulePath)];
-            const command = require(modulePath);
-
-            const isValid =
-                command &&
-                command.data &&
-                command.data.name &&
-                typeof command.execute === 'function' &&
-                typeof command.data.toJSON === 'function';
-
-            if (!isValid) {
-                console.warn(`Invalid command: ${modulePath}`);
-                totalInvalid++;
-                continue;
-            }
-
-            if (commands.has(command.data.name)) {
-                console.warn(`Duplicate command: ${command.data.name} (${modulePath})`);
-                totalInvalid++;
-                continue;
-            }
-
-            const json = command.data.toJSON();
-
-            commands.set(command.data.name, {
-                modulePath,
-                data: json
-            });
-            commandData.push(json);
-            totalIndexed++;
-
-            // Clave para lazy real: descargar del cache tras indexar metadata
-            delete require.cache[require.resolve(modulePath)];
-        } catch (err) {
-            console.error(`Error indexing ${modulePath}:`, err.message);
-            totalInvalid++;
-        }
-    }
-
-    console.log(`Commands indexed: ${totalIndexed}`);
-    if (totalInvalid > 0) {
-        console.warn(`Files invalid/erroneous: ${totalInvalid}`);
-    }
-
-    return { commands, commandData };
-}
-
-async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
-    let eventEntries = [];
-
-    try {
-        eventEntries = await fsp.readdir(eventsPath, { withFileTypes: true });
-    } catch (err) {
-        console.error(`Error reading events from ${emitterLabel}:`, err);
-        return;
-    }
-
-    const eventFiles = eventEntries.filter((entry) => entry.isFile() && entry.name.endsWith('.js'));
-
-    for (const file of eventFiles) {
-        const modulePath = path.join(eventsPath, file.name);
-
-        try {
-            const listener = require(modulePath);
-            const eventName = path.basename(file.name, '.js');
-
-            emitter.on(eventName, (...args) => listener(...args, client));
-        } catch (err) {
-            console.log(`Error loading ${emitterLabel} event ${file.name}`, err);
-        }
-    }
-}
 
 (async () => {
     // Patch Riffy REST to handle transient network errors gracefully
