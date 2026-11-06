@@ -72,8 +72,47 @@ function convertHmsToMs(hms) {
     } else {
         const a = hms.split(':')
         return hms = (((+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2])) * 1000)
+    }
+
+}
+
+// Function to format a duration in seconds into a human-readable string
+function formatDuration(seconds) {
+
+    if (seconds === null || seconds === undefined || seconds === '') {
+        return 'Permanente';
+    }
+
+    let remaining = Math.floor(Number(seconds));
+
+    if (!Number.isFinite(remaining)) {
+        return 'Permanente';
+    }
+
+    if (remaining <= 0) {
+        return '0 segundos';
+    }
+
+    const parts = [];
+    const units = [
+        { label: 'día', value: 86400 },
+        { label: 'hora', value: 3600 },
+        { label: 'minuto', value: 60 },
+        { label: 'segundo', value: 1 }
+    ];
+
+    for (const unit of units) {
+        const amount = Math.floor(remaining / unit.value);
+
+        if (amount > 0) {
+            parts.push(`${amount} ${unit.label}${amount === 1 ? '' : 's'}`);
+            remaining -= amount * unit.value;
         }
     }
+
+    return parts.join(' ');
+
+}
 
 // Export the functions for use in other modules
 module.exports = {
