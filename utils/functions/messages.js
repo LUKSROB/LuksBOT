@@ -90,6 +90,18 @@ function formatReason(reason) {
     return String(reason);
 
 }
+
+// Function to format the error for an event
+function formatError(error) {
+
+    if (!error) return 'sin detalle';
+    if (typeof error === 'string') return error;
+    if (Buffer.isBuffer(error)) return error.toString('utf8');
+    if (error.message) return error.message;
+    return String(error);
+
+}
+
 }
 
 // Export the functions for use in other modules
@@ -98,4 +110,5 @@ module.exports = {
     descriptionMessage,
     goodbyeMessage,
     formatReason,
+    formatError,
 };
