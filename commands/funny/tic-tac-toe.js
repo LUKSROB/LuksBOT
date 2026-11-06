@@ -1,7 +1,7 @@
 // Command tic-tac-toe: Play a game of Tic Tac Toe
 
 // Import necessary modules
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActivityType, MessageFlags } = require('discord.js');
 const { activeGames, createBoard, handleBotMove, GAME_TIMEOUT_SECONDS } = require('../../utils/functions/tictactoe.js');
 const { COLORS } = require('../../config.json');
 
@@ -27,7 +27,7 @@ module.exports = {
 
         const opponent = interaction.options.getUser('opponent');
         if (opponent && opponent.id === interaction.user.id) {
-            return interaction.reply({ content: '❌ ¡No puedes jugar contra ti mismo!', flags: 64 });
+            return interaction.reply({ content: '❌ ¡No puedes jugar contra ti mismo!', flags: MessageFlags.Ephemeral });
         }
 
         let player2Id;
@@ -79,7 +79,6 @@ module.exports = {
 
         setTimeout(() => activeGames.delete(message.id), GAME_TIMEOUT_SECONDS * 1000);
 
-        // Bot move if bot goes first
         if (isBot && currentPlayer === player2Id) {
             setTimeout(() => handleBotMove(message, session, interaction), 700);
         }

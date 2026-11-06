@@ -1,7 +1,7 @@
 // Command volume: Adjust the music volume
 
-const { SlashCommandBuilder } = require('discord.js');
 // Import necessary modules
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { volume } = require('../../utils/functions/music');
 
 // Export the volume command module
@@ -37,7 +37,7 @@ module.exports = {
         await interaction.deferReply();
 
         if (!player || !player.playing) {
-            return await interaction.editReply({ content: '❌ No hay música reproduciéndose.', flags: 64 });
+            return await interaction.editReply({ content: '❌ No hay música reproduciéndose.', flags: MessageFlags.Ephemeral });
 
         }
 

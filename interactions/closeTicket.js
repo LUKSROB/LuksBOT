@@ -1,7 +1,7 @@
 // Interaction handler for closing a ticket
 
-// Export the interaction handler for closing a ticket
 // Import necessary modules
+const { MessageFlags } = require('discord.js');
 const { getTicketByChannel, registerTicketClose } = require('../db/tickets');
 
 // Export the interaction handler for closing a ticket
@@ -29,7 +29,7 @@ module.exports = async (interaction) => {
             closeReason: 'manual-close-button'
         });
 
-        await interaction.reply({ content: 'Ticket cerrado. Eliminando canal...', ephemeral: true });
+        await interaction.reply({ content: 'Ticket cerrado. Eliminando canal...', flags: MessageFlags.Ephemeral });
 
         if (ticketOwner) {
             await ticketOwner.send('Tu ticket fue cerrado por el staff.').catch(() => null);
@@ -43,9 +43,9 @@ module.exports = async (interaction) => {
         console.error('Error al cerrar ticket:', err);
 
         if (interaction.deferred || interaction.replied) {
-            await interaction.followUp({ content: 'No se pudo cerrar el ticket.', ephemeral: true }).catch(() => null);
+            await interaction.followUp({ content: 'No se pudo cerrar el ticket.', flags: MessageFlags.Ephemeral }).catch(() => null);
         } else {
-            await interaction.reply({ content: 'No se pudo cerrar el ticket.', ephemeral: true }).catch(() => null);
+            await interaction.reply({ content: 'No se pudo cerrar el ticket.', flags: MessageFlags.Ephemeral }).catch(() => null);
         }
     }
 

@@ -35,14 +35,15 @@ module.exports = {
                     { name: 'Actualizados', value: String(result.updated), inline: true },
                     { name: 'Bots incluidos', value: includeBots ? 'Sí' : 'No', inline: true }
                 )
-                .setColor(COLORS.SUCCESS || 0x2ecc71)
+                .setColor(COLORS.SUCCESS)
                 .setTimestamp();
 
             await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.error('Error cargando usuarios del servidor:', error);
             await interaction.editReply({
-                content: 'Ocurrió un error al cargar los usuarios del servidor.'
+                content: 'Ocurrió un error al cargar los usuarios del servidor.',
+                flags: MessageFlags.Ephemeral
             });
         }
     }

@@ -1,7 +1,7 @@
 // Command queue: Display the current music queue
 
 // Import necessary modules
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { queue } = require('../../utils/functions/music');
 
 // Export the queue command module
@@ -25,7 +25,7 @@ module.exports = {
         } catch (error) {
 
             console.error(error);
-            await interaction.editReply({ content: 'Error al mostrar la cola de reproducción ❌', flags: 64 });
+            await interaction.editReply({ content: 'Error al mostrar la cola de reproducción ❌', flags: MessageFlags.Ephemeral });
         }
 
     }

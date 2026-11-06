@@ -1,7 +1,7 @@
 // Command unban: Unbans a user from the server
 
 // Import necessary modules
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, DiscordAPIError, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 
 // Export the unban command module

@@ -1,7 +1,7 @@
 // Interaction handler for creating a ticket for the user
 
 // Import necessary modules
-const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require("discord.js");
+const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require("discord.js");
 const { TICKET_CHANNEL, MOD_ROLE, COLORS } = require("../config.json");
 const { getOpenTicketByUser, registerTicketOpen } = require("../db/tickets");
 
@@ -28,7 +28,7 @@ module.exports = async (interaction) => {
 
         const existingDbTicket = await getOpenTicketByUser(guild.id, user.id);
         if (existingDbTicket) {
-            return interaction.reply({ content: 'Ya tienes un ticket abierto.', ephemeral: true });
+            return interaction.reply({ content: 'Ya tienes un ticket abierto.', flags: MessageFlags.Ephemeral });
         }
 
         const existingChannel = guild.channels.cache
@@ -36,10 +36,10 @@ module.exports = async (interaction) => {
             .some((channel) => channel.topic && channel.topic.includes(`owner:${user.id}`));
 
         if (existingChannel) {
-            return interaction.reply({ content: 'Ya tienes un ticket abierto.', ephemeral: true });
+            return interaction.reply({ content: 'Ya tienes un ticket abierto.', flags: MessageFlags.Ephemeral });
         }
 
-        await interaction.reply({ content: 'Creando ticket...', ephemeral: true });
+        await interaction.reply({ content: 'Creando ticket...', flags: MessageFlags.Ephemeral });
 
         const safeType = sanitizePart(ticketType, 'soporte', 10);
         const safeUser = sanitizePart(user.username, 'usuario', 12);
@@ -115,7 +115,7 @@ module.exports = async (interaction) => {
         if (interaction.deferred || interaction.replied) {
             await interaction.editReply({ content: 'Hubo un error creando tu ticket.' }).catch(() => null);
         } else {
-            await interaction.reply({ content: 'Hubo un error creando tu ticket.', ephemeral: true }).catch(() => null);
+            await interaction.reply({ content: 'Hubo un error creando tu ticket.', flags: MessageFlags.Ephemeral }).catch(() => null);
         }
     }
 

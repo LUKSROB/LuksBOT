@@ -1,6 +1,7 @@
 // Interaction handler for pausing or resuming music
 
 // Import necessary modules
+const { MessageFlags } = require('discord.js');
 const { pause } = require('../utils/functions/music');
 
 // Export the interaction handler for pausing or resuming music
@@ -14,14 +15,14 @@ module.exports = async (interaction) => {
 
     try {
         if (!player || !guild.members.me.voice.channel) {
-            return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+            return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: MessageFlags.Ephemeral });
         }
 
         await pause(interaction, player);
 
     } catch (error) {
         console.error(error);
-        await interaction.editReply({ content: 'Error al pausar/reanudar la música ❌', flags: 64 });
+        await interaction.editReply({ content: 'Error al pausar/reanudar la música', flags: MessageFlags.Ephemeral });
     }
 
 }

@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { COLORS } = require('../../config');
 // Command support-panel: Publishes the support panel for creating tickets
 
 // Import necessary modules
+const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const supportImage = require('../../utils/canvas/supportImage');
+const { COLORS } = require('../../config');
 
 // Export the support-panel command module
 module.exports = {
@@ -49,6 +49,6 @@ module.exports = {
             files: [file]
         });
 
-        await interaction.reply({ content: 'Panel de soporte publicado.', ephemeral: true });
+        await interaction.reply({ content: 'Panel de soporte publicado.', flags: MessageFlags.Ephemeral });
     }
 };

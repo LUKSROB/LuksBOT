@@ -1,7 +1,7 @@
 // Command loop: Loop the current song or playlist
 
 // Import necessary modules
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { loop } = require('../../utils/functions/music');
 
 // Export the loop command module
@@ -34,7 +34,7 @@ module.exports = {
         } catch (error) {
 
             console.error(error);
-            await interaction.editReply({ content: 'Error al cambiar el estado de bucle ❌', flags: 64 });
+            await interaction.editReply({ content: 'Error al cambiar el estado de bucle ❌', flags: MessageFlags.Ephemeral });
         }
 
     }

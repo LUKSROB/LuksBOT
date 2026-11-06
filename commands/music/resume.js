@@ -1,7 +1,7 @@
 // Command resume: Resume the current song
 
 // Import necessary modules
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { resume } = require('../../utils/functions/music');
 
 // Export the resume command module
@@ -20,14 +20,14 @@ module.exports = {
 
         try {
             if (!player || !guild.members.me.voice.channel) {
-                return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: 64 });
+                return await interaction.editReply({ content: 'No estoy reproduciendo nada actualmente.', flags: MessageFlags.Ephemeral });
             }
 
             await resume(interaction, player);
 
         } catch (error) {
             console.error(error);
-            await interaction.editReply({ content: '❌ ¡Error al reanudar la música!', flags: 64 });
+            await interaction.editReply({ content: '❌ ¡Error al reanudar la música!', flags: MessageFlags.Ephemeral });
         }
 
     }

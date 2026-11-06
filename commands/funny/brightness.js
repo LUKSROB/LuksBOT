@@ -1,15 +1,12 @@
-// Command Color-Dominant: Get the brightness whit a color
 // Command brightness: Get the brightness whit a color
 
 // Import necessary modules
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const { brightnessHex, isRgb, rgbToHex, hexToRgb, validateHex, isVeryDarkHex, isDarkRgb} = require('../../utils/functions/colors');
-const { generateColorImage } = require('../../utils/canvas/colorImage');
+const colorImage = require('../../utils/canvas/colorImage');
 
-// Export the color dominant command module
 // Export the brightness command module
 module.exports = {
-    // Define the command structure
     // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('color-brightness')
@@ -32,7 +29,6 @@ module.exports = {
                 .setRequired(false)
         ),
 
-    // Execute the command
     // Execute the command when invoked
     execute: async (interaction) => {
         const color = interaction.options.getString('color');

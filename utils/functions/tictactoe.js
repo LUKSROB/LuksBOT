@@ -2,6 +2,8 @@
 
 // Import necessary modules
 const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { COLORS } = require('../../config.json');
+
 const activeGames = new Map();
 const GAME_TIMEOUT_SECONDS = 300;
 
@@ -86,7 +88,7 @@ function handleBotMove(message, session) {
     const embed = new EmbedBuilder()
         .setTitle('🎮 Tic Tac Toe')
         .setDescription(desc)
-        .setColor(isWinner ? 0x00FF00 : isDraw ? 0xFFFF00 : 0xFF0000);
+        .setColor(isWinner ? COLORS.SUCCESS : isDraw ? COLORS.WARNING : COLORS.DANGER);
 
     message.edit({
         embeds: [embed],

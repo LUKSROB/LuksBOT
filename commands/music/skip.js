@@ -1,7 +1,7 @@
 // Command skip: Skip the current playing track
 
 // Import necessary modules
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
 const { skip } = require("../../utils/functions/music");
 
 // Export the skip command module
@@ -20,11 +20,11 @@ module.exports = {
         await interaction.deferReply();
 
         if (!player) {
-            return await interaction.editReply({ content: "No estoy reproduciendo nada actualmente.", flags: 64 });
+            return await interaction.editReply({ content: "No estoy reproduciendo nada actualmente.", flags: MessageFlags.Ephemeral });
         }
 
         if (player.queue.size === 0) {
-            return await interaction.editReply({ content: "La cola está vacía.", flags: 64 });
+            return await interaction.editReply({ content: "La cola está vacía.", flags: MessageFlags.Ephemeral });
         };
 
         await skip(interaction, player);

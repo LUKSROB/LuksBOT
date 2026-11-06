@@ -1,7 +1,7 @@
 // Command ban: Ban a user from the server
 
 // Import necessary modules
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 
 // Export the ban command module
@@ -41,15 +41,15 @@ module.exports = {
         const member = await interaction.guild.members.fetch(user.id).catch(() => null);
         
         if (user.id === interaction.client.user.id) {
-            return interaction.reply({ content: 'No puedo banearme a mí mismo.', flags: 64 });
+            return interaction.reply({ content: 'No puedo banearme a mí mismo.', flags: MessageFlags.Ephemeral });
         }
 
         if (member && member.id == interaction.user.id) {
-            return interaction.reply({ content: 'No puedes banearte a ti mismo.', flags: 64 });
+            return interaction.reply({ content: 'No puedes banearte a ti mismo.', flags: MessageFlags.Ephemeral });
         }
 
         if (member && member.id == interaction.guild.ownerId) {
-            return interaction.reply({ content: 'No puedes banear al propietario del servidor.', flags: 64 });
+            return interaction.reply({ content: 'No puedes banear al propietario del servidor.', flags: MessageFlags.Ephemeral });
         }
 
         try {
@@ -126,9 +126,9 @@ module.exports = {
         } catch (error) {
             console.error('Error al banear al usuario:', error);
             if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({ content: 'Ocurrió un error al intentar banear al usuario.', flags: 64 });
+                await interaction.reply({ content: 'Ocurrió un error al intentar banear al usuario.', flags: MessageFlags.Ephemeral });
             } else {
-                await interaction.followUp({ content: 'Ocurrió un error al intentar banear al usuario.', flags: 64 }).catch(() => {});
+                await interaction.followUp({ content: 'Ocurrió un error al intentar banear al usuario.', flags: MessageFlags.Ephemeral }).catch(() => {});
             };
         }
     }

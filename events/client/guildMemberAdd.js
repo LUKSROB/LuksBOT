@@ -30,7 +30,7 @@ module.exports = async (member) => {
         .setTitle(messages.welcomeMessage(member))
         .setDescription(messages.descriptionMessage())
         .setImage('attachment://welcome-image.png')
-        .setColor(COLORS.WELCOMEIMG);
+        .setColor(COLORS.WELCOME);
 
     if (usedInvite && usedInvite.inviter) {
         embed.setFooter({

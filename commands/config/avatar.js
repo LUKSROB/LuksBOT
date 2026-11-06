@@ -1,7 +1,7 @@
 // Command avatar: Displays the avatar of a user
 
 // Import necessary modules
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
 const { COLORS } = require('../../config.json');
 
 // Export the avatar command module
@@ -24,7 +24,7 @@ module.exports = {
 
         const avatar = member.avatarURL(image) || member.user.avatarURL(image);
 
-        if (!avatar) return interaction.reply('Este usuario no tiene un avatar');
+        if (!avatar) return interaction.reply('Este usuario no tiene un avatar', { flags: MessageFlags.Ephemeral });
 
         const embed = new EmbedBuilder()
             .setAuthor({

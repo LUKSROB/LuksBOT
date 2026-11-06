@@ -1,13 +1,12 @@
 // Command Color-Palette: Get the color palette from an image URL or attachment
 
 // Import necessary modules
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const { getPaletteColor, rgbToHex } = require('../../utils/functions/colors');
 const { generateColorImage } = require('../../utils/canvas/colorImage');
 
 // Export the color palette command module
 module.exports = {
-    // Define the command structure
     // Define the command data and execution logic
     data: new SlashCommandBuilder()
         .setName('color-palette')
@@ -29,7 +28,6 @@ module.exports = {
                 .setDescription('Sube una imagen')
                 .setRequired(false)
         ),
-    // Execute the command
     // Execute the command when invoked
     execute: async (interaction) => {
         const url = interaction.options.getString('url');
@@ -37,7 +35,7 @@ module.exports = {
         const colorCount = interaction.options.getNumber('colors');
 
         if (!url && !image) {
-            return await interaction.reply('Debes proporcionar una URL o subir una imagen.', { flags: 64 });
+            return await interaction.reply({ content: 'Debes proporcionar una URL o subir una imagen.', flags: MessageFlags.Ephemeral });
         }
 
         await interaction.deferReply();
@@ -57,7 +55,7 @@ module.exports = {
             await interaction.editReply({ embeds: [embed], files: [attachments] });
         } catch (error) {
             console.log(error);
-            await interaction.editReply({ content: error.message, flags: 64 });
+            await interaction.editReply({ content: error.message, flags: MessageFlags.Ephemeral });
         }
         
     }
