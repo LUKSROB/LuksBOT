@@ -15,6 +15,7 @@ const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
+const { createActivityManager } = require('./utils/functions/activity');
 const { indexCommands, loadEventHandlers } = require('./utils/functions/handler');
 const config = require('./config.json');
 
@@ -34,6 +35,19 @@ console.clear();
     const client = await new Discord.Client({
         intents: 53608447 // All intents enabled for the client
     });
+    
+    // Default activity: webpage
+    const pageUrl =
+        process.env.WEBSITE_URL ||
+        config.WEBSITE_URL ||
+        `http://localhost:${port}`;
+
+    client.activityManager = createActivityManager(client, {
+        defaultName: config.ACTIVITY_PAGE_NAME || pageUrl,
+        defaultType: Discord.ActivityType.Watching,
+        defaultUrl: pageUrl,
+        status: 'online',
+    });
 
     // Create Riffy instance
     const nodes = prepareLavalinkNodes(config.NODES);
@@ -52,6 +66,7 @@ console.clear();
         }
     });
 
+    // Create Lavalink failover manager
     client.lavalinkFailover = createLavalinkFailoverManager(client, nodes, {
         connectAttemptTimeoutMs: 12000,
         retryRoundDelayMs: 3000,
@@ -60,7 +75,6 @@ console.clear();
         rateLimitCooldownMs: 600000,
         ignoreFailureWindowMs: 8000
     });
-
 
     // Connect to MongoDB 
     (async () => {
@@ -150,19 +164,17 @@ console.clear();
     app.get('/', (req, res) => {
         res.send(config.WEB)
 
-        const fullUrl = req.get('host') + req.originalUrl;
+        const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
-        if (client.isReady()) {
-            setTimeout(() => {
-                client.user.setActivity({
-                    name: fullUrl,
-                    type: 3,
-                    status: 'online',
-                });
-            }, 1000);
+        if (client.isReady() && client.activityManager) {
+            client.activityManager.setDefault({
+                name: config.ACTIVITY_PAGE_NAME || fullUrl,
+                type: Discord.ActivityType.Watching
+            })
         }
     });
 
+    // Start the Express server and login the bot to Discord
     app.listen(port, () => {
         console.log(`App listening on port ${port}`)
 
