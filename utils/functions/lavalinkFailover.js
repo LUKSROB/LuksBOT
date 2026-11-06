@@ -64,6 +64,37 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         return state.nodes.findIndex((node) => node.name === nodeName);
     }
 
+    function resolveNodeIndex(nodeRef) {
+        if (typeof nodeRef === 'number' && Number.isInteger(nodeRef)) {
+            const zeroBased = nodeRef - 1;
+            return zeroBased >= 0 && zeroBased < state.nodes.length ? zeroBased : -1;
+        }
+
+        if (typeof nodeRef !== 'string') {
+            return -1;
+        }
+
+        const trimmed = nodeRef.trim();
+        if (trimmed.length === 0) {
+            return -1;
+        }
+
+        if (/^\d+$/.test(trimmed)) {
+            const fromOne = Number(trimmed) - 1;
+            if (fromOne >= 0 && fromOne < state.nodes.length) {
+                return fromOne;
+            }
+        }
+
+        const exact = state.nodes.findIndex((node) => node.name === trimmed);
+        if (exact >= 0) {
+            return exact;
+        }
+
+        const lower = trimmed.toLowerCase();
+        return state.nodes.findIndex((node) => node.name.toLowerCase().includes(lower));
+    }
+
     function getNodeConfigByName(nodeName) {
         return state.nodes.find((node) => node.name === nodeName) || null;
     }
@@ -177,7 +208,9 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
     function nextCooldownDelayMs() {
         const remaining = [];
         for (const configuredNode of state.nodes) {
-            const ms = getNodeCooldownRemainingMs(configuredNode.name);
+            const nodeMs = getNodeCooldownRemainingMs(configuredNode.name);
+            const hostMs = getHostCooldownRemainingMs(configuredNode.name);
+            const ms = Math.max(nodeMs, hostMs);
             if (ms > 0) {
                 remaining.push(ms);
             }
@@ -557,10 +590,108 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         return waitForReady(timeoutMs);
     }
 
+    function resetNodeHealth(nodeRef, options = {}) {
+        const index = resolveNodeIndex(nodeRef);
+        if (index < 0) {
+            return null;
+        }
+
+        const nodeConfig = state.nodes[index];
+        const health = getHealth(nodeConfig.name);
+        health.failures = 0;
+        health.cooldownUntil = 0;
+        health.lastFailureAt = 0;
+        health.lastReason = '';
+
+        if (options.clearHostCooldown && nodeConfig.host) {
+            state.hostCooldownUntil.delete(nodeConfig.host);
+        }
+
+        return {
+            index: index + 1,
+            name: nodeConfig.name,
+            host: nodeConfig.host
+        };
+    }
+
+    function getStatusSnapshot() {
+        return {
+            ready: isReady(),
+            switching: state.switching,
+            activeNodeName: state.connectedNodeName,
+            nodes: state.nodes.map((node, index) => {
+                const runtimeNode = client.riffy.nodeMap.get(node.name);
+                const health = getHealth(node.name);
+                return {
+                    index: index + 1,
+                    name: node.name,
+                    host: node.host,
+                    port: node.port,
+                    connected: Boolean(runtimeNode?.connected),
+                    cooldownNodeMs: Math.max(0, health.cooldownUntil - Date.now()),
+                    cooldownHostMs: getHostCooldownRemainingMs(node.name),
+                    failures: health.failures,
+                    lastReason: health.lastReason || 'sin detalle'
+                };
+            })
+        };
+    }
+
+    async function switchToNode(nodeRef, options = {}) {
+        const index = resolveNodeIndex(nodeRef);
+        if (index < 0) {
+            return {
+                ok: false,
+                reason: `Nodo no encontrado: ${nodeRef}`
+            };
+        }
+
+        const target = state.nodes[index];
+        const timeoutMs = Number(options.timeoutMs) || 15000;
+        const force = Boolean(options.force);
+        const actor = options.actor || 'manual';
+
+        if (force) {
+            resetNodeHealth(index + 1, { clearHostCooldown: true });
+        }
+
+        if (
+            state.connectedNodeName === target.name &&
+            isNodeConnected(target.name)
+        ) {
+            return {
+                ok: true,
+                switched: false,
+                alreadyActive: true,
+                activeNodeName: target.name
+            };
+        }
+
+        state.connectedNodeName = null;
+        state.activeIndex = -1;
+        notifyReadyWaiters(false);
+
+        switchUntilConnected(index, `manual-switch:${actor}`).catch((err) => {
+            console.error('[Lavalink Failover] Error en cambio manual:', err);
+        });
+
+        const ready = await waitForReady(timeoutMs);
+        return {
+            ok: ready,
+            switched: ready,
+            pending: !ready,
+            targetNodeName: target.name,
+            activeNodeName: state.connectedNodeName
+        };
+    }
+
     return {
         bootstrap,
         ensureReady,
         isReady,
+        getStatusSnapshot,
+        resetNodeHealth,
+        switchToNode,
         handleNodeDisconnect: (node, reason) => handleFailure(node, reason, 'nodeDisconnect'),
         handleNodeError: (node, error) => handleFailure(node, error, 'nodeError'),
         handleNodeConnect
