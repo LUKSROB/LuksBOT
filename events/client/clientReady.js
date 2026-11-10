@@ -17,12 +17,6 @@ module.exports = async (client) => {
 
     client.activityManager?.setDefault();
 
-    if (client.lavalinkFailover) {
-        client.lavalinkFailover.bootstrap().catch((err) => {
-            console.error('[Lavalink Failover] Error en bootstrap:', err);
-        });
-    }
-
     await registerFont(fontPath, 'GoogleSans');
 
     client.guilds.cache.map(async guild => {

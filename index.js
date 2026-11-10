@@ -68,9 +68,9 @@ console.clear();
 
     // Create Lavalink failover manager
     client.lavalinkFailover = createLavalinkFailoverManager(client, nodes, {
-        connectAttemptTimeoutMs: 12000,
-        retryRoundDelayMs: 3000,
-        failureBaseCooldownMs: 15000,
+        connectAttemptTimeoutMs: 10000,
+        retryRoundDelayMs: 15000,
+        failureBaseCooldownMs: 60000,
         failureMaxCooldownMs: 300000,
         rateLimitCooldownMs: 600000,
         ignoreFailureWindowMs: 8000

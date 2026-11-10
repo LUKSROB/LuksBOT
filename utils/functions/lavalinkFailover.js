@@ -114,6 +114,10 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
         );
     }
 
+    function hasActivePlayers() {
+        return Boolean(client?.riffy?.players && client.riffy.players.size > 0);
+    }
+
     function notifyReadyWaiters(ready) {
         for (const waiter of state.readyWaiters) {
             try {
@@ -539,6 +543,18 @@ function createLavalinkFailoverManager(client, nodes, options = {}) {
             state.connectedNodeName = null;
             state.activeIndex = -1;
             notifyReadyWaiters(false);
+        }
+
+        if (!hasActivePlayers()) {
+            stopBackgroundReconnect(nodeName);
+            const runtimeNode = client.riffy.nodeMap.get(nodeName);
+            if (runtimeNode) {
+                markNodeFailureIgnored(nodeName);
+                runtimeNode.destroy(true);
+            }
+
+            console.log(`[Lavalink Failover] Sin players activos. No reconecto ahora; se intentará al primer uso.`);
+            return;
         }
 
         const failedIndex = getNodeIndex(nodeName);

@@ -45,7 +45,7 @@ async function ensurePlayerConnection(client, guild, member, channel, existingPl
         const failover = client.lavalinkFailover;
 
         if (failover && typeof failover.ensureReady === 'function') {
-            const ready = await failover.ensureReady(7000, `play:${guild.id}`);
+            const ready = await failover.ensureReady(20000, `play:${guild.id}`);
             if (!ready) {
                 return null;
             }
