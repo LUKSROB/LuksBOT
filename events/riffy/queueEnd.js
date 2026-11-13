@@ -1,8 +1,9 @@
 // Event handler for queue end event
 
 // Import necessary modules
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { destroy } = require('../../utils/functions/music');
+const updateMusicard = require('../../utils/canvas/updateMusicard');
 const { COLORS } = require('../../config.json');
 
 // Export the queue end event handler
@@ -19,7 +20,19 @@ module.exports = async (player, client) => {
     clearInterval(player.IntervalMusicCard);
 
     if (player.message) {
-        await player.message.edit({ components: []}).catch((e) => {
+        const currentTrack = player.current || player.previous;
+        if (currentTrack) {
+            const finalMusicard = await updateMusicard(currentTrack, player, false, null, {
+                forceComplete: true
+            });
+
+            if (finalMusicard) {
+                const finalAttachment = new AttachmentBuilder(finalMusicard, { name: 'musicard.png' });
+                await player.message.edit({ files: [finalAttachment], components: [] }).catch(() => null);
+            }
+        }
+
+        await player.message.edit({ components: [] }).catch((e) => {
             console.log("No pude editar el mensaje anterior.", e);
         });
     }

@@ -7,7 +7,7 @@ const { normalizeAlbumArtUrl } = require("../../utils/functions/messages");
 const { COLORS } = require("../../config.json");
 
 // Function to create or update the music card
-module.exports = async (track, player, init = false, color) => {
+module.exports = async (track, player, init = false, color, options = {}) => {
 
     const albumArt = normalizeAlbumArtUrl(track?.info?.thumbnail);
 
@@ -16,9 +16,18 @@ module.exports = async (track, player, init = false, color) => {
     }
 
     try {
-        const musicLength = convertTime(track.info.length);
-        const timeProgress = convertTime(player.position);
-        const percProgress = musicProgress(player.position, track.info.length);
+        const trackLength = Number(track?.info?.length) || 0;
+        const safeDuration = trackLength > 0 ? trackLength : 1;
+        const forcedPosition = typeof options.forcePositionMs === 'number' ? options.forcePositionMs : null;
+        const sourcePosition = forcedPosition ?? Number(player?.position ?? 0);
+        const clampedPosition = Math.min(Math.max(sourcePosition, 0), safeDuration);
+        const finalPosition = options.forceComplete ? safeDuration : clampedPosition;
+
+        const musicLength = convertTime(safeDuration);
+        const timeProgress = convertTime(finalPosition);
+        const percProgress = options.forceComplete
+            ? 100
+            : musicProgress(finalPosition, safeDuration);
 
         const musicard = await Bloom({
             trackName: track.info.title,
@@ -42,7 +51,7 @@ module.exports = async (track, player, init = false, color) => {
                     barColor: color || COLORS.MUSIC
                 },
             },
-            progressBar: init ? 0 : percProgress,
+            progressBar: init ? 0 : Math.max(0, Math.min(100, percProgress)),
             volume: 0,
             backgroundColor: COLORS.BKMUSIC
         })
