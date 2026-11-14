@@ -54,7 +54,15 @@ module.exports = {
         const targetLanguage = options.getString('target_language');
 
         try {
-            const result = await client.translator.translateText(text, null, targetLanguage);
+            const translator = typeof client.getTranslator === 'function'
+                ? client.getTranslator()
+                : client.translator;
+
+            if (!translator) {
+                throw new Error('DeepL translator is not available');
+            }
+
+            const result = await translator.translateText(text, null, targetLanguage);
             const embed = new EmbedBuilder()
                 .setColor(COLORS.PRIMARY)
                 .setDescription(`**Texto Original:**\n${text}\n\n**Texto Traducido:**\n${result.text}`)

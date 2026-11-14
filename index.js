@@ -11,7 +11,6 @@ process.on('unhandledRejection', (err) => {
 // Dependencies
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
-const deepl = require('deepl-node');
 const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
@@ -108,9 +107,21 @@ console.clear();
         }
     })();
 
-    // Set up DeepL translator
-    client.translator = new deepl.Translator(config.DeepL_API_KEY);
-    console.log('DeepL Translator initialized');
+    // Set up DeepL translator with lazy singleton
+    let deeplTranslatorInstance = null;
+    client.getTranslator = () => {
+        if (!config.DeepL_API_KEY) {
+            throw new Error('DeepL API key is not configured');
+        }
+
+        if (!deeplTranslatorInstance) {
+            const deepl = require('deepl-node');
+            deeplTranslatorInstance = new deepl.Translator(config.DeepL_API_KEY);
+            console.log('DeepL Translator initialized (lazy)');
+        }
+
+        return deeplTranslatorInstance;
+    };
 
     // Load commands with Hybrid System
     console.log('Indexing commands for lazy loading...');
