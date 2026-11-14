@@ -8,6 +8,14 @@ const { startBirthdayScheduler } = require('../../utils/functions/birthdaySchedu
 const { startBanScheduler } = require('../../utils/functions/banScheduler');
 const path = require('path');
 const fontPath = path.resolve(__dirname, '../../assets/fonts/YujiSyuku-Regular.ttf');
+const GUILD_SYNC_CONCURRENCY = 4;
+
+async function processInBatches(items, batchSize, worker) {
+    for (let index = 0; index < items.length; index += batchSize) {
+        const batch = items.slice(index, index + batchSize);
+        await Promise.all(batch.map((item) => worker(item)));
+    }
+}
 
 // Export the client ready event handler
 module.exports = async (client) => {
@@ -19,8 +27,13 @@ module.exports = async (client) => {
 
     await registerFont(fontPath, 'GoogleSans');
 
-    client.guilds.cache.map(async guild => {
-        await setGuild(guild);
+    const guilds = [...client.guilds.cache.values()];
+    await processInBatches(guilds, GUILD_SYNC_CONCURRENCY, async (guild) => {
+        try {
+            await setGuild(guild);
+        } catch (error) {
+            console.error(`[clientReady] No se pudo sincronizar el guild ${guild.id}:`, error);
+        }
     });
 
     await startBirthdayScheduler(client);
