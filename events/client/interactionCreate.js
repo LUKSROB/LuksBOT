@@ -1,8 +1,7 @@
 // Event handler for interaction creation
 
 // Import necessary modules
-const { getUser } = require('../../db/userHelper.js');
-const { incCmdCount } = require('../../db/incCmdCount.js');
+const { upsertUser } = require('../../db/userHelper.js');
 
 // Export the interaction create event handler
 module.exports = async (interaction) => {
@@ -19,8 +18,11 @@ module.exports = async (interaction) => {
         }
 
         try {
-            await incCmdCount(interaction.user.id, interaction.user.username, interaction.guildId);
-            const userDataPromise = getUser(interaction.user.id, interaction.user.username, interaction.guildId);
+            const userDataPromise = upsertUser(
+                interaction.user.id,
+                interaction.user.username,
+                interaction.guildId
+            ).then((result) => result.user);
             const needsUserData = typeof command.execute === 'function' && command.execute.length >= 2;
             const userData = needsUserData ? await userDataPromise : undefined;
 
