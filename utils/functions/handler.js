@@ -18,6 +18,17 @@ function getCommandModule(modulePath) {
     return command;
 }
 
+// Function to get a cached interaction module or require it if not cached
+function getInteractionModule(modulePath) {
+    if (interactionModuleCache.has(modulePath)) {
+        return interactionModuleCache.get(modulePath);
+    }
+
+    const interaction = require(modulePath);
+    interactionModuleCache.set(modulePath, interaction);
+    return interaction;
+}
+
 // Function to index commands and load event handlers for the bot
 async function indexCommands() {
 
@@ -127,9 +138,58 @@ async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
     }
 }
 
+// Function to index interactions and preload handlers
+async function indexInteractions() {
+    const interactions = new Map();
+    const interactionsRoot = path.join(__dirname, '../../interactions');
+    let entries = [];
+
+    try {
+        entries = await fsp.readdir(interactionsRoot, { withFileTypes: true });
+    } catch (err) {
+        console.error('Error reading interactions folder:', err);
+        return interactions;
+    }
+
+    const files = entries.filter((entry) => entry.isFile() && entry.name.endsWith('.js'));
+
+    for (const file of files) {
+        const modulePath = path.join(interactionsRoot, file.name);
+        const interactionId = path.basename(file.name, '.js');
+
+        try {
+            const handler = getInteractionModule(modulePath);
+
+            if (typeof handler !== 'function') {
+                console.warn(`Invalid interaction handler: ${modulePath}`);
+                continue;
+            }
+
+            interactions.set(interactionId, handler);
+        } catch (err) {
+            console.error(`Error indexing interaction ${modulePath}:`, err.message);
+        }
+    }
+
+    return interactions;
+}
+
+// Function to resolve interaction handler by custom id (supports dynamic suffixes like "id:123")
+function resolveInteractionHandler(interactions, customId) {
+    if (!interactions || !(interactions instanceof Map) || !customId) {
+        return null;
+    }
+
+    const normalized = String(customId).split(':')[0];
+    return interactions.get(normalized) || null;
+}
+
 // Export the handlers functions for use in other modules
 module.exports = {
     getCommandModule,
+    getInteractionModule,
     indexCommands,
-    loadEventHandlers
+    loadEventHandlers,
+    indexInteractions,
+    resolveInteractionHandler
 };

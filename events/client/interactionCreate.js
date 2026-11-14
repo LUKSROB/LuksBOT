@@ -2,6 +2,7 @@
 
 // Import necessary modules
 const { upsertUser } = require('../../db/userHelper.js');
+const { MessageFlags } = require('discord.js');
 
 // Export the interaction create event handler
 module.exports = async (interaction) => {
@@ -33,22 +34,23 @@ module.exports = async (interaction) => {
             console.error(error);
         }
 
-    } else if (interaction.isButton()) {
+    } else if (interaction.isButton() || interaction.isStringSelectMenu()) {
         try {
-            if (interaction.customId && interaction.customId.startsWith('tictactoe:')) {
-                const execute = require('../../interactions/tictactoe.js');
-                await execute(interaction);
-            } else {
-                const execute = require(`../../interactions/${interaction.customId}.js`);
-                await execute(interaction);
+            const execute = typeof client.getInteractionHandler === 'function'
+                ? client.getInteractionHandler(interaction.customId)
+                : null;
+
+            if (!execute) {
+                console.warn(`[interactionCreate] No interaction handler found for customId "${interaction.customId}"`);
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'Esa interacción no está disponible o expiró.',
+                        flags: MessageFlags.Ephemeral
+                    });
+                }
+                return;
             }
-        } catch (error) {
-            console.error(error);
-        }
-        
-    } else if (interaction.isStringSelectMenu()) {
-        try {
-            const execute = require(`../../interactions/${interaction.customId}.js`);
+
             await execute(interaction);
         } catch (error) {
             console.error(error);

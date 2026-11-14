@@ -16,7 +16,7 @@ const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const { createActivityManager } = require('./utils/functions/activity');
-const { indexCommands, loadEventHandlers, getCommandModule } = require('./utils/functions/handler');
+const { startHttpServer, indexCommands, indexInteractions, loadEventHandlers, getCommandModule, resolveInteractionHandler } = require('./utils/functions/handler');
 const config = require('./config.json');
 
 const path = require('path');
@@ -144,6 +144,12 @@ console.clear();
             console.error(`Error doing lazy load of "${commandName}":`, err);
             return null;
         }
+    };
+
+    console.log('Indexing interaction handlers...');
+    client.interactions = await indexInteractions();
+    client.getInteractionHandler = (customId) => {
+        return resolveInteractionHandler(client.interactions, customId);
     };
 
     // Register commands with Discord
