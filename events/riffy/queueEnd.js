@@ -18,6 +18,7 @@ module.exports = async (player, client) => {
         .setDescription('No hay más canciones en la cola.')
 
     clearInterval(player.IntervalMusicCard);
+    player._musicardState = null;
 
     if (player.message) {
         const currentTrack = player.current || player.previous;

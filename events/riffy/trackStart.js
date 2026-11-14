@@ -4,9 +4,11 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const updateMusicard = require("../../utils/canvas/updateMusicard");
 const { getDominantColor, rgbToHex, isVeryDarkHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
+const { COLORS } = require("../../config.json");
 
 // Export the track start event handler
 module.exports = async (player, track, payload, client) => {
+    const RENDER_THRESHOLD_MS = 5000;
 
     const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -32,7 +34,7 @@ module.exports = async (player, track, payload, client) => {
     )
 
     const dominantColor = await getDominantColor(track.info.thumbnail);
-    let color = dominantColor ? rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b) : '#5865F2';
+    let color = dominantColor ? rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b) : COLORS.MUSIC;
     const isDark = isDarkHex(color);
     const isVeryDark = isVeryDarkHex(color);
     color = isVeryDark ? brightnessHex(color, 6) : (isDark ? brightnessHex(color, 3) : color);
@@ -54,15 +56,39 @@ module.exports = async (player, track, payload, client) => {
         console.error('Error: Musicard not generated');
     }
 
+    player._musicardState = {
+        rendering: false,
+        lastRenderedPosition: Number(player?.position ?? 0)
+    };
+
     player.IntervalMusicCard = setInterval(async () => {
+        const state = player._musicardState || {
+            rendering: false,
+            lastRenderedPosition: 0
+        };
+
+        const currentPosition = Number(player?.position ?? 0);
+        const delta = Math.abs(currentPosition - Number(state.lastRenderedPosition ?? 0));
+
+        if (state.rendering || delta < RENDER_THRESHOLD_MS) {
+            return;
+        }
+
+        state.rendering = true;
+        player._musicardState = state;
+
         try {
             const updatedMusicard = await updateMusicard(track, player, false, color);
             if (updatedMusicard) {
                 const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
                 await player.message.edit({ files: [updatedAttachment] });
+                state.lastRenderedPosition = currentPosition;
             }
         } catch (error) {
             console.error('Error updating music card:', error);
+        } finally {
+            state.rendering = false;
+            player._musicardState = state;
         }
 
     }, 7000);
