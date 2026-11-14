@@ -100,7 +100,10 @@ console.clear();
     // Connect to MongoDB 
     (async () => {
         try {
-            await mongoose.connect(config.MONGO_URL);
+            await mongoose.connect(config.MONGO_URL, {
+                maxPoolSize: 20,
+                minPoolSize: 5
+            });
             console.log('Connected to MongoDB');
         } catch (err) {
             console.error('Error connecting to Mongoose:', err);
