@@ -33,7 +33,29 @@ console.clear();
     
     // Create a new Discord client
     const client = await new Discord.Client({
-        intents: 53608447 // All intents enabled for the client
+        intents: [
+            Discord.GatewayIntentBits.Guilds,
+            Discord.GatewayIntentBits.GuildMembers,
+            Discord.GatewayIntentBits.GuildModeration,
+            Discord.GatewayIntentBits.GuildInvites,
+            Discord.GatewayIntentBits.GuildVoiceStates,
+            Discord.GatewayIntentBits.GuildMessages,
+            Discord.GatewayIntentBits.MessageContent,
+            // Discord.GatewayIntentBits.GuildEmojisAndStickers,
+            // Discord.GatewayIntentBits.GuildIntegrations,
+            // Discord.GatewayIntentBits.GuildWebhooks,
+            // Discord.GatewayIntentBits.GuildPresences,
+            // Discord.GatewayIntentBits.GuildMessageReactions,
+            // Discord.GatewayIntentBits.GuildMessageTyping,
+            // Discord.GatewayIntentBits.DirectMessages,
+            // Discord.GatewayIntentBits.DirectMessageReactions,
+            // Discord.GatewayIntentBits.DirectMessageTyping,
+            // Discord.GatewayIntentBits.GuildScheduledEvents,
+            // Discord.GatewayIntentBits.AutoModerationConfiguration,
+            // Discord.GatewayIntentBits.AutoModerationExecution,
+            // Discord.GatewayIntentBits.GuildMessagePolls,
+            // Discord.GatewayIntentBits.DirectMessagePolls
+        ]
     });
     
     // Default activity: webpage
