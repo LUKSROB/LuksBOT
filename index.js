@@ -72,6 +72,9 @@ console.clear();
 
     // Create Riffy instance
     const nodes = prepareLavalinkNodes(config.NODES);
+    if (!Array.isArray(nodes) || nodes.length === 0) {
+        console.error('[Lavalink] No hay nodos válidos configurados en config.NODES');
+    }
 
     client.riffy = new Riffy(client, [], {
         send: (payload) => {
@@ -81,10 +84,7 @@ console.clear();
         defaultSearchPlatform: "ytmsearch",
         restVersion: "v4",
         migrateOnDisconnect: false,
-        migrateOnFailure: false,
-        bypassChecks: {
-            nodeFetchInfo: true
-        }
+        migrateOnFailure: false
     });
 
     // Create Lavalink failover manager
