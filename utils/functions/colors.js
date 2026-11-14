@@ -2,6 +2,78 @@
 
 // Import necessary modules
 const sharp = require('sharp');
+const THUMBNAIL_TTL_MS = 60 * 60 * 1000;
+const dominantColorCache = new Map();
+const paletteColorCache = new Map();
+
+// Function to generate a cache key for an image input (URL or object with URL)
+function getCacheKey(input) {
+    if (input && typeof input === 'object' && typeof input.url === 'string') {
+        return input.url;
+    }
+
+    if (typeof input === 'string') {
+        return input;
+    }
+
+    return null;
+}
+
+// Function to get a cached value from a cache map with expiration check
+function getCachedValue(cache, key) {
+    if (!key || !cache.has(key)) {
+        return null;
+    }
+
+    const cached = cache.get(key);
+    if (!cached || cached.expiresAt <= Date.now()) {
+        cache.delete(key);
+        return null;
+    }
+
+    return cached.value;
+}
+
+// Function to set a cached value in a cache map with expiration
+function setCachedValue(cache, key, value) {
+    if (!key) {
+        return;
+    }
+
+    cache.set(key, {
+        value,
+        expiresAt: Date.now() + THUMBNAIL_TTL_MS
+    });
+
+    if (cache.size > 3000) {
+        for (const [cacheKey, entry] of cache.entries()) {
+            if (entry.expiresAt <= Date.now()) {
+                cache.delete(cacheKey);
+            }
+        }
+    }
+}
+
+// Function to resolve an image input (URL or object with URL) to a buffer
+async function resolveImageBuffer(input) {
+    if (Buffer.isBuffer(input)) {
+        return input;
+    }
+
+    if (input && typeof input === 'object' && input.url) {
+        const response = await fetch(input.url);
+        if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
+        return Buffer.from(await response.arrayBuffer());
+    }
+
+    if (typeof input === "string") {
+        const response = await fetch(input);
+        if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
+        return Buffer.from(await response.arrayBuffer());
+    }
+
+    throw new Error("No se recibió una imagen válida para procesar");
+}
 
 /**
  * Detecta color promedio desde link o buffer de imagen
@@ -10,19 +82,14 @@ const sharp = require('sharp');
 
 // Function to get the dominant color from an image URL or buffer
 async function getDominantColor(input) {
-
-    let buffer;
+    const cacheKey = getCacheKey(input);
+    const cached = getCachedValue(dominantColorCache, cacheKey);
+    if (cached) {
+        return cached;
+    }
 
     try {
-        if (input && typeof input === "object" && input.url) {
-            const response = await fetch(input.url);
-            if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
-            buffer = Buffer.from(await response.arrayBuffer());
-        } else if (typeof input === "string") {
-            const response = await fetch(input);
-            if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
-            buffer = Buffer.from(await response.arrayBuffer());
-        }
+        const buffer = await resolveImageBuffer(input);
 
         const { data } = await sharp(buffer)
             .resize(1, 1)
@@ -30,7 +97,9 @@ async function getDominantColor(input) {
             .toBuffer({ resolveWithObject: true });
 
         const [r, g, b] = data;
-        return { r, g, b };
+        const dominant = { r, g, b };
+        setCachedValue(dominantColorCache, cacheKey, dominant);
+        return dominant;
 
     } catch (error) {
         console.log(error);
@@ -40,19 +109,14 @@ async function getDominantColor(input) {
 
 // Function to get a color palette from an image URL or buffer
 async function getPaletteColor(input) {
-
-    let buffer;
+    const cacheKey = getCacheKey(input);
+    const cached = getCachedValue(paletteColorCache, cacheKey);
+    if (cached) {
+        return cached;
+    }
 
     try {
-        if (input && typeof input === "object" && input.url) {
-            const response = await fetch(input.url);
-            if (!response.ok) throw new Error("No se pudo descargar la imagen desde el attachment");
-            buffer = Buffer.from(await response.arrayBuffer());
-        } else if (typeof input === "string") {
-            const response = await fetch(input);
-            if (!response.ok) throw new Error("No se pudo descargar la imagen desde URL");
-            buffer = Buffer.from(await response.arrayBuffer());
-        }
+        const buffer = await resolveImageBuffer(input);
 
         const sharpResponse = await sharp(buffer)
             .resize(10, 1, { fit: 'cover' }) // Fixed undefined colorCount
@@ -68,6 +132,7 @@ async function getPaletteColor(input) {
             palette.push({ r, g, b });
         }
 
+        setCachedValue(paletteColorCache, cacheKey, palette);
         return palette;
 
     } catch (error) {
@@ -191,6 +256,10 @@ function validateRgb(r, g, b) {
 
 // Export the functions for use in other modules
 module.exports = {
+    getCacheKey,
+    getCachedValue,
+    setCachedValue,
+    resolveImageInput,
     getDominantColor,
     getPaletteColor,
     isRgb,
