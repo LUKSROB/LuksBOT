@@ -5,6 +5,19 @@ const Discord = require('discord.js');
 const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
+const commandModuleCache = new Map();
+
+// Function to get a cached command module or require it if not cached
+function getCommandModule(modulePath) {
+    if (commandModuleCache.has(modulePath)) {
+        return commandModuleCache.get(modulePath);
+    }
+
+    const command = require(modulePath);
+    commandModuleCache.set(modulePath, command);
+    return command;
+}
+
 // Function to index commands and load event handlers for the bot
 async function indexCommands() {
 
@@ -43,8 +56,7 @@ async function indexCommands() {
 
     for (const modulePath of filesByFolder.flat()) {
         try {
-            delete require.cache[require.resolve(modulePath)];
-            const command = require(modulePath);
+            const command = getCommandModule(modulePath);
 
             const isValid =
                 command &&
@@ -73,8 +85,6 @@ async function indexCommands() {
             });
             commandData.push(json);
             totalIndexed++;
-
-            delete require.cache[require.resolve(modulePath)];
         } catch (err) {
             console.error(`Error indexing ${modulePath}:`, err.message);
             totalInvalid++;
@@ -119,6 +129,7 @@ async function loadEventHandlers(emitter, eventsPath, client, emitterLabel) {
 
 // Export the handlers functions for use in other modules
 module.exports = {
+    getCommandModule,
     indexCommands,
     loadEventHandlers
 };

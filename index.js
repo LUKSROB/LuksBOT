@@ -16,7 +16,7 @@ const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const { createActivityManager } = require('./utils/functions/activity');
-const { indexCommands, loadEventHandlers } = require('./utils/functions/handler');
+const { indexCommands, loadEventHandlers, getCommandModule } = require('./utils/functions/handler');
 const config = require('./config.json');
 
 const path = require('path');
@@ -130,7 +130,7 @@ console.clear();
         }
 
         try {
-            const command = require(meta.modulePath);
+            const command = getCommandModule(meta.modulePath);
 
             if (!command || typeof command.execute !== 'function') {
                 console.error(`Invalid command when loading at runtime: ${commandName}`);
