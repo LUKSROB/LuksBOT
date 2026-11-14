@@ -259,7 +259,7 @@ module.exports = {
     getCacheKey,
     getCachedValue,
     setCachedValue,
-    resolveImageInput,
+    resolveImageBuffer,
     getDominantColor,
     getPaletteColor,
     isRgb,
