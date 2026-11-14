@@ -15,7 +15,7 @@ const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const { createActivityManager } = require('./utils/functions/activity');
-const { startHttpServer, indexCommands, indexInteractions, loadEventHandlers, getCommandModule, resolveInteractionHandler } = require('./utils/functions/handler');
+const { indexCommands, indexInteractions, loadEventHandlers, getCommandModule, resolveInteractionHandler } = require('./utils/functions/handler');
 const { createContentFilter } = require('./utils/functions/contentFilter');
 const config = require('./config.json');
 
@@ -26,6 +26,60 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 console.clear();
+
+function startHttpServer() {
+    return new Promise((resolve, reject) => {
+        const server = app.listen(port, () => {
+            console.log(`App listening on port ${port}`);
+            resolve(server);
+        });
+
+        server.on('error', reject);
+    });
+}
+
+function commandHash(commandData = []) {
+    const normalized = [...commandData]
+        .sort((a, b) => String(a.name).localeCompare(String(b.name)))
+        .map((item) => JSON.stringify(item))
+        .join('\n');
+
+    return createHash('sha256').update(normalized).digest('hex');
+}
+
+async function registerCommandsIfChanged(rest, commandData) {
+    if (!Array.isArray(commandData) || commandData.length === 0) {
+        console.warn('No valid commands found to register');
+        return;
+    }
+
+    const currentHash = commandHash(commandData);
+    const stateKey = `discord:commands:${config.APP_ID}:${config.GUILD_ID}`;
+
+    let previousHash = null;
+    try {
+        previousHash = await getStateValue(stateKey);
+    } catch (error) {
+        console.warn('[Commands] No se pudo leer hash previo de comandos:', error.message || error);
+    }
+
+    if (previousHash && previousHash === currentHash) {
+        console.log('Commands unchanged. Discord registration skipped.');
+        return;
+    }
+
+    await rest.put(
+        Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
+        { body: commandData }
+    );
+    console.log(`Registered ${commandData.length} commands on Discord`);
+
+    try {
+        await setStateValue(stateKey, currentHash);
+    } catch (error) {
+        console.warn('[Commands] No se pudo guardar hash de comandos:', error.message || error);
+    }
+}
 
 (async () => {
     // Patch Riffy REST to handle transient network errors gracefully
@@ -101,17 +155,17 @@ console.clear();
     });
 
     // Connect to MongoDB 
-    (async () => {
-        try {
-            await mongoose.connect(config.MONGO_URL, {
-                maxPoolSize: 20,
-                minPoolSize: 5
-            });
+    const mongoConnectPromise = mongoose.connect(config.MONGO_URL, {
+        maxPoolSize: 20,
+        minPoolSize: 5
+    })
+        .then(() => {
             console.log('Connected to MongoDB');
-        } catch (err) {
+        })
+        .catch((err) => {
             console.error('Error connecting to Mongoose:', err);
-        }
-    })();
+            throw err;
+        });
 
     // Set up DeepL translator with lazy singleton
     let deeplTranslatorInstance = null;
@@ -172,23 +226,18 @@ console.clear();
     // Register commands with Discord
     const REST = new Discord.REST().setToken(config.BOT_TOKEN);
 
-    (async () => {
-        try {
-            if (commandData.length === 0) {
-                console.warn('No valid commands found to register');
-                return;
-            }
-            
-            await REST.put(
-                Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
-                { body: commandData }
-            );
-            console.log(`Registered ${commandData.length} commands on Discord`);
-        } catch (err) {
-            console.log('Error registering commands');
-            console.error(err);
-        }
-    })();
+    try {
+        await mongoConnectPromise;
+    } catch (error) {
+        console.warn('[Startup] MongoDB no disponible para comparar hash; se registrarán comandos igual.');
+    }
+
+    try {
+        await registerCommandsIfChanged(REST, commandData);
+    } catch (err) {
+        console.log('Error registering commands');
+        console.error(err);
+    }
 
     // Load events
     await Promise.all([
