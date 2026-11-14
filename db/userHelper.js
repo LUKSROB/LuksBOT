@@ -73,13 +73,14 @@ async function loadGuildUsers(guild, options = {}) {
 
     const includeBots = !!options.includeBots;
     const members = await guild.members.fetch();
-    let created = 0;
-    let updated = 0;
+    const now = new Date();
+    const memberPayloads = [];
 
     for (const [, member] of members) {
         if (!includeBots && member.user.bot) continue;
 
-        const payload = {
+        memberPayloads.push({
+            userId: member.id,
             userName: member.user.username,
             nickname: member.nickname || null,
             isBot: member.user.bot,
@@ -88,40 +89,74 @@ async function loadGuildUsers(guild, options = {}) {
                 id: role.id,
                 name: role.name
             }))
-        };
+        });
+    }
 
-        const existing = await User.findOne({ userId: member.id, guildId: guild.id });
+    if (memberPayloads.length === 0) {
+        return { created: 0, updated: 0, total: 0 };
+    }
 
-        if (!existing) {
-            await new User({
-                userId: member.id,
-                userName: member.user.username,
-                guildId: guild.id,
-                nickname: member.nickname || null,
-                isBot: member.user.bot,
-                joinedAt: member.joinedAt,
-                roles: member.roles.cache.map((role) => ({
-                    id: role.id,
-                    name: role.name
-                })),
-                lastInteractionAt: new Date(),
-                commandCount: 0
-            }).save();
-            created++;
+    const userIds = memberPayloads.map((item) => item.userId);
+    const existingUsers = await User.find(
+        { guildId: guild.id, userId: { $in: userIds } },
+        { userId: 1 }
+    ).lean();
+    const existingUserIds = new Set(existingUsers.map((user) => user.userId));
+
+    const newUsers = [];
+    const updateOps = [];
+
+    for (const payload of memberPayloads) {
+        if (existingUserIds.has(payload.userId)) {
+            updateOps.push({
+                updateOne: {
+                    filter: { guildId: guild.id, userId: payload.userId },
+                    update: {
+                        $set: {
+                            userName: payload.userName,
+                            nickname: payload.nickname,
+                            isBot: payload.isBot,
+                            joinedAt: payload.joinedAt,
+                            roles: payload.roles,
+                            lastInteractionAt: now
+                        }
+                    }
+                }
+            });
             continue;
         }
 
-        existing.userName = member.user.username;
-        existing.nickname = member.nickname || null;
-        existing.isBot = member.user.bot;
-        existing.joinedAt = member.joinedAt;
-        existing.roles = member.roles.cache.map((role) => ({
-            id: role.id,
-            name: role.name
-        }));
-        existing.lastInteractionAt = new Date();
-        await existing.save();
-        updated++;
+        newUsers.push({
+            userId: payload.userId,
+            userName: payload.userName,
+            guildId: guild.id,
+            nickname: payload.nickname,
+            isBot: payload.isBot,
+            joinedAt: payload.joinedAt,
+            roles: payload.roles,
+            lastInteractionAt: now,
+            commandCount: 0
+        });
+    }
+
+    let created = 0;
+    if (newUsers.length > 0) {
+        try {
+            const inserted = await User.insertMany(newUsers, { ordered: false });
+            created = inserted.length;
+        } catch (error) {
+            if (Array.isArray(error?.writeErrors)) {
+                created = Math.max(0, newUsers.length - error.writeErrors.length);
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    let updated = 0;
+    if (updateOps.length > 0) {
+        await User.bulkWrite(updateOps, { ordered: false });
+        updated = updateOps.length;
     }
 
     return { created, updated, total: created + updated };
