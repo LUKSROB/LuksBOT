@@ -216,15 +216,13 @@ console.clear();
         }
     });
 
-    // Start the Express server and login the bot to Discord
-    app.listen(port, () => {
-        console.log(`App listening on port ${port}`)
-
+    // Start Express and login in parallel to keep health endpoint available even if login fails
+    await Promise.all([
+        startHttpServer(),
         client.login(config.BOT_TOKEN)
             .then(() => console.log('Bot logged in to Discord successfully!'))
-            .catch(err => {
+            .catch((err) => {
                 console.error('ERROR: Failed to login to Discord:', err);
-                process.exit(1);
-            });
-    });
+            })
+    ]);
 })();

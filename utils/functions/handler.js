@@ -5,7 +5,23 @@ const Discord = require('discord.js');
 const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 4000;
 const commandModuleCache = new Map();
+const interactionModuleCache = new Map();
+
+// Function to start an HTTP server for the bot
+function startHttpServer() {
+    return new Promise((resolve, reject) => {
+        const server = app.listen(port, () => {
+            console.log(`App listening on port ${port}`);
+            resolve(server);
+        });
+
+        server.on('error', reject);
+    });
+}
 
 // Function to get a cached command module or require it if not cached
 function getCommandModule(modulePath) {
@@ -186,6 +202,7 @@ function resolveInteractionHandler(interactions, customId) {
 
 // Export the handlers functions for use in other modules
 module.exports = {
+    startHttpServer,
     getCommandModule,
     getInteractionModule,
     indexCommands,
