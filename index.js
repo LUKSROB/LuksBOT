@@ -16,6 +16,7 @@ const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const { createActivityManager } = require('./utils/functions/activity');
 const { startHttpServer, indexCommands, indexInteractions, loadEventHandlers, getCommandModule, resolveInteractionHandler } = require('./utils/functions/handler');
+const { createContentFilter } = require('./utils/functions/contentFilter');
 const config = require('./config.json');
 
 const path = require('path');
@@ -56,6 +57,8 @@ console.clear();
             // Discord.GatewayIntentBits.DirectMessagePolls
         ]
     });
+
+    client.contentFilter = createContentFilter(config.WORDS_FILTER, config.WEBS_FILTER);
     
     // Default activity: webpage
     const pageUrl =
