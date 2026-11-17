@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/dashboard.css" />
+    <script src="/dashboard.js" defer></script>
+    <title>LuksBOT Dashboard</title>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <div>
+                <h1><a href="/">LuksBOT</a></h1>
+                <img src="https://cdn.discordapp.com/app-icons/1275247911726354506/ccfec3d3e61ca681519e9f7387e81cbe.png?size=256" alt="LuksBOT Logo"/>
+            </div>
+            <p class="muted">Gestiona configuración por servidor usando inicio de sesión con Discord.</p>
+            <div class="actions">
+                <button id="loginBtn">Entrar con Discord</button>
+                <button id="logoutBtn" class="secondary hidden">Cerrar sesión</button>
+            </div>
+            <div id="status">Comprobando sesión...</div>
+        </div>
+
+        <div id="dashboardPanel" class="hidden">
+            <div class="card">
+                <h2>Servidor</h2>
+                <label for="guildSelect">Selecciona un servidor</label>
+                <select id="guildSelect"></select>
+            </div>
+
+            <div class="card">
+                <h2>Configuración</h2>
+                <div class="row">
+                    <div>
+                        <label for="welcomeChannelId">Canal de bienvenida (ID)</label>
+                        <input id="welcomeChannelId" />
+                    </div>
+                    <div>
+                        <label for="goodbyeChannelId">Canal de despedida (ID)</label>
+                        <input id="goodbyeChannelId" />
+                    </div>
+                    <div>
+                        <label for="birthdayChannelId">Canal de cumpleaños (ID)</label>
+                        <input id="birthdayChannelId" />
+                    </div>
+                    <div>
+                        <label for="birthdayRoleId">Rol de cumpleaños (ID)</label>
+                        <input id="birthdayRoleId" />
+                    </div>
+                    <div>
+                        <label for="ticketChannelId">Canal de tickets (ID)</label>
+                        <input id="ticketChannelId" />
+                    </div>
+                    <div>
+                        <label for="modRoleId">Rol de moderación (ID)</label>
+                        <input id="modRoleId" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:12px;">
+                    <div>
+                        <label for="wordsFilter">Palabras bloqueadas (una por línea o separadas por coma)</label>
+                        <textarea id="wordsFilter"></textarea>
+                    </div>
+                    <div>
+                        <label for="websFilter">Webs bloqueadas (una por línea o separadas por coma)</label>
+                        <textarea id="websFilter"></textarea>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="saveBtn">Guardar configuración</button>
+                    <button id="reloadBtn" class="secondary">Recargar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
