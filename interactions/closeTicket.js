@@ -1,8 +1,10 @@
 // Interaction handler for closing a ticket
 
 // Import necessary modules
-const { MessageFlags } = require('discord.js');
+const { EmbedBuilder, MessageFlags } = require('discord.js');
 const { getTicketByChannel, registerTicketClose } = require('../db/tickets');
+const { getGuildSettings } = require('../db/guild');
+const { COLORS } = require('../config.json');
 
 // Export the interaction handler for closing a ticket
 module.exports = async (interaction) => {
@@ -30,6 +32,24 @@ module.exports = async (interaction) => {
         });
 
         await interaction.reply({ content: 'Ticket cerrado. Eliminando canal...', flags: MessageFlags.Ephemeral });
+
+        const settings = await getGuildSettings(guild.id);
+        if (settings.ticketLogChannelId) {
+            const logChannel = await guild.channels.fetch(settings.ticketLogChannelId).catch(() => null);
+            if (logChannel && logChannel.isTextBased()) {
+                const logEmbed = new EmbedBuilder()
+                    .setColor(COLORS.DANGER)
+                    .setTitle('🔒 Ticket cerrado')
+                    .addFields(
+                        { name: 'Canal', value: `#${channel.name}`, inline: true },
+                        { name: 'Dueño', value: ownerId ? `<@${ownerId}>` : 'Desconocido', inline: true },
+                        { name: 'Cerrado por', value: `${user}`, inline: true }
+                    )
+                    .setTimestamp();
+
+                await logChannel.send({ embeds: [logEmbed] }).catch(() => null);
+            }
+        }
 
         if (ticketOwner) {
             await ticketOwner.send('Tu ticket fue cerrado por el staff.').catch(() => null);

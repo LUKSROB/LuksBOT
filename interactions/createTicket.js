@@ -2,7 +2,8 @@
 
 // Import necessary modules
 const { PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require("discord.js");
-const { TICKET_CHANNEL, MOD_ROLE, COLORS } = require("../config.json");
+const { COLORS } = require("../config.json");
+const { getGuildSettings } = require("../db/guild");
 const { getOpenTicketByUser, registerTicketOpen } = require("../db/tickets");
 const { sanitizePart } = require("../utils/functions/messages");
 
@@ -22,14 +23,20 @@ module.exports = async (interaction) => {
         const {user, guild} = interaction;
         const ticketType = interaction.values[0] || 'soporte';
 
+        const settings = await getGuildSettings(guild.id);
+        const ticketCategoryId = settings.ticketChannelId;
+        const modRoleId = settings.modRoleId;
+
         const existingDbTicket = await getOpenTicketByUser(guild.id, user.id);
         if (existingDbTicket) {
             return interaction.reply({ content: 'Ya tienes un ticket abierto.', flags: MessageFlags.Ephemeral });
         }
 
-        const existingChannel = guild.channels.cache
-            .filter((channel) => channel.parentId === TICKET_CHANNEL)
-            .some((channel) => channel.topic && channel.topic.includes(`owner:${user.id}`));
+        const existingChannel = ticketCategoryId
+            ? guild.channels.cache
+                .filter((channel) => channel.parentId === ticketCategoryId)
+                .some((channel) => channel.topic && channel.topic.includes(`owner:${user.id}`))
+            : false;
 
         if (existingChannel) {
             return interaction.reply({ content: 'Ya tienes un ticket abierto.', flags: MessageFlags.Ephemeral });
@@ -41,31 +48,36 @@ module.exports = async (interaction) => {
         const safeUser = sanitizePart(user.username, 'usuario', 12);
         const channelName = `${safeType}-${safeUser}`;
 
+        const permissionOverwrites = [
+            { id: interaction.guild.roles.everyone, deny: [PermissionsBitField.Flags.ViewChannel] },
+            {
+                id: user.id,
+                allow: [
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages,
+                    PermissionsBitField.Flags.ReadMessageHistory,
+                    PermissionsBitField.Flags.AttachFiles
+                ]
+            }
+        ];
+
+        if (modRoleId) {
+            permissionOverwrites.push({
+                id: modRoleId,
+                allow: [
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages,
+                    PermissionsBitField.Flags.ReadMessageHistory
+                ]
+            });
+        }
+
         const channel = await guild.channels.create({
             name: channelName,
             topic: `owner:${user.id}|type:${safeType}`,
             type: ChannelType.GuildText,
-            parent: TICKET_CHANNEL,
-            permissionOverwrites: [
-                { id: interaction.guild.roles.everyone, deny: [PermissionsBitField.Flags.ViewChannel] },
-                {
-                    id: MOD_ROLE,
-                    allow: [
-                        PermissionsBitField.Flags.ViewChannel,
-                        PermissionsBitField.Flags.SendMessages,
-                        PermissionsBitField.Flags.ReadMessageHistory
-                    ]
-                },
-                {
-                    id: user.id,
-                    allow: [
-                        PermissionsBitField.Flags.ViewChannel,
-                        PermissionsBitField.Flags.SendMessages,
-                        PermissionsBitField.Flags.ReadMessageHistory,
-                        PermissionsBitField.Flags.AttachFiles
-                    ]
-                }
-            ]
+            parent: ticketCategoryId || undefined,
+            permissionOverwrites
         });
 
         await registerTicketOpen({
@@ -98,7 +110,7 @@ module.exports = async (interaction) => {
             .setTimestamp();
 
         await channel.send({
-            content: `${user} <@&${MOD_ROLE}>`,
+            content: modRoleId ? `${user} <@&${modRoleId}>` : `${user}`,
             embeds: [supportEmbed],
             components: [closeButton]
         });
