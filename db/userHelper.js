@@ -17,7 +17,7 @@ async function upsertUser(userId, userName, guildId, extraData = {}) {
     };
 
     const userData = await User.findOneAndUpdate(query, update, {
-        new: true,
+        returnDocument: 'after',
         upsert: true,
         setDefaultsOnInsert: true,
         runValidators: true

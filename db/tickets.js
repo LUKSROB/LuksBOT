@@ -32,7 +32,7 @@ async function registerTicketOpen(data) {
     return Ticket.findOneAndUpdate(
         { channelId: data.channelId },
         { $set: payload },
-        { upsert: true, new: true }
+        { upsert: true, returnDocumetn: 'after' }
     );
 }
 // Function to register a ticket as closed
