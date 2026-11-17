@@ -2,7 +2,7 @@
 
 // Import necessary modules
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
-const { WELCOME_CHANNEL } = require('../../config.json');
+const { getGuildSettings } = require('../../db/guild');
 const welcomeImage = require('../../utils/canvas/welcomeImage');
 const invites = require('../../utils/functions/invites');
 const messages = require('../../utils/functions/messages');
@@ -12,8 +12,16 @@ const { COLORS } = require('../../config.json');
 // Export the guild member add event handler
 module.exports = async (member) => {
 
-    const { client } = member;
-    const channelWelcome = WELCOME_CHANNEL;
+    const { client, guild } = member;
+
+    const settings = await getGuildSettings(guild.id);
+    const channelWelcome = settings.welcomeChannelId;
+
+    if (!channelWelcome) {
+        console.warn(`[guildMemberAdd] Canal de bienvenida no configurado para ${guild.id}`);
+        return;
+    }
+
     const channel = await client.channels.fetch(channelWelcome).catch(() => null);
 
     if (!channel || !channel.isTextBased()) {

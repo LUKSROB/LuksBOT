@@ -17,6 +17,35 @@ async function processInBatches(items, batchSize, worker) {
     }
 }
 
+// Map config.json keys -> per-guild settings (only used for the main guild migration)
+const CONFIG_TO_SETTING = {
+    welcomeChannelId: 'WELCOME_CHANNEL',
+    goodbyeChannelId: 'GOODBYE_CHANNEL',
+    birthdayChannelId: 'BIRTHDAY_CHANNEL',
+    birthdayRoleId: 'BIRTHDAY_ROLE',
+    ticketChannelId: 'TICKET_CHANNEL',
+    ticketLogChannelId: 'TICKETS_ID',
+    ticketPanelMessageId: 'TICKET_MESSAGE',
+    modRoleId: 'MOD_ROLE'
+};
+
+// Migrate legacy config.json values into the guild document (main guild only, once)
+async function seedGuildSettingsFromConfig(guildId, config) {
+    const current = await getGuildSettings(guildId);
+    const seed = {};
+
+    for (const [settingKey, configKey] of Object.entries(CONFIG_TO_SETTING)) {
+        const value = config[configKey];
+        if (value && !current[settingKey]) {
+            seed[settingKey] = value;
+        }
+    }
+
+    if (Object.keys(seed).length > 0) {
+        await updateGuildSettings(guildId, seed);
+    }
+}
+
 // Export the client ready event handler
 module.exports = async (client) => {
     
