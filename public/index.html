@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="LuksBOT: bot de Discord con música, moderación, filtros automáticos, cumpleaños, tickets y dashboard web." />
+    <meta name="theme-color" content="#0b0e18" />
+    <link rel="stylesheet" href="index.css" />
+    <script src="index.js" defer></script>
+    <title>LuksBOT · Música, moderación y comunidad</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a class="brand" href="/">
+                <img
+                    class="brand-logo"
+                    src="https://cdn.discordapp.com/app-icons/1275247911726354506/ccfec3d3e61ca681519e9f7387e81cbe.png?size=64"
+                    alt="Logo de LuksBOT"
+                    width="34"
+                    height="34"
+                />
+                <span>LuksBOT</span>
+            </a>
+
+            <nav class="nav" aria-label="Secciones">
+                <a href="#caracteristicas">Características</a>
+                <a href="#comandos">Comandos</a>
+                <a href="#dashboard">Dashboard</a>
+            </nav>
+
+            <div class="header-actions">
+                <a id="session-chip" class="session-chip" href="/dashboard" hidden>
+                    <img id="session-avatar" src="" alt="" width="22" height="22" hidden />
+                    <span id="session-name">Mi cuenta</span>
+                </a>
+                <a class="btn btn-small btn-primary" href="/auth/discord" id="cta-login">
+                    <span data-cta-label>Entrar con Discord</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero wrap">
+            <div class="hero-copy">
+                <span class="badge">● Discord bot multipropósito</span>
+                <h1>Música, moderación y comunidad <span class="gradient">en un solo bot</span></h1>
+                <p class="lead">
+                    LuksBOT reúne reproducción con Lavalink, filtros automáticos, cumpleaños, tickets,
+                    bienvenidas con imagen y un dashboard web para administrar cada servidor.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary btn-lg" href="/auth/discord">
+                        <span data-cta-label>Entrar con Discord</span>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                    <a class="btn btn-ghost btn-lg" href="#comandos">Ver comandos</a>
+                </div>
+
+                <p class="hero-note">
+                    Inicia sesión con Discord para abrir el dashboard. Solo verás los servidores donde puedes administrar.
+                </p>
+
+                <ul class="chips" aria-label="Tecnologías">
+                    <li>Lavalink · Riffy</li>
+                    <li>MongoDB</li>
+                    <li>Express + OAuth2</li>
+                    <li>Node 20</li>
+                </ul>
+            </div>
+
+            <aside class="hero-card" aria-label="Resumen del bot">
+                <div class="bot-head">
+                    <img
+                        src="https://cdn.discordapp.com/app-icons/1275247911726354506/ccfec3d3e61ca681519e9f7387e81cbe.png?size=128"
+                        alt=""
+                        width="52"
+                        height="52"
+                    />
+                    <div>
+                        <strong>LuksBOT</strong>
+                        <span class="online"><i></i> En línea</span>
+                    </div>
+                </div>
+
+                <div class="bot-activity">
+                    <span class="dot" aria-hidden="true"></span>
+                    Escuchando música en tus servidores
+                </div>
+
+                <div class="mini-grid">
+                    <div><strong>27</strong><span>comandos slash</span></div>
+                    <div><strong>4</strong><span>categorías</span></div>
+                    <div><strong>9</strong><span>ajustes por servidor</span></div>
+                    <div><strong>24 h</strong><span>sesión dashboard</span></div>
+                </div>
+
+                <ul class="mini-list">
+                    <li><span aria-hidden="true">🎵</span> Tarjeta de reproducción con color dominante</li>
+                    <li><span aria-hidden="true">🛡️</span> Filtro de palabras y dominios</li>
+                    <li><span aria-hidden="true">🎂</span> Cumpleaños con rol automático</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="stats wrap" aria-label="Datos rápidos">
+            <div><strong>27</strong><span>comandos slash</span></div>
+            <div><strong>4</strong><span>categorías</span></div>
+            <div><strong>9</strong><span>ajustes por servidor</span></div>
+            <div><strong>OAuth2</strong><span>acceso al dashboard</span></div>
+        </section>
+
+        <section id="caracteristicas" class="section wrap">
+            <div class="section-head">
+                <h2>Todo lo que tu servidor necesita</h2>
+                <p>Música, seguridad, comunidad y administración web, integrados en un mismo bot.</p>
+            </div>
+
+            <div class="grid features">
+                <article class="card">
+                    <span class="icon music" aria-hidden="true">🎵</span>
+                    <h3>Música con Lavalink</h3>
+                    <p>Cola, loop, volumen y tarjeta de reproducción, con failover automático entre nodos.</p>
+                </article>
+
+                <article class="card">
+                    <span class="icon success" aria-hidden="true">🛡️</span>
+                    <h3>Filtro automático</h3>
+                    <p>Elimina mensajes con palabras o dominios bloqueados por servidor y avisa al autor.</p>
+                </article>
+
+                <article class="card">
+                    <span class="icon warning" aria-hidden="true">🎂</span>
+                    <h3>Cumpleaños</h3>
+                    <p>Agenda diaria, rol temporal y felicitaciones en el canal que configures.</p>
+                </article>
+
+                <article class="card">
+                    <span class="icon invites" aria-hidden="true">🎟️</span>
+                    <h3>Tickets</h3>
+                    <p>Panel con categorías, permisos por usuario, cierre y logs para el staff.</p>
+                </article>
+
+                <article class="card">
+                    <span class="icon games" aria-hidden="true">👋</span>
+                    <h3>Bienvenidas e invitaciones</h3>
+                    <p>Imagen de bienvenida, despedidas y seguimiento de quién invita a quién.</p>
+                </article>
+
+                <article class="card">
+                    <span class="icon" aria-hidden="true">📊</span>
+                    <h3>Dashboard web</h3>
+                    <p>OAuth2 de Discord, configuración por servidor y API para el filtro de contenido.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="comandos" class="section wrap">
+            <div class="section-head">
+                <h2>27 comandos slash</h2>
+                <p>Organizados en cuatro categorías. Escribí <code>/</code> en Discord para verlos.</p>
+            </div>
+
+            <div class="cmd-grid">
+                <article class="card cmd-card">
+                    <header>
+                        <span class="tag tag-admin">Admins</span>
+                        <h3>Administración</h3>
+                    </header>
+                    <ul class="cmd-list">
+                        <li><code>/ban</code><span>Banea con duración opcional</span></li>
+                        <li><code>/unban</code><span>Desbanea y registra el motivo</span></li>
+                        <li><code>/config-guild</code><span>Canales y roles del servidor</span></li>
+                        <li><code>/filter</code><span>Palabras y webs bloqueadas</span></li>
+                        <li><code>/lavalink-node</code><span>Estado y cambio de nodo</span></li>
+                        <li><code>/load-users</code><span>Sincroniza usuarios a MongoDB</span></li>
+                        <li><code>/support-panel</code><span>Publica el panel de tickets</span></li>
+                    </ul>
+                </article>
+
+                <article class="card cmd-card">
+                    <header>
+                        <span class="tag tag-config">Config</span>
+                        <h3>Utilidades</h3>
+                    </header>
+                    <ul class="cmd-list">
+                        <li><code>/help</code><span>Centro de ayuda con botones</span></li>
+                        <li><code>/ping</code><span>Latencia del bot</span></li>
+                        <li><code>/translate</code><span>Traduce con DeepL</span></li>
+                        <li><code>/avatar</code><span>Avatar de un usuario</span></li>
+                        <li><code>/invites</code><span>Top de invitadores</span></li>
+                        <li><code>/cmd-count</code><span>Comandos usados</span></li>
+                    </ul>
+                </article>
+
+                <article class="card cmd-card">
+                    <header>
+                        <span class="tag tag-funny">Funny</span>
+                        <h3>Diversión</h3>
+                    </header>
+                    <ul class="cmd-list">
+                        <li><code>/dice</code><span>Lanza un dado</span></li>
+                        <li><code>/say</code><span>Repite un mensaje</span></li>
+                        <li><code>/tic-tac-toe</code><span>Partida con botones</span></li>
+                        <li><code>/color-brightness</code><span>Brillo de un color</span></li>
+                        <li><code>/color-dominant</code><span>Color dominante de una imagen</span></li>
+                        <li><code>/color-palette</code><span>Paleta de una imagen</span></li>
+                        <li><code>/birthday</code><span>Cumpleaños, rol y canal</span></li>
+                    </ul>
+                </article>
+
+                <article class="card cmd-card">
+                    <header>
+                        <span class="tag tag-music">Music</span>
+                        <h3>Música</h3>
+                    </header>
+                    <ul class="cmd-list">
+                        <li><code>/play</code><span>Reproduce o encola</span></li>
+                        <li><code>/pause</code><span>Pausa la pista</span></li>
+                        <li><code>/resume</code><span>Reanuda la pista</span></li>
+                        <li><code>/skip</code><span>Salta a la siguiente</span></li>
+                        <li><code>/queue</code><span>Muestra la cola</span></li>
+                        <li><code>/loop</code><span>Bucle de pista o cola</span></li>
+                        <li><code>/volume</code><span>Ajusta el volumen</span></li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section id="dashboard" class="section wrap">
+            <div class="dash-card">
+                <div>
+                    <span class="badge">Panel web</span>
+                    <h2>Configurá tu servidor sin tocar código</h2>
+                    <p>
+                        Entrá con tu cuenta de Discord y administrá los canales, roles y filtros del servidor
+                        desde el navegador.
+                    </p>
+                    <ul class="check-list">
+                        <li>Canales de bienvenida, despedida, cumpleaños y tickets</li>
+                        <li>Rol de moderación y listas de palabras/webs bloqueadas</li>
+                        <li>API de filtro de contenido con activación por servidor</li>
+                    </ul>
+                    <a class="btn btn-primary" href="/auth/discord">
+                        <span data-cta-label>Entrar con Discord</span>
+                    </a>
+                </div>
+
+                <div class="dash-preview" aria-hidden="true">
+                    <div class="window-bar"><i></i><i></i><i></i></div>
+                    <div class="preview-row">
+                        <div class="preview-field">
+                            <small>Canal de bienvenida</small>
+                            <b>#general</b>
+                        </div>
+                        <div class="preview-field">
+                            <small>Rol de moderación</small>
+                            <b>Staff</b>
+                        </div>
+                    </div>
+                    <div class="preview-row">
+                        <div class="preview-field">
+                            <small>Cumpleaños</small>
+                            <b>#cumpleaños</b>
+                        </div>
+                        <div class="preview-field">
+                            <small>Tickets</small>
+                            <b>Soporte</b>
+                        </div>
+                    </div>
+                    <div class="preview-block">
+                        Filtro de palabras
+                        <br />
+                        24 términos activos
+                        <br />
+                        <span class="preview-pill">Guardado</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap footer-inner">
+            <p>© <span id="year">2026</span> LuksBOT · Hecho por Luksrob</p>
+            <nav aria-label="Enlaces del pie">
+                <a href="/dashboard">Dashboard</a>
+                <a href="#comandos">Comandos</a>
+                <a href="https://github.com/LUKSROB/LuksBOT" target="_blank" rel="noopener">GitHub</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>
