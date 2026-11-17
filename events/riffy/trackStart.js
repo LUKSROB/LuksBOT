@@ -4,11 +4,15 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const updateMusicard = require("../../utils/canvas/updateMusicard");
 const { getDominantColor, rgbToHex, isVeryDarkHex, isDarkHex, brightnessHex } = require("../../utils/functions/colors");
+const { downloadImage, cacheImageInPlayer } = require("../../utils/functions/imageDownload");
+const { normalizeAlbumArtUrl } = require("../../utils/functions/messages");
 const { COLORS } = require("../../config.json");
 
 // Export the track start event handler
 module.exports = async (player, track, payload, client) => {
-    const RENDER_THRESHOLD_MS = 5000;
+    const RENDER_THRESHOLD_MS = 6000;
+    const RENDER_INTERVAL_MS = 7000;
+    const MAX_CONSECUTIVE_ERRORS = 3;
 
     const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -40,6 +44,15 @@ module.exports = async (player, track, payload, client) => {
     color = isVeryDark ? brightnessHex(color, 6) : (isDark ? brightnessHex(color, 3) : color);
 
     const channel = client?.channels?.cache?.get(player.textChannel);
+    
+    const albumArtUrl = normalizeAlbumArtUrl(track?.info?.thumbnail);
+    if (albumArtUrl) {
+        const imageBuffer = await downloadImage(albumArtUrl);
+        if (imageBuffer) {
+            cacheImageInPlayer(player, albumArtUrl, imageBuffer, color);
+        }
+    }
+    
     const musicard = await updateMusicard(track, player, true, color);
 
     client.activityManager?.setMusic(player.guildId, track);
@@ -58,14 +71,26 @@ module.exports = async (player, track, payload, client) => {
 
     player._musicardState = {
         rendering: false,
-        lastRenderedPosition: Number(player?.position ?? 0)
+        lastRenderedPosition: Number(player?.position ?? 0),
+        consecutiveErrors: 0,
+        loopActive: true
     };
+
+    if (player.IntervalMusicCard) {
+        clearInterval(player.IntervalMusicCard);
+    }
 
     player.IntervalMusicCard = setInterval(async () => {
         const state = player._musicardState || {
             rendering: false,
-            lastRenderedPosition: 0
+            lastRenderedPosition: 0,
+            consecutiveErrors: 0,
+            loopActive: true
         };
+
+        if (!state.loopActive) {
+            return;
+        }
 
         const currentPosition = Number(player?.position ?? 0);
         const delta = Math.abs(currentPosition - Number(state.lastRenderedPosition ?? 0));
@@ -83,14 +108,21 @@ module.exports = async (player, track, payload, client) => {
                 const updatedAttachment = new AttachmentBuilder(updatedMusicard, { name: 'musicard.png' });
                 await player.message.edit({ files: [updatedAttachment] });
                 state.lastRenderedPosition = currentPosition;
+                state.consecutiveErrors = 0;
             }
         } catch (error) {
-            console.error('Error updating music card:', error);
+            state.consecutiveErrors++;
+            console.error(`[MusicCard] Error updating (${state.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS}):`, error.message || error);
+            
+            if (state.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                console.warn(`[MusicCard] Loop detenido después de ${MAX_CONSECUTIVE_ERRORS} errores consecutivos`);
+                state.loopActive = false;
+            }
         } finally {
             state.rendering = false;
             player._musicardState = state;
         }
 
-    }, 7000);
+    }, RENDER_INTERVAL_MS);
 
 };

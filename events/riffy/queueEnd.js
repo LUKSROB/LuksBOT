@@ -23,7 +23,7 @@ module.exports = async (player, client) => {
     if (player.message) {
         const currentTrack = player.current || player.previous;
         if (currentTrack) {
-            const finalMusicard = await updateMusicard(currentTrack, player, false, null, {
+            const finalMusicard = await updateMusicard(currentTrack, player, false, player._cachedColor, {
                 forceComplete: true
             });
 

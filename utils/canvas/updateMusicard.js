@@ -9,7 +9,9 @@ const { COLORS } = require("../../config.json");
 // Function to create or update the music card
 module.exports = async (track, player, init = false, color, options = {}) => {
 
-    const albumArt = normalizeAlbumArtUrl(track?.info?.thumbnail);
+    const albumArt = player?._cachedAlbumArt || normalizeAlbumArtUrl(track?.info?.thumbnail);
+    
+    color = color || player?._cachedColor || COLORS.MUSIC;
 
     if (!albumArt) {
         return null;
@@ -42,13 +44,13 @@ module.exports = async (track, player, init = false, color, options = {}) => {
                     textColor: COLORS.ARTMUSIC
                 },
                 trackStyle: {
-                    textColor: color || COLORS.MUSIC
+                    textColor: color
                 },
                 timeStyle: {
-                    textColor: color || COLORS.MUSIC
+                    textColor: color
                 },
                 progressBarStyle: {
-                    barColor: color || COLORS.MUSIC
+                    barColor: color
                 },
             },
             progressBar: init ? 0 : Math.max(0, Math.min(100, percProgress)),
