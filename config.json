@@ -88,10 +88,5 @@
             "password": "free",
             "secure": true
         }
-    ],
-    "TWITCH": "", // URL of the Twitch profile
-    "KICK": "", // URL of the Kick profile
-    "WEBSITE_URL": "", // URL of the website
-    "ACTIVITY_PAGE_NAME": "", // Name of the activity page
-    "WEB": "<h1 style='text-align: center; margin-top: 20%;'>No deberias de estar aqui</h1>"
+    ]
 }
