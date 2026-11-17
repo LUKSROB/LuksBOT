@@ -4,6 +4,7 @@
 const { registerFont } = require('musicard');
 const { updateCache } = require('../../utils/functions/invites');
 const { setGuild, getGuildSettings, updateGuildSettings } = require('../../db/guild');
+const { getGuildContentFilter } = require('../../db/contentFilter');
 const { startBirthdayScheduler } = require('../../utils/functions/birthdayScheduler');
 const { startBanScheduler } = require('../../utils/functions/banScheduler');
 const path = require('path');
@@ -57,9 +58,24 @@ module.exports = async (client) => {
     await registerFont(fontPath, 'GoogleSans');
 
     const guilds = [...client.guilds.cache.values()];
+    const config = require('../../config.json');
+    
+    // Inicializar filtros por defecto para cada guild
+    const defaultFilterConfig = {
+        words: config.WORDS_FILTER || [],
+        webs: config.WEBS_FILTER || []
+    };
+
     await processInBatches(guilds, GUILD_SYNC_CONCURRENCY, async (guild) => {
         try {
             await setGuild(guild);
+            // Asegurar que el guild tenga configuración de filtro
+            await getGuildContentFilter(guild.id, defaultFilterConfig);
+
+            // Migrar una sola vez los valores legacy de config.json al guild principal
+            if (config.GUILD_ID && guild.id === config.GUILD_ID) {
+                await seedGuildSettingsFromConfig(guild.id, config);
+            }
         } catch (error) {
             console.error(`[clientReady] No se pudo sincronizar el guild ${guild.id}:`, error);
         }

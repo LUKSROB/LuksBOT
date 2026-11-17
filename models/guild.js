@@ -33,7 +33,22 @@ const guildSchema = new mongoose.Schema({
     invites: { type: Object, default: {} },
     birthdayRoleId: { type: String, default: null },
     birthdayChannelId: { type: String, default: null },
-    bans: { type: [banRecordSchema], default: [] }
+    welcomeChannelId: { type: String, default: null },
+    goodbyeChannelId: { type: String, default: null },
+    invitesChannelId: { type: String, default: null },
+    messagesChannelId: { type: String, default: null },
+    ticketChannelId: { type: String, default: null },
+    ticketLogChannelId: { type: String, default: null },
+    ticketPanelMessageId: { type: String, default: null },
+    modRoleId: { type: String, default: null },
+    settingsUpdatedAt: { type: Date, default: null },
+    bans: { type: [banRecordSchema], default: [] },
+    contentFilter: {
+        enabled: { type: Boolean, default: true },
+        words: { type: [String], default: [] },
+        webs: { type: [String], default: [] },
+        updatedAt: { type: Date, default: Date.now }
+    }
 }, { strict: false});
 
 // Create indexes for efficient querying of bans within guilds

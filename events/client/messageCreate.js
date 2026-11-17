@@ -1,15 +1,18 @@
 // Event handler for message creation
 
-
 // Import necessary modules
 const { MessageFlags } = require('discord.js');
+const { getGuildContentFilter, compileGuildFilter } = require('../../db/contentFilter');
+
 // Export the message create event handler
 module.exports = async (message) => {
 
     if (message.author.bot) return;
     if (!message.guild) return;
 
-    const filter = message.client.contentFilter;
+    const filterConfig = await getGuildContentFilter(message.guildId);
+    const filter = compileGuildFilter(filterConfig);
+
     if (filter && typeof filter.test === 'function' && filter.test(message.content)) {
         try {
             await message.delete();
