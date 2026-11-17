@@ -20,6 +20,6 @@ module.exports = async (member) => {
         return;
     }
 
-        await channel.send(messages.goodbyeMessage(member));
+    await channel.send(messages.goodbyeMessage(member));
     
 }
