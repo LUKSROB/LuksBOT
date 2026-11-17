@@ -12,12 +12,15 @@ process.on('unhandledRejection', (err) => {
 require('dotenv').config();
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
+const { createHash } = require('crypto');
 const { Riffy } = require('riffy');
 const { patchRiffyRest } = require('./utils/functions/patchRiffyRest');
 const { prepareLavalinkNodes, createLavalinkFailoverManager } = require('./utils/functions/lavalinkFailover');
 const { createActivityManager } = require('./utils/functions/activity');
 const { indexCommands, indexInteractions, loadEventHandlers, getCommandModule, resolveInteractionHandler } = require('./utils/functions/handler');
 const { createContentFilter } = require('./utils/functions/contentFilter');
+const { registerDashboardRoutes } = require('./utils/functions/dashboard');
+const { getStateValue, setStateValue } = require('./db/runtimeState');
 const config = require('./config.json');
 
 const path = require('path');
@@ -35,8 +38,8 @@ console.clear();
 
 function startHttpServer() {
     return new Promise((resolve, reject) => {
-        const server = app.listen(port, () => {
-            console.log(`App listening on port ${port}`);
+        const server = app.listen(PORT, () => {
+            console.log(`App listening on port ${PORT}`);
             resolve(server);
         });
 
@@ -261,8 +264,33 @@ async function registerCommandsIfChanged(rest, commandData) {
     });
 
     // Express server for health check
-    app.get('/', (req, res) => {
-        res.send(config.WEB)
+    app.use(express.json({ limit: '1mb' }));
+    app.use(express.urlencoded({ extended: true }));
+    
+    // Cookie parser middleware - MUST be before routes
+    app.use((req, res, next) => {
+        const cookieHeader = req.headers.cookie || '';
+        req.cookies = {};
+        if (cookieHeader) {
+            cookieHeader.split(';').forEach((cookie) => {
+                const [key, val] = cookie.trim().split('=');
+                if (key) {
+                    try {
+                        req.cookies[key] = decodeURIComponent(val || '');
+                    } catch {
+                        req.cookies[key] = val || '';
+                    }
+                }
+            });
+        }
+        next();
+    });
+    
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    registerDashboardRoutes(app, client, config);
+
+    app.get('/', (req) => {
 
         const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
