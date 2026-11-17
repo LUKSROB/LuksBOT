@@ -39,6 +39,94 @@ async function updateGuild(guildId, data) {
     );
 }
 
+// Configurable per-guild settings (channels and roles) that replace config.json
+const GUILD_SETTING_KEYS = Object.freeze([
+    'welcomeChannelId',
+    'goodbyeChannelId',
+    'invitesChannelId',
+    'messagesChannelId',
+    'birthdayChannelId',
+    'birthdayRoleId',
+    'ticketChannelId',
+    'ticketLogChannelId',
+    'ticketPanelMessageId',
+    'modRoleId'
+]);
+
+// Normalize a setting value to a trimmed string or null
+function normalizeSettingValue(value) {
+    if (value === undefined || value === null) {
+        return null;
+    }
+
+    const normalized = String(value).trim();
+    return normalized || null;
+}
+
+// Function to get the configurable settings of a guild
+async function getGuildSettings(guildId) {
+    const projection = { guildId: 1, settingsUpdatedAt: 1 };
+    for (const key of GUILD_SETTING_KEYS) {
+        projection[key] = 1;
+    }
+
+    const guild = await Guild.findOne({ guildId }, projection).lean();
+    const settings = {};
+
+    for (const key of GUILD_SETTING_KEYS) {
+        settings[key] = guild ? (guild[key] ?? null) : null;
+    }
+
+    settings.settingsUpdatedAt = guild?.settingsUpdatedAt ?? null;
+    return settings;
+}
+
+// Function to update one or more configurable settings of a guild
+async function updateGuildSettings(guildId, data = {}) {
+    const update = {};
+
+    for (const key of GUILD_SETTING_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+            update[key] = normalizeSettingValue(data[key]);
+        }
+    }
+
+    if (Object.keys(update).length === 0) {
+        return getGuildSettings(guildId);
+    }
+
+    update.settingsUpdatedAt = new Date();
+
+    await Guild.updateOne(
+        { guildId },
+        {
+            $set: update,
+            $setOnInsert: { guildId, guildName: 'Unknown Guild' }
+        },
+        { upsert: true }
+    );
+
+    return getGuildSettings(guildId);
+}
+
+// Function to clear a single configurable setting of a guild
+async function clearGuildSetting(guildId, key) {
+    if (!GUILD_SETTING_KEYS.includes(key)) {
+        throw new Error(`Unknown guild setting: ${key}`);
+    }
+
+    await Guild.updateOne(
+        { guildId },
+        {
+            $set: { [key]: null, settingsUpdatedAt: new Date() },
+            $setOnInsert: { guildId, guildName: 'Unknown Guild' }
+        },
+        { upsert: true }
+    );
+
+    return getGuildSettings(guildId);
+}
+
 // Add a ban record to a guild
 async function createBanRecord(guildId, data) {
     const bannedAt = data.bannedAt || new Date();
@@ -71,7 +159,7 @@ async function createBanRecord(guildId, data) {
             },
             $push: { bans: ban }
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
 
     return updatedGuild?.bans?.[updatedGuild.bans.length - 1] || null;
@@ -204,6 +292,10 @@ module.exports = {
     setGuild,
     getGuild,
     updateGuild,
+    GUILD_SETTING_KEYS,
+    getGuildSettings,
+    updateGuildSettings,
+    clearGuildSetting,
     createBanRecord,
     getActiveBan,
     getGuildBans,
