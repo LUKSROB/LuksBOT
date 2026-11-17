@@ -3,7 +3,7 @@
 // Import necessary modules
 const { registerFont } = require('musicard');
 const { updateCache } = require('../../utils/functions/invites');
-const { setGuild } = require('../../db/guild');
+const { setGuild, getGuildSettings, updateGuildSettings } = require('../../db/guild');
 const { startBirthdayScheduler } = require('../../utils/functions/birthdayScheduler');
 const { startBanScheduler } = require('../../utils/functions/banScheduler');
 const path = require('path');
@@ -14,6 +14,35 @@ async function processInBatches(items, batchSize, worker) {
     for (let index = 0; index < items.length; index += batchSize) {
         const batch = items.slice(index, index + batchSize);
         await Promise.all(batch.map((item) => worker(item)));
+    }
+}
+
+// Map config.json keys -> per-guild settings (only used for the main guild migration)
+const CONFIG_TO_SETTING = {
+    welcomeChannelId: 'WELCOME_CHANNEL',
+    goodbyeChannelId: 'GOODBYE_CHANNEL',
+    birthdayChannelId: 'BIRTHDAY_CHANNEL',
+    birthdayRoleId: 'BIRTHDAY_ROLE',
+    ticketChannelId: 'TICKET_CHANNEL',
+    ticketLogChannelId: 'TICKETS_ID',
+    ticketPanelMessageId: 'TICKET_MESSAGE',
+    modRoleId: 'MOD_ROLE'
+};
+
+// Migrate legacy config.json values into the guild document (main guild only, once)
+async function seedGuildSettingsFromConfig(guildId, config) {
+    const current = await getGuildSettings(guildId);
+    const seed = {};
+
+    for (const [settingKey, configKey] of Object.entries(CONFIG_TO_SETTING)) {
+        const value = config[configKey];
+        if (value && !current[settingKey]) {
+            seed[settingKey] = value;
+        }
+    }
+
+    if (Object.keys(seed).length > 0) {
+        await updateGuildSettings(guildId, seed);
     }
 }
 

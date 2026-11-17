@@ -1,19 +1,5 @@
 {
-    "PORT": 4000,
-    "BOT_TOKEN": "", // Add your bot token
-    "APP_ID": "", // Add your application ID
-    "GUILD_ID": "", // Add your guild ID
-    "TICKETS_ID": "", // Add your tickets channel ID
-    "MOD_ROLE": "", // Add your moderator role ID
-    "WELCOME_CHANNEL": "", // Add your welcome channel ID
-    "GOODBYE_CHANNEL": "", // Add your goodbye channel ID
-    "TICKET_CHANNEL": "", // Add your ticket channel ID
-    "MONGO_URL": "", // Add your MongoDB connection URL
-    "DeepL_API_KEY": "", // Add your DeepL API key
-    "PALETTE_RAPIDAPI": {
-        "url": "", // Add your Palette RapidAPI URL
-        "rapidapi_key": "" // Add your Palette RapidAPI key
-    },
+    "GUILD_ID": "1252736352936661134",
     "COLORS": {
         "PRIMARY": "#0070C9",
         "SUCCESS": "#00C851",

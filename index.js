@@ -9,6 +9,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Dependencies
+require('dotenv').config();
 const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const { Riffy } = require('riffy');
@@ -23,7 +24,12 @@ const path = require('path');
 const express = require('express');
 
 const app = express();
-const port = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
+const DISCORD_ID = process.env.DISCORD_ID;
+const WEBSITE_URL = process.env.WEBSITE_URL;
+const ACTIVITY_NAME = process.env.ACTIVITY_NAME;
+
+app.set('trust proxy', 1);
 
 console.clear();
 
@@ -54,7 +60,7 @@ async function registerCommandsIfChanged(rest, commandData) {
     }
 
     const currentHash = commandHash(commandData);
-    const stateKey = `discord:commands:${config.APP_ID}:${config.GUILD_ID}`;
+    const stateKey = `discord:commands:${DISCORD_ID}:${config.GUILD_ID}`;
 
     let previousHash = null;
     try {
@@ -69,7 +75,7 @@ async function registerCommandsIfChanged(rest, commandData) {
     }
 
     await rest.put(
-        Discord.Routes.applicationGuildCommands(config.APP_ID, config.GUILD_ID),
+        Discord.Routes.applicationGuildCommands(DISCORD_ID, config.GUILD_ID),
         { body: commandData }
     );
     console.log(`Registered ${commandData.length} commands on Discord`);
@@ -112,16 +118,16 @@ async function registerCommandsIfChanged(rest, commandData) {
         ]
     });
 
-    client.contentFilter = createContentFilter(config.WORDS_FILTER, config.WEBS_FILTER);
+    client.contentFilter = null;
     
     // Default activity: webpage
     const pageUrl =
-        process.env.WEBSITE_URL ||
+        WEBSITE_URL ||
         config.WEBSITE_URL ||
-        `http://localhost:${port}`;
+        `http://localhost:${PORT}`;
 
     client.activityManager = createActivityManager(client, {
-        defaultName: config.ACTIVITY_PAGE_NAME || pageUrl,
+        defaultName: ACTIVITY_NAME || pageUrl,
         defaultType: Discord.ActivityType.Watching,
         defaultUrl: pageUrl,
         status: 'online',
@@ -155,7 +161,7 @@ async function registerCommandsIfChanged(rest, commandData) {
     });
 
     // Connect to MongoDB 
-    const mongoConnectPromise = mongoose.connect(config.MONGO_URL, {
+    const mongoConnectPromise = mongoose.connect(process.env.MONGO_CLIENT, {
         maxPoolSize: 20,
         minPoolSize: 5
     })
@@ -170,13 +176,13 @@ async function registerCommandsIfChanged(rest, commandData) {
     // Set up DeepL translator with lazy singleton
     let deeplTranslatorInstance = null;
     client.getTranslator = () => {
-        if (!config.DeepL_API_KEY) {
+        if (!process.env.DEEPL_KEY) {
             throw new Error('DeepL API key is not configured');
         }
 
         if (!deeplTranslatorInstance) {
             const deepl = require('deepl-node');
-            deeplTranslatorInstance = new deepl.Translator(config.DeepL_API_KEY);
+            deeplTranslatorInstance = new deepl.Translator(process.env.DEEPL_KEY);
             console.log('DeepL Translator initialized (lazy)');
         }
 
@@ -224,7 +230,7 @@ async function registerCommandsIfChanged(rest, commandData) {
     };
 
     // Register commands with Discord
-    const REST = new Discord.REST().setToken(config.BOT_TOKEN);
+    const REST = new Discord.REST().setToken(process.env.DISCORD_KEY);
 
     try {
         await mongoConnectPromise;
@@ -262,7 +268,7 @@ async function registerCommandsIfChanged(rest, commandData) {
 
         if (client.isReady() && client.activityManager) {
             client.activityManager.setDefault({
-                name: config.ACTIVITY_PAGE_NAME || fullUrl,
+                name: ACTIVITY_NAME || fullUrl,
                 type: Discord.ActivityType.Watching
             })
         }
@@ -271,7 +277,7 @@ async function registerCommandsIfChanged(rest, commandData) {
     // Start Express and login in parallel to keep health endpoint available even if login fails
     await Promise.all([
         startHttpServer(),
-        client.login(config.BOT_TOKEN)
+        client.login(process.env.DISCORD_KEY)
             .then(() => console.log('Bot logged in to Discord successfully!'))
             .catch((err) => {
                 console.error('ERROR: Failed to login to Discord:', err);
