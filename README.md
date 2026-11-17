@@ -206,7 +206,13 @@ Botones de reproducción: `stop`, `loop`, `pause`, `skip`, `queue`.
 - `Ticket`: `guildId`, `channelId`, `ownerId`, `type`, `status`, `openedAt`, `closedAt`, cierre y motivo.
 - `RuntimeState`: pares clave/valor; se usa para omitir el registro de comandos si el hash no cambió.
 
-## Seguridad y privacidad
+## ☕ Apoyar el proyecto
+
+Si LuksBot te resulta útil, podés invitarme un café. Tu apoyo ayuda a mantener la infraestructura y el desarrollo del bot.
+
+[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_6.svg)](https://cafecito.app/luksrob)
+
+## Privacidad y términos
 
 - No subas `.env` ni credenciales al repositorio.
 - Si un token o API key se expone, revocalo y generá uno nuevo de inmediato.
@@ -215,3 +221,12 @@ Botones de reproducción: `stop`, `loop`, `pause`, `skip`, `queue`.
 ## Estado del proyecto
 
 Versión **1.8.7**. Proyecto en evolución; los comandos y funciones pueden cambiar con nuevas versiones.
+
+## 📄 Licencia
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+Este proyecto se distribuye bajo la licencia **MIT**. Podés usar, copiar, modificar y redistribuir el código siempre que conserves el aviso de copyright y el texto de la licencia.
+
+Ver [LICENSE](./LICENSE) para el texto completo.
+
+© 2026 Luksrob. El nombre, el logo y la identidad de LuksBot no están incluidos en la licencia del código.
