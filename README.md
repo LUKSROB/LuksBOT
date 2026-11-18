@@ -233,7 +233,8 @@ Ver [LICENSE](./LICENSE) para el texto completo.
 ---
 
 <div align="center">
+
 **Me divertí mucho creando LuksBOT, le puse todo mi esfuerzo y dedicación**
 
-*Hecho con ❤️ por [LUKSROB](https://github.com/LUKSROB) *
+*Hecho con ❤️ por [LUKSROB](https://github.com/LUKSROB)*
 </div>
