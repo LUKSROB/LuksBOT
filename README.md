@@ -226,7 +226,13 @@ Versión **1.8.7**. Proyecto en evolución; los comandos y funciones pueden camb
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 Este proyecto se distribuye bajo la licencia **MIT**. Podés usar, copiar, modificar y redistribuir el código siempre que conserves el aviso de copyright y el texto de la licencia.
-
 Ver [LICENSE](./LICENSE) para el texto completo.
 
 © 2026 Luksrob. El nombre, el logo y la identidad de LuksBot no están incluidos en la licencia del código.
+
+---
+
+<div align="center">
+**Me divertí mucho creando LuksBOT, le puse todo mi esfuerzo y dedicación**
+*Hecho con ❤️ por [LUKSROB](https://github.com/LUKSROB) *
+</div>
