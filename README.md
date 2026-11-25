@@ -59,8 +59,9 @@ events/
 interactions/            Handlers de botones y select menus (customId = nombre del archivo)
 db/                      Acceso a datos (guilds, usuarios, tickets, cumpleaños, filtros)
 models/                  Esquemas Mongoose (Guild, User, Ticket, RuntimeState)
-utils/functions/         Helpers (dashboard, failover, actividad, filtros, colores...)
-utils/canvas/            Generación de imágenes
+utils/
+  functions/         Helpers (dashboard, failover, actividad, filtros, colores...)
+  canvas/            Generación de imágenes
 public/                  Landing (index.html) y dashboard (dashboard.html + dashboard.js)
 assets/                  Fuentes e imágenes
 config.json              IDs, colores, filtros por defecto y nodos Lavalink
@@ -124,7 +125,6 @@ node index.js
 | `PORT` | No | Puerto HTTP (por defecto `4000`). |
 
 > `config.json` ya **no** contiene credenciales: token, Mongo y API keys viven en `.env`.
-> Si usás algunas variables heredadas (`KICK`, `PALETTE_RAPIDAPI`, `WEB` o `TWITCH` en `.env`), ten en cuenta que el código actual no las lee.
 
 ## config.json
 
